@@ -86,8 +86,8 @@ OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PATCH = @PATCH@
 PERL = @PERL@
-PHP = @PHP@
 PKG_CONFIG = @PKG_CONFIG@
+PYTHON = @PYTHON@
 RANLIB = @RANLIB@
 RESOLVES = @RESOLVES@
 SDL = @SDL@
@@ -127,7 +127,8 @@ libzzip_la_SOURCES = \
 	stat.c \
 	info.c \
 	err.c \
-	plugin.c
+	plugin.c \
+	write.c
 
 libzzip_la_headers = \
 	stdint.h \
@@ -163,7 +164,7 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 
 libzzip_la_DEPENDENCIES =
 am_libzzip_la_OBJECTS = zip.lo file.lo dir.lo stat.lo info.lo err.lo \
-	plugin.lo
+	plugin.lo write.lo
 libzzip_la_OBJECTS = $(am_libzzip_la_OBJECTS)
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
@@ -172,7 +173,7 @@ depcomp = $(SHELL) $(top_srcdir)/uses/depcomp
 @AMDEP_TRUE@DEP_FILES = $(DEPDIR)/dir.Plo $(DEPDIR)/err.Plo \
 @AMDEP_TRUE@	$(DEPDIR)/file.Plo $(DEPDIR)/info.Plo \
 @AMDEP_TRUE@	$(DEPDIR)/plugin.Plo $(DEPDIR)/stat.Plo \
-@AMDEP_TRUE@	$(DEPDIR)/zip.Plo
+@AMDEP_TRUE@	$(DEPDIR)/write.Plo $(DEPDIR)/zip.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -242,6 +243,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/info.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/plugin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/stat.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/write.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/zip.Plo@am__quote@
 
 distclean-depend:
@@ -444,15 +446,26 @@ uninstall-am: uninstall-info-am uninstall-libLTLIBRARIES uninstall-local \
 
 # here is some backward compatibility with version 0.10.* of zziplib
 install-data-local : install-zzipHEADERS
-	(cd $(DESTDIR)$(includedir) && $(LN_S) -f zzip/zzip.h    zziplib.h)
-	(cd $(DESTDIR)$(includedir) && $(LN_S) -f zzip/lib.h     zzip.h)
-	(cd $(DESTDIR)$(includedir) && $(LN_S) -f zzip/plugin.h  zzip-io.h)
-	(cd $(DESTDIR)$(includedir) && $(LN_S) -f zzip/wrap.h    zzipwrap.h)
-	(cd $(DESTDIR)$(includedir) && $(LN_S) -f zzip/format.h  zzipformat.h)
+	echo '#ifndef ZZIP_WARNING'   > $(DESTDIR)$(includedir)/zzip.h
+	echo '#define ZZIP_WARNING 1' >>$(DESTDIR)$(includedir)/zzip.h
+	echo '#ifdef __GNUC__'        >>$(DESTDIR)$(includedir)/zzip.h
+	echo '#warning do no not use <zzip.h>, update to include <zzip/lib.h>'\
+	                              >>$(DESTDIR)$(includedir)/zzip.h
+	echo '#endif'                 >>$(DESTDIR)$(includedir)/zzip.h
+	echo '#endif'                 >>$(DESTDIR)$(includedir)/zzip.h
+	echo '#include "zzip/lib.h"'  >>$(DESTDIR)$(includedir)/zzip.h
+	sed -e 's|zzip.h|zziplib.h|' -e 's|zzip/lib.h|zzip/zzip.h|' \
+	$(DESTDIR)$(includedir)/zzip.h >$(DESTDIR)$(includedir)/zziplib.h
+	sed -e 's|zzip.h|zzip-io.h|' -e 's|zzip/lib.h|zzip/plugin.h|' \
+	$(DESTDIR)$(includedir)/zzip.h >$(DESTDIR)$(includedir)/zzip-io.h
+	sed -e 's|zzip.h|zzipwrap.h|' -e 's|zzip/lib.h|zzip/wrap.h|' \
+	$(DESTDIR)$(includedir)/zzip.h >$(DESTDIR)$(includedir)/zzipwrap.h
+	sed -e 's|zzip.h|zzipformat.h|' -e 's|zzip/lib.h|zzip/format.h|' \
+	$(DESTDIR)$(includedir)/zzip.h >$(DESTDIR)$(includedir)/zzipformat.h
 
 uninstall-local :
-	(cd $(DESTDIR)$includedir) && rm zziplib.h  zzip.h  zzip-io.h)
-	(cd $(DESTDIR)$includedir) && rm zzipwrap.h zzipformat.h)
+	(cd $(DESTDIR)$(includedir) && rm zziplib.h  zzip.h  zzip-io.h)
+	(cd $(DESTDIR)$(includedir) && rm zzipwrap.h zzipformat.h)
 
 zzip-zlib-config.pc : Makefile
 	@ echo "zlib_libs=@ZLIB_LDIR@ -lz" >$@

@@ -13,6 +13,9 @@
 #define ZZIP__FILE_OFFSET_BITS  64 
 #endif
 
+/* Define if you have the <direct.h> header file. */
+/* #undef ZZIP_HAVE_DIRECT_H */
+
 /* Define if you have the <dirent.h> header file, and it defines `DIR'. */
 #ifndef ZZIP_HAVE_DIRENT_H 
 #define ZZIP_HAVE_DIRENT_H  1 
@@ -161,7 +164,7 @@
 
 /* Version number of package */
 #ifndef ZZIP_VERSION 
-#define ZZIP_VERSION  "0.10.82" 
+#define ZZIP_VERSION  "0.12.83" 
 #endif
 
 /* io-wrap needs to wrap systemcalls */

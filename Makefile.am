@@ -9,7 +9,8 @@ rpm2: dist-bzip2 $(PACKAGE).spec
 	rpm -ta $(PACKAGE)-$(VERSION).tar.bz2
 
 zzip.html zzip.xml zzip.pdf \
-doc docs clean-doc clean-docs man manpages htmpages unpack clean-unpack \
+doc docs docu clean-doc clean-docs clean-docu \
+man manpages htmpages unpack clean-unpack \
 omf install-omf install-doc install-sfnet install-man3 x :
 	(cd docs && $(MAKE) `basename $@`)
 

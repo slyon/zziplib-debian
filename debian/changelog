@@ -1,3 +1,17 @@
+zziplib (0.12.83-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sun, 26 Sep 2004 21:48:52 +0200
+
+zziplib (0.12.82-1) unstable; urgency=low
+
+  * New upstream version.
+  * Added manpages for zziplib-bin and included tools. Thanks to Ricardo
+    Mones (closes: bug#256186).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sat, 26 Jun 2004 16:33:10 +0200
+
 zziplib (0.10.82-1) unstable; urgency=low
 
   * Initial Release (closes: bug#173511, bug#222397).

@@ -5,8 +5,8 @@ AC_REVISION($Revision: 0.0$)
 AC_CONFIG_AUX_DIR(uses)
 # =======================================================================
 AC_CANONICAL_SYSTEM
+dnl AM_ENABLE_MULTILIB([Makefile],[$host])
 AX_ENABLE_BUILDDIR
-
 AC_SET_DEFAULT_PATHS_SYSTEM
 # -----------------------------------------------------------------------
 AC_ARG_ENABLE(thread-safe,AC_HELP_STRING(
@@ -63,8 +63,9 @@ AC_SUBST(ZLIB_LDIR)
 # -----------------------------------------------------------------------
 AX_SPEC_DEFAULTS
 AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
-
+dnl test ".$CFLAGS" = "." && CFLAGS="" 
 AC_PROG_CC
+dnl test ".$CFLAGS" = "." && test "$GCC" = "yes" && CFLAGS="-O3"
 AC_PROG_INSTALL
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
@@ -80,7 +81,7 @@ AX_PREFIX_CONFIG_H([zzip/_msvc.h],[zzip],[zzip/_msvc.in])
 AM_MAINTAINER_MODE
 
 AC_PATH_PROGS(PERL, perl5 perl, echo no perl found for)
-AC_PATH_PROGS(PHP,  php-standalone php, echo no php found for)
+AC_PATH_PROGS(PYTHON, python2.2 python2.3 python, echo no python found for)
 AC_PATH_PROGS(MKZIP, zip pkzip, :)
 AC_PATH_PROGS(XMLTO, xmlto, :)
 
@@ -90,7 +91,7 @@ AC_STDC_HEADERS
 AC_HEADER_DIRENT
 AC_CHECK_HEADERS(stdint.h unistd.h windows.h winnt.h winbase.h sys/int_types.h)
 AC_CHECK_HEADERS(sys/types.h sys/mman.h sys/stat.h sys/param.h) dnl posix'ish
-AC_CHECK_HEADERS(io.h zlib.h)
+AC_CHECK_HEADERS(io.h direct.h zlib.h)
 AC_CHECK_FUNCS( strcasecmp )
 
 AC_TYPE_OFF_T

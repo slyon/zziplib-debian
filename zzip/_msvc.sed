@@ -3,6 +3,8 @@ s:undef *HAVE_STDLIB_H *$:define HAVE_STDLIB_H 1:
 s:undef *HAVE_STRING_H *$:define HAVE_STRING_H 1:
 s:undef *HAVE_SYS_STAT_H *$:define HAVE_SYS_STAT_H 1:
 s:undef *HAVE_SYS_TYPES_H *$:define HAVE_SYS_TYPES_H 1:
+s:undef *HAVE_DIRECT_H *$:define HAVE_DIRECT_H 1:
+s:undef *HAVE_IO_H *$:define HAVE_IO_H 1:
 s:undef *HAVE_WINDOWS_H *$:define HAVE_WINDOWS_H 1  /* yes, this is windows */:
 s:undef *HAVE_WINBASE_H *$:define HAVE_WINBASE_H 1  /* hmm, is that win32 ? */:
 s:undef *HAVE_WINNT_H *$:define HAVE_WINNT_H 1      /* is that always true? */:

@@ -4,8 +4,8 @@ DEFAULT_INCLUDES = # nothing - no default of -I. -I$(srcdir)
 DEFS = @DEFS@ -I$(top_builddir) -I$(top_srcdir) # also for automake 1.4
 
 bin_SCRIPTS = zzip-config
-bin_PROGRAMS = zzcat zzdir zzxorcat zzxordir zzxorcopy
-noinst_PROGRAMS = zziptest zzobfuscated
+bin_PROGRAMS = zzcat zzdir zzxorcat zzxordir zzxorcopy unzzip
+noinst_PROGRAMS = zziptest zzobfuscated zzip
 aclocaldir = $(datadir)/aclocal
 aclocal_DATA = zziplib.m4
 #
@@ -19,6 +19,10 @@ WCC10_CLEAN = *.obj *.lk1 *.mk1 *.mk *.sym *.tgt
 EXTRA_DIST = $(aclocal_DATA)
 CLEANFILES = $(WCC10_CLEAN)
 
+unzzip_LDFLAGS = @ZZIPLIB_LDFLAGS@
+unzzip_LDADD = ../zzip/libzzip.la @RESOLVES@ -lz
+zzip_LDFLAGS = @ZZIPLIB_LDFLAGS@
+zzip_LDADD = ../zzip/libzzip.la @RESOLVES@ -lz
 zziptest_LDFLAGS = @ZZIPLIB_LDFLAGS@
 zziptest_LDADD = ../zzip/libzzip.la @RESOLVES@ -lz
 zzcat_LDFLAGS =  @ZZIPLIB_LDFLAGS@

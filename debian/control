@@ -22,7 +22,7 @@ Description: library providing read access on ZIP-archives - binaries
   Author: Guido Draheim <guidod@gmx.de>
   Homepage: http://zziplib.sourceforge.net
 
-Package: libzzip-0-10
+Package: libzzip-0-12
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
@@ -41,7 +41,7 @@ Description: library providing read access on ZIP-archives - library
 Package: libzzip-dev
 Section: devel
 Architecture: any
-Depends: libzzip-0-10 (= ${Source-Version})
+Depends: libzzip-0-12 (= ${Source-Version})
 Description: library providing read access on ZIP-archives - development
  The zziplib library is intentionally lightweight, it offers the ability
  to easily extract data from files archived in a single zip file.

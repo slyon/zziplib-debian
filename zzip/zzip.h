@@ -96,7 +96,7 @@ struct zzip_dirent
 
 /*
  * Getting error strings 
- * zzip-err.c
+ * zzip/err.c
  */
 _zzip_export    /* error in _opendir : */
 zzip_char_t* 	zzip_strerror(int errcode); 
@@ -109,7 +109,7 @@ int    	 	zzip_errno(int errcode);
 /*
  * Functions to grab information from ZZIP_DIR/ZZIP_FILE structure 
  * (if ever needed)
- * zzip-info.c
+ * zzip/info.c
  */
 _zzip_export
 int  	 	zzip_error(ZZIP_DIR * dir);
@@ -133,7 +133,7 @@ int             zzip_realfd(ZZIP_FILE * fp);
 
 /*
  * zip handle management
- * zzip-zip.c
+ * zzip/zip.c
  */
 _zzip_export
 ZZIP_DIR *      zzip_dir_alloc(zzip_strings_t* fileext);
@@ -156,8 +156,8 @@ int             zzip_dir_read(ZZIP_DIR * dir, ZZIP_DIRENT * dirent);
 
 /*
  * Scanning files in zip archive
- * zzip-dir.c
- * zzip-zip.c
+ * zzip/dir.c
+ * zzip/zip.c
  */
 _zzip_export
 ZZIP_DIR * 	zzip_opendir(zzip_char_t* filename);
@@ -174,9 +174,8 @@ void	 	zzip_seekdir(ZZIP_DIR * dir, zzip_off_t offset);
 
 /*
  * 'opening', 'closing' and reading invidual files in zip archive.
- * zzip-file.c
+ * zzip/file.c
  */
-
 _zzip_export
 ZZIP_FILE * 	zzip_file_open(ZZIP_DIR * dir, zzip_char_t* name, int modes);
 _zzip_export
@@ -191,7 +190,10 @@ int	 	zzip_close(ZZIP_FILE * fp);
 _zzip_export
 zzip_ssize_t	zzip_read(ZZIP_FILE * fp, char * buf, zzip_size_t len);
 
-
+/*
+ * the stdc variant to open/read/close files. - Take note of the freopen()
+ * call as it may reuse an existing preparsed copy of a zip central directory
+ */
 _zzip_export
 ZZIP_FILE*      zzip_freopen(zzip_char_t* name, zzip_char_t* mode, ZZIP_FILE*);
 _zzip_export
@@ -212,15 +214,13 @@ zzip_off_t      zzip_seek(ZZIP_FILE * fp, zzip_off_t offset, int whence);
 _zzip_export
 zzip_off_t      zzip_tell(ZZIP_FILE * fp);
 
-
 /*
  * reading info of a single file 
- * zzip-stat.c
+ * zzip/stat.c
  */
 _zzip_export
 int		zzip_dir_stat(ZZIP_DIR * dir, zzip_char_t* name, 
 			      ZZIP_STAT * zs, int flags);
-
 
 #ifdef ZZIP_LARGEFILE_RENAME
 #define zzip_open_shared_io  zzip_open_shared_io64
@@ -255,9 +255,64 @@ ZZIP_FILE * zzip_file_open_ext_io(ZZIP_DIR * dir,
 				  zzip_strings_t* ext, zzip_plugin_io_t io);
 
 _zzip_export
-ZZIP_DIR *  zzip_dir_open_ext_io(zzip_char_t* filename, 
+ZZIP_DIR *  zzip_dir_open_ext_io(zzip_char_t* filename,
 				 zzip_error_t* errcode_p,
 				 zzip_strings_t* ext, zzip_plugin_io_t io);
+
+#if defined _ZZIP_WRITE_SOURCE
+/* ........................................................................
+ * write support is not yet implemented
+ * zzip/write.c
+ */
+#define ZZIP_NO_CREAT 1
+
+ZZIP_DIR*    zzip_dir_creat_ext_io(zzip_char_t* name, int o_mode, 
+                                   zzip_strings_t* ext, zzip_plugin_io_t io);
+ZZIP_DIR*    zzip_dir_creat(zzip_char_t* name, int o_mode);
+int          zzip_file_mkdir(ZZIP_DIR* dir, zzip_char_t* name, int o_mode);
+ZZIP_FILE*   zzip_file_creat(ZZIP_DIR* dir, zzip_char_t* name, int o_mode);
+zzip_ssize_t zzip_file_write(ZZIP_FILE* file, 
+                             const void* ptr, zzip_size_t len);
+
+ZZIP_DIR*    zzip_createdir(zzip_char_t* name, int o_mode);
+zzip_ssize_t zzip_write(ZZIP_FILE* file, const void* ptr, zzip_size_t len);
+zzip_size_t  zzip_fwrite(const void* ptr, zzip_size_t len, 
+                         zzip_size_t multiply, ZZIP_FILE* file);
+#ifndef zzip_savefile
+#define zzip_savefile 0
+#define zzip_savefile_is_null
+#endif
+
+#ifdef _ZZIP_NO_INLINE
+#define zzip_mkdir(_name_,_mode_) \
+        zzip_file_mkdir((zzip_savefile),(_name_),(_mode_))
+#define zzip_creat(_name_,_mode_) \
+        zzip_file_creat((zzip_savefile),(_name_),(_mode_))
+#define zzip_sync() \
+      { zzip_closedir((zzip_savefile)); (zzip_savefile) = 0; }
+#define zzip_start(_name_,_mode_,_ext_) \
+      { if ((zzip_savefile)) zzip_closedir((zzip_savefile)); 
+         zzip_savefile = zzip_dir_creat(_name_, _mode_,_ext_); }
+
+#else
+
+_zzip_inline static int         zzip_mkdir(zzip_char_t* name, int o_mode)
+{                   return zzip_file_mkdir(zzip_savefile, name, o_mode); }
+_zzip_inline static ZZIP_FILE*  zzip_creat(zzip_char_t* name, int o_mode)
+{                   return zzip_file_creat(zzip_savefile, name, o_mode); }
+
+#ifndef zzip_savefile_is_null
+_zzip_inline static void        zzip_sync(void)
+{                           zzip_closedir(zzip_savefile); zzip_savefile = 0; }
+_zzip_inline static void        zzip_mkfifo(zzip_char_t* name, int o_mode)
+{       if ((zzip_savefile)) zzip_closedir (zzip_savefile);
+             zzip_savefile = zzip_createdir(_name_,_mode_); }
+#else
+_zzip_inline static void        zzip_sync(void) {}
+_zzip_inline static void        zzip_mkfifo(zzip_char_t* name, int o_mode) {}
+#endif
+#endif /* _ZZIP_NO_INLINE */
+#endif /* _ZZIP_WRITE_SOURCE */
 
 #ifdef __cplusplus
 };
@@ -265,3 +320,8 @@ ZZIP_DIR *  zzip_dir_open_ext_io(zzip_char_t* filename,
 
 #endif /* _ZZIPLIB_H */
 
+/* 
+ * Local variables:
+ * c-file-style: "stroustrup"
+ * End:
+ */

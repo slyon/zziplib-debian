@@ -6,6 +6,9 @@
 /* Number of bits in a file offset, on hosts where this is settable. */
 #undef _FILE_OFFSET_BITS
 
+/* Define if you have the <direct.h> header file. */
+#undef HAVE_DIRECT_H
+
 /* Define if you have the <dirent.h> header file, and it defines `DIR'. */
 #undef HAVE_DIRENT_H
 

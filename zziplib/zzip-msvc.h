@@ -11,6 +11,11 @@
 /* Number of bits in a file offset, on hosts where this is settable. */
 /* #undef ZZIP__FILE_OFFSET_BITS */
 
+/* Define if you have the <direct.h> header file. */
+#ifndef ZZIP_HAVE_DIRECT_H 
+#define ZZIP_HAVE_DIRECT_H  1 
+#endif
+
 /* Define if you have the <dirent.h> header file, and it defines `DIR'. */
 /* #undef ZZIP_HAVE_DIRENT_H */
 
@@ -21,7 +26,9 @@
 /* #undef ZZIP_HAVE_INTTYPES_H */
 
 /* Define if you have the <io.h> header file. */
-/* #undef ZZIP_HAVE_IO_H */
+#ifndef ZZIP_HAVE_IO_H 
+#define ZZIP_HAVE_IO_H  1 
+#endif
 
 /* Define if you have the <memory.h> header file. */
 #ifndef ZZIP_HAVE_MEMORY_H 

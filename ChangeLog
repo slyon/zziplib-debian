@@ -1,3 +1,65 @@
+2003-08-14
+ * remove _not_implemend macro definitions for shallow-write api
+	from header zzip.h
+ * introduce symbol _ZZIP_WRITE_SOURCE that all files should
+	carry that want to have the declarations of the
+	shallow-write api
+ * use that symbol for zzip/write.c and bins/zzip.c
+ * adding docs/64on32.htm
+
+2003-08-14
+ * for the shallow-write api to compile on win32, we need to
+	test for direct.h which only exists on win'sh system
+	or so we assume
+ * add bins/unzzip
+ * add bins/zzip
+ * ooops, zzip_strerror_of should check dir != 0
+
+2003-08-13
+ * complete zip-write API - no actual implementation so far
+ * tested shallow-write implementation on solaris+linux+win32
+ * and now, call it zzip-12 always
+
+2003-08-12
+ * `make docs` does not always work, so we add `make docu` now
+ *  update make-doc.py
+ *  fix call for make-doc.py
+ *  fix zzip_get16 bad refer that gets detected by make-doc.py
+
+
+2003-08-07
+ * implement zzip/write to a degree that it forwards calls to real
+	files and directories in the system. No zip archives here,
+	but the accession API has been setup so that applications
+	can start to pick it up even for versions of zziplib that
+	have been compiled without zip archive support.
+
+2003-08-07
+ * add doc lines in zzip/zzip.h
+ * add write-defines including flag-marker ZZIP_NO_CREAT
+ * add file write.c with empty definitions for write-support
+ * add the make-doc.py script in its last version - and make its output
+	the default master files for both html and docbook
+ * remove all other doc-maker scripts but make-doc.pl and make-doc.py
+	plus the make-dbk.pl of course
+ * twist configure.ac to set PYTHON instead of PHP
+
+2003-08-03
+ * make compatibility-headers to issue a warning upon include
+	
+2003-07-31
+ * fix a segfault with corrupted central directory - just some checks
+	for field boundaries
+ * add a hack to support the fixup-rootdir thing with some simple(r) code
+	that abuses a few fields in the trailer-structure
+ * cvs checkout savannah.gnu.org:config into ../savannah.config and,
+ * add a rule `make configsub` in Makefile.mk to update the two files
+	uses/config.sub and uses/config.guess to the latest versions.
+
+2003-07-30
+ * creating a 0.12.82 out of the source for 0.10.82 and make up a rpm
+	spec which does alias the .so files for these generations
+	
 2003-07-29
  * the include of _LARGEFILE_SOURCE to do ZZIP_LARGEFILE_RENAME is
 	actually a bad idea - the respective symbol does not provoke

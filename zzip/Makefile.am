@@ -20,7 +20,8 @@ libzzip_la_SOURCES = \
 	stat.c \
 	info.c \
 	err.c \
-	plugin.c
+	plugin.c \
+	write.c
 libzzip_la_headers = \
 	stdint.h \
 	file.h \
@@ -45,15 +46,26 @@ CLEANFILES = $(WCC10_CLEAN)  *.pc *.omf
 
 # here is some backward compatibility with version 0.10.* of zziplib
 install-data-local : install-zzipHEADERS
-	(cd $(DESTDIR)$(includedir) && $(LN_S) -f zzip/zzip.h    zziplib.h)
-	(cd $(DESTDIR)$(includedir) && $(LN_S) -f zzip/lib.h     zzip.h)
-	(cd $(DESTDIR)$(includedir) && $(LN_S) -f zzip/plugin.h  zzip-io.h)
-	(cd $(DESTDIR)$(includedir) && $(LN_S) -f zzip/wrap.h    zzipwrap.h)
-	(cd $(DESTDIR)$(includedir) && $(LN_S) -f zzip/format.h  zzipformat.h)
+	echo '#ifndef ZZIP_WARNING'   > $(DESTDIR)$(includedir)/zzip.h
+	echo '#define ZZIP_WARNING 1' >>$(DESTDIR)$(includedir)/zzip.h
+	echo '#ifdef __GNUC__'        >>$(DESTDIR)$(includedir)/zzip.h
+	echo '#warning do no not use <zzip.h>, update to include <zzip/lib.h>'\
+	                              >>$(DESTDIR)$(includedir)/zzip.h
+	echo '#endif'                 >>$(DESTDIR)$(includedir)/zzip.h
+	echo '#endif'                 >>$(DESTDIR)$(includedir)/zzip.h
+	echo '#include "zzip/lib.h"'  >>$(DESTDIR)$(includedir)/zzip.h
+	sed -e 's|zzip.h|zziplib.h|' -e 's|zzip/lib.h|zzip/zzip.h|' \
+	$(DESTDIR)$(includedir)/zzip.h >$(DESTDIR)$(includedir)/zziplib.h
+	sed -e 's|zzip.h|zzip-io.h|' -e 's|zzip/lib.h|zzip/plugin.h|' \
+	$(DESTDIR)$(includedir)/zzip.h >$(DESTDIR)$(includedir)/zzip-io.h
+	sed -e 's|zzip.h|zzipwrap.h|' -e 's|zzip/lib.h|zzip/wrap.h|' \
+	$(DESTDIR)$(includedir)/zzip.h >$(DESTDIR)$(includedir)/zzipwrap.h
+	sed -e 's|zzip.h|zzipformat.h|' -e 's|zzip/lib.h|zzip/format.h|' \
+	$(DESTDIR)$(includedir)/zzip.h >$(DESTDIR)$(includedir)/zzipformat.h
 
 uninstall-local :
-	(cd $(DESTDIR)$includedir) && rm zziplib.h  zzip.h  zzip-io.h)
-	(cd $(DESTDIR)$includedir) && rm zzipwrap.h zzipformat.h)
+	(cd $(DESTDIR)$(includedir) && rm zziplib.h  zzip.h  zzip-io.h)
+	(cd $(DESTDIR)$(includedir) && rm zzipwrap.h zzipformat.h)
 
 
 # ----------------------------------------------------------------------

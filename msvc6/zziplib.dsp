@@ -109,6 +109,10 @@ SOURCE="..\zzip\stat.c"
 # End Source File
 # Begin Source File
 
+SOURCE="..\zzip\write.c"
+# End Source File
+# Begin Source File
+
 SOURCE="..\zzip\zip.c"
 # End Source File
 # End Group

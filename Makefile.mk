@@ -18,3 +18,7 @@ rpm: dist-bzip $(PACKAGE).spec
 
 dist-bzip : dist-bzip2
 	  cp */$(PACKAGE)-$(VERSION).tar.bz2 .
+
+configsub :
+	cp ../savannah.config/config.guess uses/config.guess
+	cp ../savannah.config/config.sub   uses/config.sub

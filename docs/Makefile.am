@@ -5,13 +5,14 @@ doc_FILES = README.MSVC6 README.SDL COPYING.ZZIP COPYING.LIB COPYING.ZLIB \
 	zziplib.html staticlink.txt
 htm_FILES = zzip-index.htm zzip-zip.htm zzip-file.htm zzip-sdl-rwops.htm \
             zzip-extio.htm zzip-xor.htm zzip-api.htm  zzip-parse.htm \
-            future.htm configs.htm sfx-make.htm history.htm referentials.htm  
+            64on32.htm future.htm configs.htm sfx-make.htm \
+            history.htm referentials.htm  
 SDL = @top_srcdir@/SDL
 SDL_RWOPS = $(SDL)/SDL_rwops_zzcat.c \
             $(SDL)/SDL_rwops_zzip.c $(SDL)/SDL_rwops_zzip.h
 changelog = @top_srcdir@/ChangeLog
 
-EXTRA_DIST = zzip-doc.pl zzip-doc.php $(doc_FILES) $(htm_FILES) $(SDL_RWOPS) \
+EXTRA_DIST = make-doc.py $(doc_FILES) $(htm_FILES) $(SDL_RWOPS) \
              make-doc.pl make-dbk.pl  manpages.ar htmpages.ar      body.htm
 CLEANFILES = *.pc *.omf
 DISTCLEANFILES = zziplib.spec 
@@ -27,8 +28,9 @@ zziplib.spec : @top_srcdir@/$(PACKAGE).spec
 	@ $(LN_S) $? $@ # the two zzip-doc.* will grep thru zziplib.spec
 doc  : $(doc_FILES) $(htm_FILES:.htm=.html)
 docs : doc manpages.ar htmpages.ar
+docu : docs
 zziplib0.html : zziplib0.xml
-zziplib0.xml : zziplib.spec @srcdir@/Makefile.am \
+zziplib0.xml : zziplib.spec @srcdir@/Makefile.am @srcdir@/make-doc.pl \
                  $(srcdir)/make-doc.pl @top_srcdir@/zzip/*.c
 	- @PERL@ $(srcdir)/make-doc.pl @top_srcdir@/zzip/*.c \
           "suffix=0" "package=$(PACKAGE)" "version=$(VERSION)" \
@@ -36,22 +38,17 @@ zziplib0.xml : zziplib.spec @srcdir@/Makefile.am \
 	  "docbookfile=$@" 
 	- test -s $@
 zziplib1.html : zziplib1.xml
-zziplib1.xml : zziplib.spec @srcdir@/Makefile.am \
-                 $(srcdir)/zzip-doc.pl @top_srcdir@/zzip/*.c
-	- @PERL@ $(srcdir)/zzip-doc.pl @top_srcdir@/zzip/*.c
+zziplib1.xml : zziplib.spec @srcdir@/Makefile.am @srcdir@/make-doc.py \
+                   $(srcdir)/make-doc.py @top_srcdir@/zzip/*.c
+	- @PYTHON@ $(srcdir)/make-doc.py @top_srcdir@/zzip/*.c suffix=1
 	- test -f zziplib1.docbook && mv zziplib1.docbook $@ ; test -s $@
-# zziplib2.html : zziplib2.xml
-# zziplib2.xml : zziplib.spec @srcdir@/Makefile.am \
-#                    $(srcdir)/zzip-doc.php @top_srcdir@/zzip/*.c
-# 	- @PHP@ -q $(srcdir)/zzip-doc.php @top_srcdir@/zzip/*.c
-# 	- test -f zziplib2.docbook && mv zziplib2.docbook $@ ; test -s $@
 zziplib.html :    zziplib1.html zziplib0.html
-	- test -s zziplib1.html && cp zziplib1.html zziplib.html
 	- test -s zziplib0.html && cp zziplib0.html zziplib.html
+	- test -s zziplib1.html && cp zziplib1.html zziplib.html
 	test -s $@
 zziplib.xml :     zziplib1.xml zziplib0.xml
-	- test -s zziplib1.xml && cp zziplib1.xml zziplib.xml
 	- test -s zziplib0.xml && cp zziplib0.xml zziplib.xml
+	- test -s zziplib1.xml && cp zziplib1.xml zziplib.xml
 	test -s $@ || rm $@
 
 omfdir=${datadir}/omf
@@ -112,7 +109,8 @@ manpages.ar : zziplib.xml
 	;       (cd man && ar qc ../$@ *.3)  \
 	; echo '(rm man/*.3 ; rmdir man)' \
 	;       (rm man/*.3 ; rmdir man)  \
-	; fi ; test -s $@ || mv $@.old $@
+	; fi ; test -s $@ || mv $@.old $@ \
+        || mv $(srcdir)/$@.old $@ || test -s $@.old >$@
 
 htmpages.ar : zziplib.xml
 	@ if test "$(XMLTO)" = ":" \
@@ -129,7 +127,8 @@ htmpages.ar : zziplib.xml
 	;       (cd man && ar qc ../$@ *.*)  \
 	; echo '(rm man/*.* ; rmdir man)' \
 	;       (rm man/*.* ; rmdir man)  \
-	; fi ; test -s $@ || mv $@.old $@
+	; fi ; test -s $@ || mv $@.old $@ \
+        || mv $(srcdir)/$@.old $@ || test -s $@.old >$@
 
 install-man3 : manpages.ar
 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man3

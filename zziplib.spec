@@ -1,7 +1,7 @@
 %define lib   lib010
 Summary:      ZZipLib - libZ-based ZIP-access Library
 Name:         zziplib
-Version:      0.10.82
+Version:      0.12.83
 Release:      1mdk
 Serial:       1
 Copyright:    LGPL
@@ -32,6 +32,7 @@ Summary:      ZZipLib - Documentation Files
 Group:        Development/Libraries
 Provides:     zziplib
 Provides:     libzzip0
+Provides:     libzzip-0.so.10
 
 %package doc
 Summary:      ZZipLib - Documentation Files
@@ -106,6 +107,16 @@ make install DESTDIR=%{buildroot}
 sed -e 's/zzip.so/zzip32.so/' -e 's/zzip.a/zzip32.a/' libzzip.la >libzzip32.la)
 (cd %buildroot/%_libdir/pkgconfig && \
 sed -e 's/-lzzip/-lzzip32/' -e 's/zziplib/zziplib32/' zziplib.pc >zziplib32.pc)
+
+# the 12.8x and 11.8x and 10.8x packages are all the same actually
+(cd %buildroot/%_libdir && \
+(for i in libzzip*.so.* ; do : \
+; v10=`echo $i | sed -e "s/.so.../.so.10/"` \
+; v11=`echo $i | sed -e "s/.so.../.so.11/"` \
+; v12=`echo $i | sed -e "s/.so.../.so.12/"` \
+; test ! -e $v10 && test -e $v12 && ln -s $v12 $v10 \
+; test ! -e $v12 && test -e $v10 && ln -s $v10 $v12 \
+; ln -s $v10 $v11 ; done))
 
 make install-doc DESTDIR=%{buildroot}
 make install-man3 DESTDIR=%{buildroot}
