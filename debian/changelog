@@ -1,0 +1,6 @@
+zziplib (0.10.82-1) unstable; urgency=low
+
+  * Initial Release (closes: bug#173511, bug#222397).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Mon, 29 Mar 2004 12:41:28 +0200
+

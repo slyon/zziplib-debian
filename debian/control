@@ -1,0 +1,57 @@
+Source: zziplib
+Section: libs
+Priority: optional
+Maintainer: Aurelien Jarno <aurel32@debian.org>
+Build-Depends: debhelper (>= 4.0.0), autotools-dev, pkg-config, zlib1g-dev
+Standards-Version: 3.6.1
+
+Package: zziplib-bin
+Section: utils
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: library providing read access on ZIP-archives - binaries
+ The zziplib library is intentionally lightweight, it offers the ability
+ to easily extract data from files archived in a single zip file.
+ Applications can bundle files into a single zip archive and access them.
+ The implementation is based only on the (free) subset of compression
+ with the zlib algorithm which is actually used by the zip/unzip tools.
+ .
+ This package contains some useful binaries to extract data from zip
+ archives.
+ .
+  Author: Guido Draheim <guidod@gmx.de>
+  Homepage: http://zziplib.sourceforge.net
+
+Package: libzzip-0-10
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: library providing read access on ZIP-archives - library
+ The zziplib library is intentionally lightweight, it offers the ability
+ to easily extract data from files archived in a single zip file.
+ Applications can bundle files into a single zip archive and access them.
+ The implementation is based only on the (free) subset of compression
+ with the zlib algorithm which is actually used by the zip/unzip tools.
+ .
+ This package contains the zziplib runtime library.
+ .
+  Author: Guido Draheim <guidod@gmx.de>
+  Homepage: http://zziplib.sourceforge.net
+
+Package: libzzip-dev
+Section: devel
+Architecture: any
+Depends: libzzip-0-10 (= ${Source-Version})
+Description: library providing read access on ZIP-archives - development
+ The zziplib library is intentionally lightweight, it offers the ability
+ to easily extract data from files archived in a single zip file.
+ Applications can bundle files into a single zip archive and access them.
+ The implementation is based only on the (free) subset of compression
+ with the zlib algorithm which is actually used by the zip/unzip tools.
+ .
+ This package contains the header files and static library needed to
+ compile applications that use zziplib.
+ .
+  Author: Guido Draheim <guidod@gmx.de>
+  Homepage: http://zziplib.sourceforge.net
+

@@ -1,0 +1,40 @@
+.TH ZZLIB-CONFIG 1 "April 17, 2004"
+.SH NAME
+zzip-config - script to get information about the installed version of zziplib
+.SH SYNOPSIS
+.B  zzip-config [\-\-prefix\fI[=DIR]\fP] [\-\-package] [\-\-version] [\-\-libs] [\-\-cflags] [LIBRARIES]
+.SH DESCRIPTION
+.PP
+\fIzzip-config\fP is a tool that is used to configure to determine
+the compiler and linker flags that should be used to compile
+and link programs that use \fIzziplib\fP. 
+.
+.SH OPTIONS
+.l
+\fIzzip-config\fP accepts the following options:
+.TP 8
+.B  LIBRARIES
+This argument is currently ignored as zzip as only one library.
+.TP 8
+.B  \-\-version
+Print the currently installed version of \fIzzip\fP on the standard output.
+.TP 8
+.B  \-\-libs
+Print the linker flags that are necessary to link a \fIzzip\fP program.
+.TP 8
+.B  \-\-cflags
+Print the compiler flags that are necessary to compile a \fIzzip\fP program.
+.TP 8
+.B  \-\-prefix=PREFIX
+If specified, use PREFIX instead of the installation prefix that \fIzzip\fP
+was built with when computing the output for the \-\-cflags and
+\-\-libs options. This option is also used for the exec prefix
+if \-\-exec\-prefix was not specified. This option must be specified
+before any \-\-libs or \-\-cflags options.
+.TP 8
+.B  \-\-package
+Print the package name, ie. zziplib.
+.SH AUTHORS
+.B zziplib
+was written by Guido Draheim <guidod@gmx.de>.
+
