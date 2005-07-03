@@ -1,3 +1,29 @@
+zziplib (0.12.83-5) unstable; urgency=low
+
+  * zzip/zzip.h: include sys/types.h instead of stddef.h, so that zziplib
+    could be built on GNU/Hurd and GNU/kFreeBSD.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sun,  3 Jul 2005 11:42:08 +0200
+
+zziplib (0.12.83-4) unstable; urgency=low
+
+  * Libtool update for kfreebsd-gnu in zziplib/ directory (closes:
+    bug#294730).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Fri, 18 Feb 2005 12:45:00 +0100
+
+zziplib (0.12.83-3) unstable; urgency=low
+
+  * Added GCC 4.0 fixes from Andreas Jochens (closes: bug#295055).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Sun, 13 Feb 2005 16:10:27 +0100
+
+zziplib (0.12.83-2) unstable; urgency=low
+
+  * Libtool update for kfreebsd-gnu (closes: bug#294730). 
+
+ -- Aurelien Jarno <aurel32@debian.org>  Fri, 11 Feb 2005 17:32:04 +0100
+
 zziplib (0.12.83-1) unstable; urgency=low
 
   * New upstream version.

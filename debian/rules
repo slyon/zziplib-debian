@@ -29,9 +29,12 @@ configure-stamp:
 	dh_testdir
 
 	-test -r /usr/share/misc/config.sub && \
-	cp -f /usr/share/misc/config.sub config.sub
+	cp -f /usr/share/misc/config.sub config.sub && \
+	cp -f /usr/share/misc/config.sub zziplib/config.sub
+	
 	-test -r /usr/share/misc/config.guess && \
-	cp -f /usr/share/misc/config.guess config.guess
+	cp -f /usr/share/misc/config.guess config.guess && \
+	cp -f /usr/share/misc/config.guess zziplib/config.guess
 	
 	CFLAGS="$(CFLAGS)" ./configure \
 			--host=$(DEB_HOST_GNU_TYPE) \
@@ -55,7 +58,7 @@ clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp 
-	rm -f config.sub config.guess
+	rm -f config.sub config.guess zziplib/config.sub zziplib/config.guess
 	-$(MAKE) distclean
 	dh_clean 
 
