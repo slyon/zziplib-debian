@@ -57,7 +57,7 @@ build-stamp: configure-stamp
 clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp 
+	rm -f configure-stamp build-stamp 
 	rm -f config.sub config.guess zziplib/config.sub zziplib/config.guess
 	-$(MAKE) distclean
 	dh_clean 

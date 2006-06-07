@@ -3,7 +3,7 @@ Section: libs
 Priority: optional
 Maintainer: Aurelien Jarno <aurel32@debian.org>
 Build-Depends: debhelper (>= 4.0.0), autotools-dev, pkg-config, zlib1g-dev
-Standards-Version: 3.6.1
+Standards-Version: 3.7.2
 
 Package: zziplib-bin
 Section: utils

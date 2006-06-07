@@ -73,7 +73,7 @@ int main(int argc, char ** argv)
                 printf("filename: %s\n\n", hdr->d_name);
     
                 if (hdr->d_reclen == 0) break;
-                hdr = (char *)hdr->d_reclen;
+                hdr += hdr->d_reclen;
                 sleep(1);
             }
         }

@@ -1,3 +1,10 @@
+zziplib (0.12.83-6) unstable; urgency=low
+
+  * bins/zziptest.c: fixed a cast to pointer from integer of different size.
+  * Bumped Standards-Version to 3.7.2 (nochanges).
+
+ -- Aurelien Jarno <aurel32@debian.org>  Wed,  7 Jun 2006 14:31:12 +0200
+
 zziplib (0.12.83-5) unstable; urgency=low
 
   * zzip/zzip.h: include sys/types.h instead of stddef.h, so that zziplib

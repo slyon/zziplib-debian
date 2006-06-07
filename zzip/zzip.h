@@ -22,7 +22,7 @@
 #include <zzip/conf.h>
 
 #include <fcntl.h>
-#include <sys/types.h> /* size_t and friends */
+#include <stddef.h> /* size_t and friends */
 /* msvc6 has neither ssize_t (we assume "int") nor off_t (assume "long") */
 
 #ifdef __cplusplus
