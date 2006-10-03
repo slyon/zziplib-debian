@@ -1,7 +1,7 @@
 Source: zziplib
 Section: libs
 Priority: optional
-Maintainer: Aurelien Jarno <aurel32@debian.org>
+Maintainer: Anibal Monsalve Salazar <anibal@debian.org>
 Build-Depends: debhelper (>= 4.0.0), autotools-dev, pkg-config, zlib1g-dev
 Standards-Version: 3.7.2
 
@@ -39,7 +39,7 @@ Description: library providing read access on ZIP-archives - library
   Homepage: http://zziplib.sourceforge.net
 
 Package: libzzip-dev
-Section: devel
+Section: libdevel
 Architecture: any
 Depends: libzzip-0-12 (= ${Source-Version})
 Description: library providing read access on ZIP-archives - development

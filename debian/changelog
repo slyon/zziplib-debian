@@ -1,3 +1,18 @@
+zziplib (0.12.83-8) unstable; urgency=low
+
+  * New maintainer.
+  * Fixed "libzzip-dev: Override says libdevel - optional, .deb says
+    devel - optional".
+
+ -- Anibal Monsalve Salazar <anibal@debian.org>  Tue, 03 Oct 2006 11:08:37 +1000
+
+zziplib (0.12.83-7) unstable; urgency=low
+
+  * Orphaning this package, setting maintainer field to
+    packages@qa.debian.org.
+
+ -- Aurelien Jarno <aurel32@debian.org>  Mon,  2 Oct 2006 11:03:22 +0200
+
 zziplib (0.12.83-6) unstable; urgency=low
 
   * bins/zziptest.c: fixed a cast to pointer from integer of different size.
