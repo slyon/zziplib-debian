@@ -12,17 +12,15 @@ AUTHOR
 
 COPYING
   The zziplib may be used freely under the restrictions of the
-  GNU Lesser General Public License version 2 or later. An
-  additional exception to these restrictions allows to staticlink
-  the library under certain conditions. See docs/COPYING.ZZIP for
-  the details and docs/COPYING.LIB for the original terms of the
-  GNU Lesser General Public License. 
+  GNU Lesser General Public License version 2 or later. Alternativly
+  the Mozilla Public license can be chosen. The sources are under
+  a dual license, as long as the MPL hint is not removed, the modified
+  files will be again under a dual license for the final recipient.
 
 LICENSING
   If you can not use a dynalinked library according to LGPL rules,
-  then look at the staticlink exception which follows the MPL model.
-  Without being too specific you would need to modify _and_ ship a 
-  modified staticlinked library version to have license issues. Anyway,
+  then look at docs/copying.htm for a few hints. Generally the LGPL 
+  has a way for staticlinking as well as the MPL has a way. Anyway,
   special (paid) licenses can be negotiated with the copyright holder.
 
 HOMEPAGE

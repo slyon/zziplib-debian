@@ -1,6 +1,6 @@
 #ifndef __ZZIP_INTERNAL_MMAP_H
 #define __ZZIP_INTERNAL_MMAP_H
-#include <zzip/conf.h>
+#include <zzip/types.h>
 
 /*
  * DO NOT USE THIS CODE.
@@ -9,12 +9,12 @@
  * functions (or just static members) and a few defines, simply to be
  * able to reuse these across - and have everything in a specific place.
  *
- * Copyright (c) 2002 Guido Draheim
+ * Copyright (c) 2002,2003 Guido Draheim
  *          All rights reserved,
  *          use under the restrictions of the 
  *          Lesser GNU General Public License
- *          note the additional license information 
- *          that can be found in COPYING.ZZIP
+ *          or alternatively the restrictions 
+ *          of the Mozilla Public License 1.1
  */
 
 #ifdef _USE_MMAP
@@ -52,7 +52,7 @@
 /* we (ab)use the "*user" variable to store the FileMapping handle */
                  /* which assumes (sizeof(long) == sizeof(HANDLE)) */
 
-static size_t win32_getpagesize ()
+static size_t win32_getpagesize (void)
 { 
     SYSTEM_INFO si; GetSystemInfo (&si); 
     return si.dwAllocationGranularity; 

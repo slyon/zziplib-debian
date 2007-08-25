@@ -1,3 +1,307 @@
+2007-03-17
+ * http://www.securitylab.ru/forum/read.php?FID=21&TID=40858&MID=326187
+  zziplib vulnerability due to usage of strcpy
+ * add indent-check for enforcing some source code style.
+	
+2007-02-01
+ * remake manpages.ar / htmpages.ar - redistribute zziplib-manpages.ar 
+   instead while the rebuild mechanics become a lot simpler
+ * unless --maintainer-mode, make mans / install-mans part of the default
+	
+2007-01-31
+ * applying patches from Mike Frysinger
+ * consider making the manpage install target part of the default 
+   `make install` rather than a sep install-man3 target ? (from Mike)
+ * Michael Sterret reports, that the SDL/* example requires zzip-config
+   instead of the pkgconfig stuff - actually, the whole part should be
+   give a makeover as newer SDL does install its own sdl.pc which makes
+   the current local generation of zzip-sdl-config.pc a real mess.
+	
+2006-09-27
+ * adding docs/zip-php.htm integrating Chris Branch's mail into the docs
+ * appending docs/changes.htm rule from ./ChangeLog 
+	
+2006-09-26
+ * adding docs/notes.htm - to register some old dicussions for later
+	reference. Let's see how that fills up.
+
+2006-09-21
+ * last doc/*.py updates
+ * last doc/mksite.* updates
+ * last doc/body.htm updates - including new zzipmmapped.html docu
+ * "make install-sf" will copy the doctree directly to sourceforge
+
+2006-09-18
+ * docs/makedocs.py docs/zzipdoc/*.py creates new docs/zziplib-man3.tar.gz
+	plus zziplib.html zzipmmapped.html zzipfseeko.html
+ * that will be the only to be used in the future but it is not complete
+	
+2006-08-18
+ * updating msvc8 project files
+ * adding zlib.dll to cvs
+ * zzip/memdisk.c:183 overrides for off64_t will not work with off32_t !!!
+ * headers for mktime should return time_t - do we have the header ???
+
+2006-08-17
+ * A report by Tuilipant Gergely had shown an "unaligned access"
+   error on an alpha machine. So, I have added macro to test for
+   the condition of aligned access but the alpha platoform seems
+   to be okay. Further reports are required.
+ * Mark README.SDL to be explicitly outdated (it's 16. Dec. 2002)
+	
+2008-08-14
+ * Yvan Phelizot reports a problem in zzip/mmapped.c
+ * Malcom MacLeod had spurious problems inside a C++ project,
+	so let's update all heraders with explicit 'extern "C"' linkage.
+
+2006-08-08
+ * rephrase build system, automated tests, some doc parts
+
+2006-04-28
+ * bsd/mac needs sys/types.h for size_t
+
+2005-12-11
+ * there have been reports about multithreading problems
+ * one source of problems: access to the dir->cache members.
+	fixed by using an explicit semaphore variable, otherwise
+	just allocate/deallocate the buffer / filehandle
+ * second source of problems: the zip file is opened _and_ read
+	with only one filehandle for multiple threads that
+	share the same "dir" handle. Look for "->currentfp".
+ * that is not fixed away - while access to the cache variables
+	can continue in the case of a "locked" state that is not
+	possible for open/reads. In the "locked" case the thread
+	must be blocked but that is a system-specific call.
+ * there are two ways to fix it - (a) push down the sysfile to
+	each zzip_file by "dup(2)"licating the sysfile handle.
+	However zzip looses a feature that was helping a lot on
+	system with a low number of sysfile hands (e.g. dos and
+	some embedded operating systems that I did work with).
+	and (b) provide an indirect ->lock() call that can be
+	filled by the caller application upon zzip invokation,
+	perhaps add it to the io-plugin structure. Well (c) is
+	it possible to support both styles? Dynamically?
+
+2005-12-10
+ * testing on sourceforge compilefarm - including "make check"
+ * there was an error on bsd'ish systems (implicit 64on32)
+	which was caused by archaic CORRECT_ROOTSEEK code
+	being still present. Remove it?
+
+2005-12-09
+ * testing with Microsoft Visual Studio 2005 (msvc8) Express Edition
+ * fixing some compilation problems related to zip64 support in win32
+	
+2005-12-08
+ * cut acinclude.m4 into seperated aclocal macros in m4/ subdirectory
+
+2005-10-14
+ * testing on sourceforge compilefarm, cleaning away any compiler warnings
+	i386-debian2.2 i386-freebsd4.8 
+	amd64-fedora3 alpha-debian3.0
+	sparc-solaris8 powerpc-macos10.2
+ * note, the build system has some quirks but not yet renovated to the
+	newest autoconf/automake stuff anyway - TBD before final release
+	
+2005-10-13
+ * MSVC7 knows the following __declspec attributes:
+	align(#), allocate("seg"), deprecated, dllexport, dllimport,
+	naked{for asm}, noinline, noreturn, nothrow, novtable,
+	property{MngC++}, selectany{common}, thread{tls}, uuid("name")
+ * introduce zzip__new__ for a restrict'ed return item
+ * introduce zzip_byte_t to help silence down compiler warnings
+	about signedness mismatch in assigning data buffer variables.
+	Especially the zlib data_in happens to be of unsigned char type.
+ * note that zzip/format.h does now use zzip_byte_t for layout definition
+
+2005-02-17
+ * adding that _GNU_SOURCE on __linux__ to get the strndup prototype
+ * cleaning a few warning messages on different platforms as well
+	as a bug for 64bit platforms
+ * updating docs/mksite.sh and adding docs/mksite.pl and going to
+	let VERSION be pasted directly instead of a makefile snippet
+ * adding docs/memdisk.htm documentation to the series which is
+	currently quite shallow.
+ * note: no tests for actual zip64 support are made, neither for a
+	large central directory (more than 64K files) nor for large
+	files (more than 2GB). This is all theoretic but I am quite
+	confident that it will work.
+	
+2005-02-16
+ * change zzip/zip disk_trailer implementation
+ * we do not anymore pass a copy of the file block around
+ * we do use a local helper structure now with off_t fields
+ * the parse_root_directory is now using off_t for all computatations
+ * make check succeeds - beware, this is a new implementation
+ * RANT: glibc bastards make for additinal warning messages, the fseeko
+    prototype is not exported by default, but as soon as we add some
+    define to make it available, some other prototypes are disabled,
+    including one of the most widespread: strndup(). The documentation
+    even says we have to say GNU to get prototype - if you have ever heard
+    of unix to diverge into something not quite but be alike, here it is,
+    what compiles on most platforms gives a warning on linux even that it
+    works fine afterwards because the libc does export all we need and
+    autoconf does find it - it is just not prototyped and that's all.
+	
+2005-02-15
+ * adding zzip/memdisk.* as cache variant for libzzipfseeko
+ * add macro support for zip64 extensions
+ * extend trailer routines with zip64 detection (and return 0)
+ * add memdisk bins
+
+2005-01-04
+ * remember TODO multithreading tests and hardening the code.
+ http://www.idefense.com/application/poi/display?id=153&type=vulnerabilities
+
+2004-12-27
+ * updating to latest autoconf/automake/libtool stuff in Suse92
+ * required a rewrite of ax_enable_builddir.m4 in ac-archive
+ * adding two macros to silence down bogus depracation warnings
+	from the latest gcc 3.3.5
+
+2004-11-27
+ * harveyandsu:yahoo:com reported an api mismatch for SDL rwops
+	usage and the implementation in the SDL_rwops_zzip example.
+ *
+	
+2004-05-11
+ * documenting zzip-cryptoid handling
+ * update mksite.sh
+
+2004-05-09
+ * documenting zzipmmapped and zzipfseeko parser libraries
+	
+2004-05-08
+ * remove bogus zzip_file_open_ext_io from zzip.h
+ * change to use mksite.sh for documentation builds
+
+2004-03-08
+ * add link in docs/history.htm to the new appnote.txt whitepaper
+	on zip file format specification.
+	
+2004-02-19
+ * a test run on solaris did show that fetch.* needs to be linked
+	to the new lib*.la stuff - to convert endianess-dependent
+	values from zip to main memory
+ * there seems to be an automake problem with hpux10 that I can not
+	yet define on what grounds it is - to get away with it I am
+	not defining automake 1.7 as the version to be used, plus
+	autoconf 2.57 - these are pretty new.
+
+2004-01-24
+ * zzip/fseeko.c and bins/zzip.c had some issued with non-C99 compilers
+	which do not like variable declarations in the middle of a block
+
+2004-01-16
+ * zzip_rewind again - the deflateReset does not reset the
+	input buffer variables (oops) so we have to do it
+	explicitly. Here we adopt to set crestlen to full
+	csize and the current z-buffer fillstate avail_in
+	to null to trigger a new read() on next zzip_read.
+ * the zlib headers do not tell whether next_in/avail_in
+	is used in deflateReset as is done in deflateInit.
+	A question to zlib@gzip.org brought no answer (as
+	is always the case) and after some thinking I did
+	decide to reset avail_in *after* the zReset call.
+ * based on this decision, I have made up a patch and I was
+	sending it over to zlib@gzip.org. Same consequence
+	again, the message is bluntly ignored (while there is
+	traffic on zlib devel mailinglist). There seems to be
+	a major problem about it, either a technical problem
+	 (mail-adress disfunctional) or a social problem (no
+	one cares or perhaps some minor racism).
+	
+2003-12-29
+ * added libzzipfseeko.la with another simplified interface
+ * rename the other one to libzzipmmapped.la
+ * fix bugs for decompression on the latter as well
+   it seems the one has to use inflateInit2 (..., -MAX_WBITS)
+ * added bins/unzzipshow for an example binary
+ * added "--help" and "--version" to all bins examples
+
+2003-12-24
+ * added libzzipmmap.la with a simplified interface to zip archives
+ * added bins unzzipdir and unzzipcat to show usage of libzzipmmap.la
+ * introduce zzip/types.h to allow easier inclusion to zzip/mmapped.*
+
+2003-12-22
+ * add AC_C_BIGENDIAN and
+ * move out ZZIP_GET to zzip/fetch.h where we also specify access
+	wrappers to items in the zzip/format.h structures, portably.
+ * add byteswap.h ac_check and put a new file autoconf.h to carry
+	compiletime overrides for the autoconf definitions.
+ * start changing over to use zzip/fetch.h definitions everywhere
+	thereby replacing original ZZIP_GET16/32 usages completely.
+	This is localized to zzip/zip.c
+ * rename struct zzip_root_dirent to struct zzip_disk_entry but
+	retain a compatibility declaration.
+ * introduce zzip_version_t and zzip_dostime_t along with an optional
+	ZZIP_NEED_PACKED def that helps with weird compiler struct packing
+ * struct zzip_file_trailer did not use the char[x] variant, it does now
+ * place even more zzip/fetch.h declarations
+ * place even more defs into zzip/format.h
+ * noting CVS area on webpages
+
+2003-12-21
+ * Nigel Stewart hints on some MSVC 6 issues, thanks.
+	
+2003-12-20
+ * implant *Reset instead of Deinit/Init in zzip_rewind - the latter
+	is supposed to make for a memory leak (see problem report).
+	
+2003-12-10
+ * add zzip_rewind fix by glenn = Glenn Maynard (www.stepmania.com)
+ * fix dirsep_casecmp buglet noted by glenn
+ * glenn did ask for zzip_fstat, and here it is.
+ * but glenn's file_dup is not as easy and skipped here.
+ * otherwise, glenn noted that zziplib is not fully ready for multithreading,
+	the reason seems to be mostly in the reshared 32k buffer where the
+	access is not synchronized completely :-( ... effectivly, in MT
+	all ZZIP_FILE*s need to have a dedicated ZZIP_DIR*buffer.
+ * update make-doc.py with newest version
+
+2003-08-18
+ * changing license to dual MPL / LGPL
+ * bumping version code 12.83 = 13.23 which are actually the very
+	 same inside the code
+ * remove a few compatibility headers at install time.
+ * add install-exec-hook to add ln -s aliases for sharedlibs
+	they are being tried again in .spec but that does not 
+	matter as long as it is "|| true"
+ * adapt all source to carry the MPL alternative license 
+	instead of the old cruft.
+ * remove staticlinking.txt - it should be covered by copying.htm now
+ * remove "compats" disthook as well as the complete subdirectory
+      i.e. rm -r "zziplib/" at top directory (actually, I store it
+	in a distant place for now.)
+ * remove _htmpages.ar and _manpages.are from dist tarball
+ * add toplevel COPYING.LIB
+ * adapt README and TODO
+ * remove ac_output(zziplib and bins/zzip-config)
+ * remove bins/zzip-config.in
+ * adapt m4 macro and call zzip-config to be archaic
+ * remove maintainer-mode for "test.zip"
+ * turn zzip_plugin_io_t into a union reference, the old struct is 
+	still of the same name but a member in there called "fd"
+	the typedef is no a "union _zzip_plugin_io" instead.
+ * the member "use_mmap" is renamed to "sys" - we add a #define
+	in plugin.h to let some software compile with all versions
+ * in zzip/zip.c, try now with making maplen and pagesize of type
+	zzip_ssize_t - as it was newly introduce it might help and
+	perhaps be a little conservative in execution. Before that,
+	we did use size_t and it was provoking warnings like
+	comparing/computing signed+unsigned pairs of values.
+ * add "type" and "write" members to zzip_plugin_io, keep it
+	backward compatible as much as possible.
+ * add _zzip_write to zzip/conf.h
+ * remove ZZIP_WRAPWRAP code in plugin.c
+ * remove --with-wrapwrap
+ * introduce a #define _zzip_plugin_io_handlers and
+	typedefs zzip_plugin_io_handlers and zzip_plugin_io_handlers_t
+ * oops toplevel PHONY does not work, an automake restriction
+ * oops, "cat body.htm" should be "cat $(srcdir)/body.htm"
+ * adding manpages.ar again, just to be sure
+	
 2003-08-14
  * remove _not_implemend macro definitions for shallow-write api
 	from header zzip.h

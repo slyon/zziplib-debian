@@ -24,9 +24,9 @@ AC_DEFUN([PKG_CHECK_ZZIPLIB], [# checking for zziplib cflags/libs $2
     dnl script that might be there and carry cflags/libs info as well.
     AC_PATH_PROG([ZZIP_CONFIG], [zzip-config], [no])
     if test "$ZZIP_CONFIG" = "no" ; then
-      echo "*** Neither config spec could be found - there was no"
-      echo "*** zzip-config scrip and no pkg-config script in the"
-      echo "*** PATH. Make sure either one is in your path, or set"
+      echo "*** Neither config spec could be found - there was no archaic"
+      echo "*** zzip-config script around and no pkg-config script in the"
+      echo "*** PATH. Make sure that either one is in your path, or set"
       echo "*** set the PKG_CONFIG environment variable to the full"
       echo "*** path to pkg-config. See http://zziplib.sf.net - or see"
       echo "*** http://www.freedesktop.org/software/pkgconfig for more."

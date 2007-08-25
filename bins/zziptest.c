@@ -3,15 +3,16 @@
  *	Guido Draheim <guidod@gmx.de>
  *	Tomi Ollila <Tomi.Ollila@iki.fi>
  *
- *	Copyright (c) 1999,2000,2001,2002 Guido Draheim
+ *	Copyright (c) 1999,2000,2001,2002,2003 Guido Draheim
  * 	    All rights reserved,
  *	    use under the restrictions of the
  *	    Lesser GNU General Public License
- *          note the additional license information 
- *          that can be found in COPYING.ZZIP
+ *          or alternatively the restrictions 
+ *          of the Mozilla Public License 1.1
  */
 
 #include <stdio.h>
+#include <string.h>
 
 #if defined _MSC_VER /* Win32*/
 #define WIN32_LEAN_AND_MEAN
@@ -29,6 +30,16 @@
 #define O_BINARY 0
 #endif
 
+#if __GNUC__+0 >= 3 && __GNUC_MINOR__+0 >= 3
+# ifdef DEBUG
+# warning suppress a warning where the compiler should have optimized instead.
+# endif
+#define I_(_T,_L,_R) do { _T _l = (_T) _L; \
+                          _l _R; _L = (typeof(_L)) _l; } while(0)
+#else
+#define I_(_T,_L,_R) _L _R
+#endif
+
 int main(int argc, char ** argv)
 {
     ZZIP_DIR * dir;
@@ -38,8 +49,16 @@ int main(int argc, char ** argv)
   
     if (argc > 1 && argv[1] != NULL)
     {
-        name = argv[1];
-        argv++; argc--;
+	if (! strcmp (argv[1], "--help")) {
+	    printf ("zziptest [testfile]\n - selftest defaults to 'test.zip'");
+	    return 0;
+	}else if (! strcmp (argv[1], "--version")) {
+	    printf (__FILE__" version "ZZIP_PACKAGE" "ZZIP_VERSION"\n");
+	    return 0;
+	}else{
+	    name = argv[1];
+	    argv++; argc--;
+	}
     }
 
     printf("Opening zip file `%s'... ", name);
@@ -73,7 +92,7 @@ int main(int argc, char ** argv)
                 printf("filename: %s\n\n", hdr->d_name);
     
                 if (hdr->d_reclen == 0) break;
-                hdr += hdr->d_reclen;
+                I_(char *, hdr, += hdr->d_reclen);
                 sleep(1);
             }
         }
@@ -100,7 +119,7 @@ int main(int argc, char ** argv)
   
     {   ZZIP_FILE * fp;
         char buf[17];
-        const char * name = argv[1]? argv[1]: "readme";
+        const char * name = argv[1]? argv[1]: "README";
 
 
         printf("Opening file `%s' in zip archive... ", name);    

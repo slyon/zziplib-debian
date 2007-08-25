@@ -218,6 +218,6 @@ zzipwrap_use_memory_io(int blocksize,
  zzip_memory_callback = callback;
  zzip_memory_callbackdata = callbackdata;
 
- return &zzip_memory_io;
+ return (zzip_plugin_io_t) &zzip_memory_io;
 }
 

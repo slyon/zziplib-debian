@@ -1,3 +1,29 @@
+zziplib (0.13.49-2) unstable; urgency=low
+
+  * debian/rules: added configure option --datadir, closes: #439395.
+
+ -- Anibal Monsalve Salazar <anibal@debian.org>  Sat, 25 Aug 2007 10:29:31 +1000
+
+zziplib (0.13.49-1) unstable; urgency=low
+
+  * libzzip-0-13 Replaces & Conflicts: libzzip-0-12
+
+ -- Anibal Monsalve Salazar <anibal@debian.org>  Fri, 24 Aug 2007 08:41:46 +1000
+
+zziplib (0.13.49-0) unstable; urgency=low
+
+  * New upstream version. Closes: #399617.
+    - zzip-config was removed by upstream maintainer.
+    - htmpages.ar was not shipped by upstream maintainer.
+    - new build dependency: python.
+  * Fixed: CVE-2007-1614 DoS and execution of arbitrary code.
+    Closes: #436701.
+  * Fixed the following lintian messages:
+    - W: zziplib source: substvar-source-version-is-deprecated libzzip-dev
+    - W: zziplib source: debian-rules-ignores-make-clean-error line 62
+
+ -- Anibal Monsalve Salazar <anibal@debian.org>  Thu, 09 Aug 2007 18:47:38 +1000
+
 zziplib (0.12.83-8) unstable; urgency=low
 
   * New maintainer.

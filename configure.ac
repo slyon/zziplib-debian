@@ -1,12 +1,12 @@
 AC_INIT(zziplib.spec)
 AC_PREREQ(2.49)
 AC_COPYRIGHT([Guido Draheim <guido@gmx.de> for ZZipLib.SF.net])
-AC_REVISION($Revision: 0.0$)
+AC_REVISION($Revision: 1.9 $)
 AC_CONFIG_AUX_DIR(uses)
 # =======================================================================
 AC_CANONICAL_SYSTEM
 dnl AM_ENABLE_MULTILIB([Makefile],[$host])
-AX_ENABLE_BUILDDIR
+AX_ENABLE_BUILDDIR_UNAME
 AC_SET_DEFAULT_PATHS_SYSTEM
 # -----------------------------------------------------------------------
 AC_ARG_ENABLE(thread-safe,AC_HELP_STRING(
@@ -75,11 +75,14 @@ AX_SET_VERSION_INFO
 AC_MSG_RESULT([creating zzip/_msvc.in via zzip/_msvc.sed of config.h.in])
 test -d zzip || mkdir zzip
 sed -f $srcdir/zzip/_msvc.sed $srcdir/config.h.in >zzip/_msvc.in
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS([config.h])
 AX_PREFIX_CONFIG_H([zzip/_config.h],[zzip],[config.h])
 AX_PREFIX_CONFIG_H([zzip/_msvc.h],[zzip],[zzip/_msvc.in])
 AM_MAINTAINER_MODE
 
+AX_CREATE_PKGCONFIG_INFO(dnl
+[zzip/zziplib.pc], [zzip-zlib-config],[-lzzip])
+# -----------------------------------------------------------------------
 AC_PATH_PROGS(PERL, perl5 perl, echo no perl found for)
 AC_PATH_PROGS(PYTHON, python2.2 python2.3 python, echo no python found for)
 AC_PATH_PROGS(MKZIP, zip pkzip, :)
@@ -87,20 +90,26 @@ AC_PATH_PROGS(XMLTO, xmlto, :)
 
 AC_C_INLINE
 AC_C_CONST
+ACX_C_RESTRICT
 AC_STDC_HEADERS
 AC_HEADER_DIRENT
 AC_CHECK_HEADERS(stdint.h unistd.h windows.h winnt.h winbase.h sys/int_types.h)
 AC_CHECK_HEADERS(sys/types.h sys/mman.h sys/stat.h sys/param.h) dnl posix'ish
-AC_CHECK_HEADERS(io.h direct.h zlib.h)
-AC_CHECK_FUNCS( strcasecmp )
+AC_CHECK_HEADERS(io.h direct.h zlib.h byteswap.h)
+AC_CHECK_HEADERS(fnmatch.h)
+AC_CHECK_FUNCS( strcasecmp strndup )
 
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
 dnl AC_TYPE_SSIZE_T
 AC_CHECK_TYPE(ssize_t,int)
+AC_CHECK_TYPE(off64_t,_zzip_off_t)
+AC_CHECK_TYPE(__int64,long long)
 AC_COMPILE_CHECK_SIZEOF(short)
 AC_COMPILE_CHECK_SIZEOF(int)
 AC_COMPILE_CHECK_SIZEOF(long)
+AC_C_BIGENDIAN
+AX_CHECK_ALIGNED_ACCESS_REQUIRED
 dnl -------------------------------------------------------------
 # the default is _disabled_!! anyway, result is prefixed in zzip/_config.h!!
 AC_SYS_LARGEFILE_SENSITIVE
@@ -176,23 +185,6 @@ case "${with_docdir}" in
 esac
 AC_SUBST(docdir)
 AC_MSG_RESULT($docdir)
-# ----------------------------------------------------------------
-AC_MSG_CHECKING(whether io-wrap needs to wrap system calls)
-AC_ARG_WITH(wrapwrap, AC_HELP_STRING(
-    [--with-wrapwrap],[io-wrap needs to wrap systemcalls (no)])
-    ,,[with_wrapwrap="auto"])
-case "$with_wrapwrap" in
-  yes|no) WRAPWRAP="$with_wrapwrap"  ;;
-  auto) WRAPWRAP="no" ;;
-dnl     if test "$ac_cv_sizeof_size_t" != "$ac_cv_sizeof_int" 
-dnl     then WRAPWRAP="yes" ; else WRAPWRAP="no" ; fi ;;
-  *) AC_MSG_RESULT(oops)
-     AC_MSG_ERROR(bad value $with_wrapwrap for --with-wrapwrap) ;;
-esac
-if test "$WRAPWRAP" = "yes" ; then
-  AC_DEFINE(WRAPWRAP, 1, [io-wrap needs to wrap systemcalls])
-fi
-AC_MSG_RESULT($WRAPWRAP)
 # ----------------------------------------------------------------
 AC_MSG_CHECKING(whether using debugging messages in libraries)
 AC_ARG_WITH(debug, AC_HELP_STRING(
@@ -302,16 +294,18 @@ AX_NOT_ENABLE_FRAME_POINTER
 AX_CFLAGS_WARN_ALL
 AX_CFLAGS_NO_WRITABLE_STRINGS
 AX_CFLAGS_STRICT_PROTOTYPES
-AX_CFLAGS_GCC_OPTION(,-Wpointer-arith,)
-AX_CFLAGS_GCC_OPTION(,-Wsign-compare,)
-AX_CFLAGS_GCC_OPTION(,-Wmissing-declarations,)
+AX_CFLAGS_GCC_OPTION(-Wpointer-arith)
+AX_CFLAGS_GCC_OPTION(-Wsign-compare)
+AX_CFLAGS_GCC_OPTION(-Wmissing-declarations)
+AX_CFLAGS_GCC_OPTION(-Wdeclaration-after-statement)
+AX_CFLAGS_GCC_OPTION(-Werror-implicit-function-declaration)
 # ---------------------------------------------------------------
-AX_WARNING_DEFAULT_PKGCONFIGDIR
-AX_WARNING_DEFAULT_ACLOCALDIR
+AX_ENABLE_DEFAULT_PKGCONFIGDIR
+AX_ENABLE_DEFAULT_ACLOCALDIR
 AC_SUBST([CONFIG_FILES])
-AC_OUTPUT([Makefile zzip/Makefile zzipwrap/Makefile SDL/Makefile
-           docs/Makefile test/Makefile          zziplib/Makefile
-           bins/Makefile bins/zzip-config])
+AC_OUTPUT([Makefile 
+           zzip/Makefile zzipwrap/Makefile SDL/Makefile
+           docs/Makefile test/Makefile bins/Makefile])
 dnl -------------------------------------------------------------
 PATCH_LIBTOOL_ON_DARWIN_ZSH_OVERQUOTING
 PATCH_LIBTOOL_SYS_LIB_SEARCH_PATH_SPEC

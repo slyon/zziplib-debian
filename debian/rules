@@ -4,7 +4,7 @@
 # GNU copyright 1997 to 1999 by Joey Hess.
 
 # Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
+export DH_VERBOSE=1
 
 
 # These are used for cross-compiling and for saving the configure script
@@ -41,7 +41,8 @@ configure-stamp:
 			--build=$(DEB_BUILD_GNU_TYPE) \
 			--prefix=/usr \
 			--mandir=\$${prefix}/share/man \
-			--infodir=\$${prefix}/share/info
+			--infodir=\$${prefix}/share/info \
+			--datadir=\$${prefix}/share
 
 	touch configure-stamp
 
@@ -59,7 +60,7 @@ clean:
 	dh_testroot
 	rm -f configure-stamp build-stamp 
 	rm -f config.sub config.guess zziplib/config.sub zziplib/config.guess
-	-$(MAKE) distclean
+	[ ! -f Makefile ] || $(MAKE) distclean
 	dh_clean 
 
 install: build
@@ -75,11 +76,11 @@ install: build
 	dh_install --list-missing -s --sourcedir=debian/tmp
 
 	cd $(CURDIR)/debian/libzzip-dev/usr/share/man/man3/ \
-		&& ar x $(CURDIR)/docs/manpages.ar
+		&& ar x $(CURDIR)/docs/zziplib-manpages.ar
 
-	cd $(CURDIR)/debian/libzzip-dev/usr/share/doc/libzzip-dev/html/ \
-		&& ar x $(CURDIR)/docs/htmpages.ar \
-		&& rm written.lst
+#	cd $(CURDIR)/debian/libzzip-dev/usr/share/doc/libzzip-dev/html/ \
+#		&& ar x $(CURDIR)/docs/htmpages.ar \
+#		&& rm written.lst
 	
 	
 # Build architecture-independent files here.
@@ -93,15 +94,6 @@ binary-arch: build install
 	dh_installchangelogs ChangeLog
 	dh_installdocs
 	dh_installexamples
-#	dh_installmenu
-#	dh_installdebconf	
-#	dh_installlogrotate
-#	dh_installemacsen
-#	dh_installpam
-#	dh_installmime
-#	dh_installinit
-#	dh_installcron
-#	dh_installinfo
 	dh_installman
 	cd $(CURDIR)/debian/zziplib-bin/usr/share/man/man1/ \
 		&& ln -s zziplib-bin.1.gz zzcat.1.gz \
@@ -113,8 +105,6 @@ binary-arch: build install
 	dh_strip
 	dh_compress
 	dh_fixperms
-#	dh_perl
-#	dh_python
 	dh_makeshlibs -V
 	dh_installdeb
 	dh_shlibdeps

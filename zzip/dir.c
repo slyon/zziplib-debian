@@ -2,12 +2,12 @@
  * Author: 
  *	Guido Draheim <guidod@gmx.de>
  *
- *	Copyright (c) 1999,2000,2001,2002 Guido Draheim
+ *	Copyright (c) 1999,2000,2001,2002,2003 Guido Draheim
  * 	    All rights reserved,
  *	    use under the restrictions of the
  *	    Lesser GNU General Public License
- *          note the additional license information 
- *          that can be found in COPYING.ZZIP
+ *          or alternatively the restrictions 
+ *          of the Mozilla Public License 1.1
  */
 
 #include <zzip/lib.h>                                   /* exported... */
@@ -32,10 +32,10 @@
 
 #ifdef ZZIP_HAVE_SYS_STAT_H
 /* MSVC does have IFbitmask but not the corresponding IStests */
-# if !defined S_ISDIR && defined S_IFDIR
+# if ! defined S_ISDIR && defined S_IFDIR
 # define S_ISDIR(_X_) ((_X_) & S_IFDIR)
 # endif
-# if !defined S_ISREG && defined S_IFREG
+# if ! defined S_ISREG && defined S_IFREG
 # define S_ISREG(_X_) ((_X_) & S_IFREG)
 # endif
 #endif
@@ -179,6 +179,11 @@ zzip_seekdir(ZZIP_DIR* dir, zzip_off_t offset)
 #undef zzip_seekdir /* zzip_seekdir64 */
 #undef zzip_telldir /* zzip_telldir64 */
 
+long   zzip_telldir(ZZIP_DIR* dir);
+void   zzip_seekdir(ZZIP_DIR* dir, long offset);
+
+/* DLL compatibility layer - so that 32bit code can link with this lib too */
+
 long   zzip_telldir(ZZIP_DIR* dir) 
 { 
     off_t off = zzip_telldir64 (dir); 
@@ -195,12 +200,12 @@ void   zzip_seekdir(ZZIP_DIR* dir, long offset)
 
 /**
  * This function is the equivalent of => opendir(3) for a realdir or zipfile.
- * <p>
+ * 
  * This function has some magic - if the given argument-path
  * is a directory, it will wrap a real => opendir(3) into the ZZIP_DIR
  * structure. Otherwise it will divert to => zzip_dir_open which 
  * can also attach a ".zip" extension if needed to find the archive.
- * <p>
+ * 
  * the error-code is mapped to => errno(3).
  */
 ZZIP_DIR* 
@@ -260,7 +265,7 @@ zzip_opendir_ext_io(zzip_char_t* filename, int o_modes,
 
 /**
  * This function is the equivalent of => closedir(3) for a realdir or zipfile.
- * <p>
+ * 
  * This function is magic - if the given arg-ZZIP_DIR
  * is a real directory, it will call the real => closedir(3) and then
  * free the wrapping ZZIP_DIR structure. Otherwise it will divert 

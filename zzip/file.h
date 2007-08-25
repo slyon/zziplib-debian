@@ -16,8 +16,8 @@
  *          All rights reserved,
  *          use under the restrictions of the
  *          Lesser GNU General Public License
- *          note the additional license information 
- *          that can be found in COPYING.ZZIP
+ *          or alternatively the restrictions 
+ *          of the Mozilla Public License 1.1
  */
 
 #ifndef _ZZIP_FILE_H /* zzip-file.h */
@@ -62,19 +62,19 @@
 
 struct zzip_file
 {
-  struct zzip_dir* dir; 
-  int fd;
-  int method;
-  zzip_size_t restlen;
-  zzip_size_t crestlen;
-  zzip_size_t usize;
-  zzip_size_t csize;
-  /* added dataoffset member - data offset from start of zipfile*/
-  zzip_off_t dataoffset;
-  char* buf32k;
-  zzip_off_t offset; /* offset from the start of zipfile... */
-  z_stream d_stream;
-  zzip_plugin_io_t io;
+    struct zzip_dir* dir; 
+    int fd;
+    int method;
+    zzip_size_t restlen;
+    zzip_size_t crestlen;
+    zzip_size_t usize;
+    zzip_size_t csize;
+    /* added dataoffset member - data offset from start of zipfile*/
+    zzip_off_t dataoffset;
+    char* buf32k;
+    zzip_off_t offset; /* offset from the start of zipfile... */
+    z_stream d_stream;
+    zzip_plugin_io_t io;
 };
 
 #endif /* _ZZIP_FILE_H */

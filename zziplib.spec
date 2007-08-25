@@ -1,10 +1,9 @@
 %define lib   lib010
 Summary:      ZZipLib - libZ-based ZIP-access Library
 Name:         zziplib
-Version:      0.12.83
-Release:      1mdk
-Serial:       1
-Copyright:    LGPL
+Version:      0.13.49
+Release:      1
+License:      LGPL
 Group:        Development/Libraries
 URL:          http://zziplib.sf.net
 Vendor:       Guido Draheim <guidod@gmx.de>
@@ -13,9 +12,9 @@ BuildRoot:    /var/tmp/%{name}-%{version}-%{release}
 
 Distribution: Original
 Packager:     Guido Draheim <guidod@gmx.de>
-Requires:      zlib1
-BuildRequires: zlib1-devel
-BuildRequires: libSDL1.2-devel
+Requires:      zlib
+BuildRequires: zlib-devel
+BuildRequires: SDL-devel
 
 #Begin3
 # Author1:        too@iki.fi (Tomi Ollila)
@@ -75,54 +74,23 @@ Requires:     zziplib-%lib = %version
 # fixing relink problems during install too
 LDFLAGS="-L%buildroot%_libdir" \
 CFLAGS="$RPM_OPT_FLAGS" \
-sh configure --prefix=%{_prefix} --enable-sdl --disable-builddir \
-  --with-docdir=%{_docdir} --mandir=%{_mandir} TIMEOUT=9
-cp -a zzip zzip64
+sh configure --prefix=%{_prefix} --with-docdir=%{_docdir} --mandir=%{_mandir} \
+             --enable-sdl  TIMEOUT=9
+make zzip64-setup
 
 %build
-%define _FILE_OFFSET64 -D_ZZIP_LARGEFILE -D_FILE_OFFSET_BITS=64
-%define _RELEASEINFO64 "RELEASE_INFO=-release 0-64"
-%define _CFLAGS_OFFSET64 "AM_CFLAGS=%_FILE_OFFSET64"
-make
-(cd zzip64 && make %_CFLAGS_OFFSET64 %_RELEASEINFO64)
+make 
+make zzip64-build
 make doc
 
 %install
 rm -rf %{buildroot}
-(cd zzip64 && make install %_RELEASEINFO64 DESTDIR=%{buildroot})
-(cd %buildroot/%_libdir && mv    libzzip.so   libzzip64.so)
-(cd %buildroot/%_libdir && mv    libzzip.a    libzzip64.a)
-(cd %buildroot/%_libdir && \
-sed -e 's/zzip.so/zzip64.so/' -e 's/zzip.a/zzip64.a/' libzzip.la >libzzip64.la)
-(cd %buildroot/%_libdir/pkgconfig && \
-sed -e 's/largefile=/largefile= %_FILE_OFFSET64/' \
-    -e 's/-lzzip/-lzzip64/' -e 's/zziplib/zziplib64/' zziplib.pc >zziplib64.pc)
-
+make zzip64-install DESTDIR=%{buildroot}
 make install DESTDIR=%{buildroot}
-(cd %buildroot/%_libdir && mv    libzzip.so   libzzip32.so)
-(cd %buildroot/%_libdir && mv    libzzip.a    libzzip32.a)
-(cd %buildroot/%_libdir && ln -s libzzip32.so libzzip.so)
-(cd %buildroot/%_libdir && ln -s libzzip32.a  libzzip.a)
-(cd %buildroot/%_libdir && \
-sed -e 's/zzip.so/zzip32.so/' -e 's/zzip.a/zzip32.a/' libzzip.la >libzzip32.la)
-(cd %buildroot/%_libdir/pkgconfig && \
-sed -e 's/-lzzip/-lzzip32/' -e 's/zziplib/zziplib32/' zziplib.pc >zziplib32.pc)
-
-# the 12.8x and 11.8x and 10.8x packages are all the same actually
-(cd %buildroot/%_libdir && \
-(for i in libzzip*.so.* ; do : \
-; v10=`echo $i | sed -e "s/.so.../.so.10/"` \
-; v11=`echo $i | sed -e "s/.so.../.so.11/"` \
-; v12=`echo $i | sed -e "s/.so.../.so.12/"` \
-; test ! -e $v10 && test -e $v12 && ln -s $v12 $v10 \
-; test ! -e $v12 && test -e $v10 && ln -s $v10 $v12 \
-; ln -s $v10 $v11 ; done))
-
+make zzip32-postinstall DESTDIR=%{buildroot}
+make zzip-postinstall
 make install-doc DESTDIR=%{buildroot}
-make install-man3 DESTDIR=%{buildroot}
-
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+make install-mans DESTDIR=%{buildroot}
 
 %clean
 rm -rf %{buildroot}
@@ -131,15 +99,20 @@ rm -rf %{buildroot}
       %defattr(-,root,root)
       %{_libdir}/lib*.so.*
 
+%post %lib 
+/sbin/ldconfig || true
+%postun %lib
+/sbin/ldconfig || true
+
 %files doc
       %defattr(-,root,root)
-      %{_datadir}/groups/*
+      %{_datadir}/doc/*
 %dir  %{_datadir}/omf/%{name}
       %{_datadir}/omf/%{name}/*
 %post doc
-test ! -f /usr/bin/scrollkeeper-update || /usr/bin/scrollkeeper-update
+test ! -f %_bindir/scrollkeeper-update || %_bindir/scrollkeeper-update
 %postun doc
-test ! -f /usr/bin/scrollkeeper-update || /usr/bin/scrollkeeper-update
+test ! -f %_bindir/scrollkeeper-update || %_bindir/scrollkeeper-update
 
 %files devel
       %defattr(-,root,root)

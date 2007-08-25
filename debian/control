@@ -2,7 +2,7 @@ Source: zziplib
 Section: libs
 Priority: optional
 Maintainer: Anibal Monsalve Salazar <anibal@debian.org>
-Build-Depends: debhelper (>= 4.0.0), autotools-dev, pkg-config, zlib1g-dev
+Build-Depends: debhelper (>= 5), autotools-dev, pkg-config, zlib1g-dev, python
 Standards-Version: 3.7.2
 
 Package: zziplib-bin
@@ -22,10 +22,12 @@ Description: library providing read access on ZIP-archives - binaries
   Author: Guido Draheim <guidod@gmx.de>
   Homepage: http://zziplib.sourceforge.net
 
-Package: libzzip-0-12
+Package: libzzip-0-13
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Replaces: libzzip-0-12
+Conflicts: libzzip-0-12
 Description: library providing read access on ZIP-archives - library
  The zziplib library is intentionally lightweight, it offers the ability
  to easily extract data from files archived in a single zip file.
@@ -41,7 +43,7 @@ Description: library providing read access on ZIP-archives - library
 Package: libzzip-dev
 Section: libdevel
 Architecture: any
-Depends: libzzip-0-12 (= ${Source-Version})
+Depends: libzzip-0-13 (= ${binary:Version})
 Description: library providing read access on ZIP-archives - development
  The zziplib library is intentionally lightweight, it offers the ability
  to easily extract data from files archived in a single zip file.

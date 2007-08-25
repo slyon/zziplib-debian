@@ -3,17 +3,18 @@
  *      Guido Draheim <guidod@gmx.de>
  *      Tomi Ollila <too@iki.fi>
  *
- *      Copyright (c) 1999,2000,2001,2002 Guido Draheim
+ * Copyright (c) 1999,2000,2001,2002,2003 Guido Draheim
  *          All rights reserved,
  *          use under the restrictions of the 
  *          Lesser GNU General Public License
- *          note the additional license information 
- *          that can be found in COPYING.ZZIP
+ *          or alternatively the restrictions 
+ *          of the Mozilla Public License 1.1
  */
 
 #include <zzip/lib.h>                                  /* archive handling */
 #include <zzip/file.h>
 #include <zzip/format.h>
+#include <zzip/fetch.h>
 
 #include <ctype.h>
 #include <errno.h>
@@ -32,25 +33,43 @@
 /* per default, we use a little hack to correct bad z_rootseek parts */
 #define ZZIP_CORRECT_ROOTSEEK 1
 
-/* ------------------------- fetch helpers --------------------------------- */
+#if (__GNUC__ == 3 && __GNUC_MINOR__ >= 3) || (__GNUC__ >= 4)
+# ifdef DEBUG
+# warning suppress a warning where the compiler should have optimized instead.
+# endif
+#define _255 254
+#else
+#define _255 255
+#endif
 
-/**
- * Make 32 bit value in host byteorder from little-endian mapped octet-data
- * (works also on machines which SIGBUS on misaligned data access (eg. 68000))
- */
-uint32_t __zzip_get32(unsigned char * s)
-{
-  return ((uint32_t)s[3] << 24) | ((uint32_t)s[2] << 16)
-    |    ((uint32_t)s[1] << 8)  |  (uint32_t)s[0];
-}
+#define ZZIP_DISK64_TRAILER
 
-/** => __zzip_get32
- * This function does the same for a 16 bit value.
- */
-uint16_t __zzip_get16(unsigned char * s)
-{
-    return ((uint16_t)s[1] << 8) | (uint16_t)s[0];
-}
+#ifdef ZZIP_DISK64_TRAILER
+struct _disk_trailer {
+    void*         zz_tail;
+    void*         zz_for_correct_rootseek; // ZZIP_CORRECT_ROOTSEEK
+    zzip_off64_t  zz_entries; 
+    zzip_off64_t  zz_finalentries;
+    zzip_off64_t  zz_rootseek;
+    zzip_off64_t  zz_rootsize;
+};
+#define _disk_trailer_entries(__p) ((__p)->zz_entries)
+#define _disk_trailer_localentries(__p) ((__p)->zz_entries)
+#define _disk_trailer_finalentries(__p) ((__p)->zz_entries)
+#define _disk_trailer_rootseek(__p) ((__p)->zz_rootseek)
+#define _disk_trailer_rootsize(__p) ((__p)->zz_rootsize)
+#define _disk_trailer_set_rootseek(__p,__v) ((__p)->rootseek = (__v))
+
+#else
+#define _disk_trailer zzip_disk_trailer
+#define _disk_trailer_entries zzip_disk_trailer_entries
+#define _disk_trailer_localentries zzip_disk_trailer_localentries
+#define _disk_trailer_finalentries zzip_disk_trailer_finalentries
+#define _disk_trailer_rootseek zzip_disk_trailer_rootseek
+#define _disk_trailer_rootsize zzip_disk_trailer_rootsize
+#define _disk_trailer_set_rootseek zzip_disk_trailer_set_rootseek
+#define __zzip_fetch_disk_trailer __zzip_find_disk_trailer
+#endif
 
 /* ---------------------------  internals  -------------------------------- */
 /* internal functions of zziplib, avoid at all cost, changes w/o warning.
@@ -58,11 +77,11 @@ uint16_t __zzip_get16(unsigned char * s)
  * which know what they do and which can adapt from version to version
  */
 
-int __zzip_find_disk_trailer( int fd, zzip_off_t filesize, 
-			      struct zzip_disk_trailer * trailer,
+int __zzip_fetch_disk_trailer( int fd, zzip_off_t filesize, 
+			      struct _disk_trailer * _zzip_restrict trailer,
 			      zzip_plugin_io_t io);
 int __zzip_parse_root_directory( int fd, 
-				 struct zzip_disk_trailer * trailer, 
+				 struct _disk_trailer * trailer, 
 				 struct zzip_dir_hdr ** hdr_return,
 				 zzip_plugin_io_t io);
 
@@ -78,20 +97,16 @@ _zzip_inline char* __zzip_aligned4(char* p);
  */
 _zzip_inline static void __fixup_rootseek(
     zzip_off_t offset_of_trailer,
-    struct zzip_disk_trailer* trailer)
+    struct _disk_trailer* trailer)
 {
-    if (                    (zzip_off_t) ZZIP_GET32(trailer->z_rootseek) >
-	offset_of_trailer - (zzip_off_t) ZZIP_GET32(trailer->z_rootsize) &&
-	offset_of_trailer > (zzip_off_t) ZZIP_GET32(trailer->z_rootsize))
+    if (                    _disk_trailer_rootseek (trailer) >
+	offset_of_trailer - _disk_trailer_rootsize (trailer) &&
+	offset_of_trailer > _disk_trailer_rootsize (trailer))
     {
 	register zzip_off_t offset;
-	offset = offset_of_trailer -  ZZIP_GET32(trailer->z_rootsize); 
-	trailer->z_rootseek[0] = offset & 0xff;
-	trailer->z_rootseek[1] = offset >> 8 & 0xff;
-	trailer->z_rootseek[2] = offset >> 16 & 0xff;
-	trailer->z_rootseek[3] = offset >> 24 & 0xff;
-	HINT2("new rootseek=%li", 
-	      (long) ZZIP_GET32(trailer->z_rootseek));
+	offset = offset_of_trailer - _disk_trailer_rootsize (trailer);
+	_disk_trailer_set_rootseek (trailer, offset);
+	HINT2("new rootseek=%li", (long) _disk_trailer_rootseek (trailer));
     }
 }
 #define __correct_rootseek(A,B,C)
@@ -115,14 +130,14 @@ _zzip_inline static void __fixup_rootseek(
 #ifdef DEBUG
 _zzip_inline static void __debug_dir_hdr (struct zzip_dir_hdr* hdr)
 {
-    if (sizeof(struct zzip_dir_hdr) > sizeof(struct zzip_root_dirent))
+    if (sizeof(struct zzip_dir_hdr) > sizeof(struct zzip_disk_entry))
     { WARN1("internal sizeof-mismatch may break wreakage"); }
     /*  the internal directory structure is never bigger than the
      *  external zip central directory space had been beforehand
      *  (as long as the following assertion holds...) 
      */
 
-    if (((unsigned)hdr)&3)
+    if (((zzip_off_t)hdr)&3)
     { NOTE1("this machine's malloc(3) returns sth. not u32-aligned"); }
     /* we assume that if this machine's malloc has returned a non-aligned 
      * memory block, then it is actually safe to access misaligned data, and 
@@ -153,9 +168,9 @@ _zzip_inline static void __debug_dir_hdr (struct zzip_dir_hdr* hdr)
  * bytes off the end of the file.
  */
 int 
-__zzip_find_disk_trailer(int fd, zzip_off_t filesize, 
-			 struct zzip_disk_trailer * trailer,
-			 zzip_plugin_io_t io)
+__zzip_fetch_disk_trailer(int fd, zzip_off_t filesize, 
+			  struct _disk_trailer * _zzip_restrict trailer,
+			  zzip_plugin_io_t io)
 {
 #ifdef DEBUG
 #define return(val) { e=val; HINT2("%s", zzip_strerror(e)); goto cleanup; }
@@ -171,16 +186,16 @@ __zzip_find_disk_trailer(int fd, zzip_off_t filesize,
     char* buf = malloc(2*ZZIP_BUFSIZ);
 #endif
     zzip_off_t offset = 0;
-    zzip_off_t maplen = 0; /* mmap(),read(),getpagesize() use size_t !! */
+    zzip_ssize_t maplen = 0; /* mmap(),read(),getpagesize() use size_t !! */
     char* fd_map = 0;
 
-    if (!trailer)
+    if (! trailer)
         { return(EINVAL); }
   
     if (filesize < __sizeof(struct zzip_disk_trailer))
         { return(ZZIP_DIR_TOO_SHORT); }
           
-    if (!buf)
+    if (! buf)
         { return(ZZIP_OUTOFMEM); }
 
     offset = filesize; /* a.k.a. old offset */
@@ -188,27 +203,27 @@ __zzip_find_disk_trailer(int fd, zzip_off_t filesize,
     {
         register unsigned char* mapped;
 
-         if (offset <= 0) { return(ZZIP_DIR_EDH_MISSING); }
+	 if (offset <= 0) { return(ZZIP_DIR_EDH_MISSING); }
 
 	 /* trailer cannot be farther away than 64K from fileend */
          if (filesize-offset > 64*1024) 
              { return(ZZIP_DIR_EDH_MISSING); }
 
 	/* the new offset shall overlap with the area after the old offset! */
-        if (USE_MMAP && io->use_mmap)
+        if (USE_MMAP && io->fd.sys)
         {
 	    zzip_off_t mapoff = offset;
 	    { 
-		zzip_off_t pagesize = _zzip_getpagesize (io->use_mmap);
+		zzip_ssize_t pagesize = _zzip_getpagesize (io->fd.sys);
 		if (pagesize < ZZIP_BUFSIZ) goto non_mmap; /* an error? */
 		if (mapoff == filesize && filesize > pagesize) 
 		    mapoff -= pagesize;
 		if (mapoff < pagesize) {
-		    maplen = mapoff + pagesize; mapoff = 0;
+		    maplen = (zzip_ssize_t)mapoff + pagesize; mapoff = 0;
 		} else {               
 		    mapoff -= pagesize; maplen = 2*pagesize; 
-		    if (mapoff & (pagesize-1)) { /* only on first run */
-			pagesize -= mapoff & (pagesize-1);
+		    if ((zzip_ssize_t)mapoff & (pagesize-1)) { /*only 1. run */
+			pagesize -= (zzip_ssize_t)mapoff & (pagesize-1);
 			mapoff += pagesize;
 			maplen -= pagesize;
 		    }   
@@ -216,9 +231,9 @@ __zzip_find_disk_trailer(int fd, zzip_off_t filesize,
 		if (mapoff + maplen > filesize) maplen = filesize - mapoff;
 	    }
 
-            fd_map = _zzip_mmap(io->use_mmap, fd, mapoff, (zzip_size_t)maplen);
+            fd_map = _zzip_mmap(io->fd.sys, fd, mapoff, (zzip_size_t)maplen);
             if (fd_map == MAP_FAILED) goto non_mmap;
-	    mapped = fd_map; offset = mapoff; /* success */
+	    mapped = (unsigned char*) fd_map; offset = mapoff; /* success */
 	    HINT3("mapped *%p len=%li", fd_map, (long) maplen);
         } else {
         non_mmap:
@@ -228,11 +243,11 @@ __zzip_find_disk_trailer(int fd, zzip_off_t filesize,
 		if (offset == filesize && filesize > pagesize)
 		    offset -= pagesize;
 		if (offset < pagesize) {
-		    maplen = offset + pagesize; offset = 0;
+		    maplen = (zzip_ssize_t)offset + pagesize; offset = 0;
 		} else {
 		    offset -= pagesize; maplen = 2*pagesize;
-		    if (offset & (pagesize-1)) { /* only on first run */
-			pagesize -= offset & (pagesize-1);
+		    if ((zzip_ssize_t)offset & (pagesize-1)) { /*on 1st run*/
+			pagesize -= (zzip_ssize_t)offset & (pagesize-1);
 			offset += pagesize;
 			maplen -= pagesize; 
 		    }    
@@ -240,11 +255,11 @@ __zzip_find_disk_trailer(int fd, zzip_off_t filesize,
 		if (offset + maplen > filesize) maplen = filesize - offset;
 	    }
 	    
-            if (io->seeks(fd, offset, SEEK_SET) < 0)
+            if (io->fd.seeks(fd, offset, SEEK_SET) < 0)
                 { return(ZZIP_DIR_SEEK); }
-            if (io->read(fd, buf, (zzip_size_t)maplen) < (zzip_ssize_t)maplen)
+            if (io->fd.read(fd, buf, (zzip_size_t)maplen) < maplen)
                 { return(ZZIP_DIR_READ); }
-            mapped = buf; /* success */
+            mapped = (unsigned char*) buf; /* success */
 	    HINT5("offs=$%lx len=%li filesize=%li pagesize=%i", 
 		  (long)offset, (long)maplen, (long)filesize, ZZIP_BUFSIZ);
         }
@@ -255,9 +270,10 @@ __zzip_find_disk_trailer(int fd, zzip_off_t filesize,
 	    for (tail = end-1; (tail >= mapped); tail--)
 	    {
 		if ((*tail == 'P') && /* quick pre-check for trailer magic */
-		    end-tail >= __sizeof(*trailer)-2 &&
-		    ZZIP_DISK_TRAILER_CHECKMAGIC(tail))
+		    end-tail >= __sizeof(struct zzip_disk_trailer)-2 &&
+		    zzip_disk_trailer_check_magic(tail))
 		{
+#                  ifndef ZZIP_DISK64_TRAILER
 		    /* if the file-comment is not present, it happens
 		       that the z_comment field often isn't either */
 		    if (end-tail >= __sizeof(*trailer))
@@ -268,9 +284,32 @@ __zzip_find_disk_trailer(int fd, zzip_off_t filesize,
 			trailer->z_comment[0] = 0; 
 			trailer->z_comment[1] = 0;
 		    }
+#                  else
+		    struct zzip_disk_trailer* orig = (struct zzip_disk_trailer*) tail;
+		    trailer->zz_tail = tail;
+		    trailer->zz_entries = zzip_disk_trailer_localentries (orig);
+		    trailer->zz_finalentries = zzip_disk_trailer_finalentries (orig);
+		    trailer->zz_rootseek = zzip_disk_trailer_rootseek (orig);
+		    trailer->zz_rootsize = zzip_disk_trailer_rootsize (orig);
+#                  endif
 
 		    __fixup_rootseek (offset + tail-mapped, trailer);
 		    { return(0); }
+		} else if ((*tail == 'P') && 
+		    end-tail >= __sizeof(struct zzip_disk64_trailer)-2 &&
+		    zzip_disk64_trailer_check_magic(tail))
+		{
+#                  ifndef ZZIP_DISK64_TRAILER
+		    return(ZZIP_DIR_LARGEFILE);
+#                  else
+		    struct zzip_disk64_trailer* orig = (struct zzip_disk64_trailer*) tail;
+		    trailer->zz_tail = tail;
+		    trailer->zz_entries = zzip_disk64_trailer_localentries (orig);
+		    trailer->zz_finalentries = zzip_disk64_trailer_finalentries (orig);
+		    trailer->zz_rootseek = zzip_disk64_trailer_rootseek (orig);
+		    trailer->zz_rootsize = zzip_disk64_trailer_rootsize (orig);
+		    { return(0); }
+#                  endif
 		}
 	    }
         }
@@ -278,7 +317,8 @@ __zzip_find_disk_trailer(int fd, zzip_off_t filesize,
          if (USE_MMAP && fd_map) 
 	 { 
 	     HINT3("unmap *%p len=%li",  fd_map, (long) maplen);
-	     _zzip_munmap(io->use_mmap, fd_map, (zzip_size_t)maplen); fd_map = 0; 
+	     _zzip_munmap(io->fd.sys, fd_map, (zzip_size_t)maplen); 
+	     fd_map = 0; 
 	 }
     } /*outer loop*/
                
@@ -286,7 +326,7 @@ __zzip_find_disk_trailer(int fd, zzip_off_t filesize,
     if (USE_MMAP && fd_map)
     { 
 	HINT3("unmap *%p len=%li",  fd_map, (long) maplen);
-	_zzip_munmap(io->use_mmap, fd_map, (zzip_size_t)maplen); 
+	_zzip_munmap(io->fd.sys, fd_map, (zzip_size_t)maplen); 
     }
 #   ifdef _LOWSTK
     free(buf);
@@ -318,72 +358,74 @@ _zzip_inline char* __zzip_aligned4(char* p)
  */
 int 
 __zzip_parse_root_directory(int fd, 
-    struct zzip_disk_trailer * trailer, 
+    struct _disk_trailer * trailer, 
     struct zzip_dir_hdr ** hdr_return,
     zzip_plugin_io_t io)
 {
-    auto struct zzip_root_dirent dirent;
+    auto struct zzip_disk_entry dirent;
     struct zzip_dir_hdr * hdr;
     struct zzip_dir_hdr * hdr0;
     uint16_t * p_reclen = 0;
-    short entries; 
-    long offset;          /* offset from start of root directory */
+    unsigned long entries;           /* 32bit is enough */
+    zzip_off64_t zz_offset;          /* offset from start of root directory */
     char* fd_map = 0; 
-    int32_t  fd_gap = 0;
-    uint16_t u_entries  = ZZIP_GET16(trailer->z_entries);   
-    uint32_t u_rootsize = ZZIP_GET32(trailer->z_rootsize);  
-    uint32_t u_rootseek = ZZIP_GET32(trailer->z_rootseek);
-    __correct_rootseek (u_rootseek, u_rootsize, trailer);
+    zzip_off64_t zz_fd_gap = 0;
+    zzip_off64_t zz_entries  = _disk_trailer_localentries (trailer);   
+    zzip_off64_t zz_rootsize = _disk_trailer_rootsize (trailer);  
+    zzip_off64_t zz_rootseek = _disk_trailer_rootseek (trailer);
+    __correct_rootseek (zz_rootseek, zz_rootsize, trailer);
 
-    hdr0 = (struct zzip_dir_hdr*) malloc(u_rootsize);
-    if (!hdr0) 
+    hdr0 = (struct zzip_dir_hdr*) malloc(zz_rootsize);
+    if (! hdr0) 
         return ZZIP_DIRSIZE;
     hdr = hdr0;                  __debug_dir_hdr (hdr);
 
-    if (USE_MMAP && io->use_mmap)
+    if (USE_MMAP && io->fd.sys)
     {
-        fd_gap = u_rootseek & (_zzip_getpagesize(io->use_mmap)-1) ;
-        HINT4(" mapseek=0x%x, maplen=%d, fd_gap=%d", 
-	      u_rootseek-fd_gap, u_rootsize+fd_gap, fd_gap);
-        fd_map = _zzip_mmap(io->use_mmap, 
-			    fd, u_rootseek-fd_gap, u_rootsize+fd_gap);
+        zz_fd_gap = zz_rootseek & (_zzip_getpagesize(io->fd.sys)-1) ;
+        HINT4(" fd_gap=%ld, mapseek=0x%lx, maplen=%ld", (long)(zz_fd_gap),
+	      (long)(zz_rootseek-zz_fd_gap), (long)(zz_rootsize+zz_fd_gap));
+        fd_map = _zzip_mmap(io->fd.sys, fd,
+			    zz_rootseek-zz_fd_gap, zz_rootsize+zz_fd_gap);
         /* if mmap failed we will fallback to seek/read mode */
         if (fd_map == MAP_FAILED) { 
             NOTE2("map failed: %s",strerror(errno)); 
             fd_map=0; 
 	}else{
-	    HINT3("mapped *%p len=%i", fd_map, u_rootsize+fd_gap);
+	    HINT3("mapped *%p len=%li", fd_map, (long)(zz_rootsize+zz_fd_gap));
 	}
     }
 
-    for (entries=u_entries, offset=0; entries > 0; entries--)
+    for (entries=zz_entries, zz_offset=0; entries; entries--)
     {
-        register struct zzip_root_dirent * d;
+        register struct zzip_disk_entry * d;
         uint16_t u_extras, u_comment, u_namlen;
 
         if (fd_map) 
-	{ d = (void*)(fd_map+fd_gap+offset); } /* fd_map+fd_gap==u_rootseek */
+	{ d = (void*)(fd_map+zz_fd_gap+zz_offset); } /* fd_map+fd_gap==u_rootseek */
         else
         {
-            if (io->seeks(fd, u_rootseek+offset, SEEK_SET) < 0)
+            if (io->fd.seeks(fd, zz_rootseek+zz_offset, SEEK_SET) < 0)
                 return ZZIP_DIR_SEEK;
-            if (io->read(fd, &dirent, sizeof(dirent)) < __sizeof(dirent))
+            if (io->fd.read(fd, &dirent, sizeof(dirent)) < __sizeof(dirent))
                 return ZZIP_DIR_READ;
             d = &dirent;
         }
 
-	if (offset+sizeof(*d) > u_rootsize)
-	{ FAIL2("%i's entry stretches beyond root directory", entries); break;}
+	if ((zzip_off64_t)(zz_offset+sizeof(*d)) > zz_rootsize ||
+	    (zzip_off64_t)(zz_offset+sizeof(*d)) < 0)
+	{ FAIL4("%li's entry stretches beyond root directory (O:%li R:%li)", 
+		(long)entries, (long)(zz_offset), (long)zz_rootsize); break;}
 
 #       if 0 && defined DEBUG
         zzip_debug_xbuf ((unsigned char*) d, sizeof(*d) + 8);
 #       endif        
         
-        u_extras  = ZZIP_GET16(d->z_extras); 
-        u_comment = ZZIP_GET16(d->z_comment); 
-        u_namlen  = ZZIP_GET16(d->z_namlen); 
+        u_extras  = zzip_disk_entry_get_extras (d);
+        u_comment = zzip_disk_entry_get_comment (d); 
+        u_namlen  = zzip_disk_entry_get_namlen (d); 
         HINT5("offset=0x%lx, size %ld, dirent *%p, hdr %p\n",
-	      offset+u_rootseek, (long)u_rootsize, d, hdr);
+	      (long)(zz_offset+zz_rootseek), (long)zz_rootsize, d, hdr);
 
         /* writes over the read buffer, Since the structure where data is
            copied is smaller than the data in buffer this can be done.
@@ -392,30 +434,33 @@ __zzip_parse_root_directory(int fd,
            first structure read.
            at the end the whole copied list of structures  is copied into
            newly allocated buffer */
-        hdr->d_crc32 = ZZIP_GET32(d->z_crc32);
-        hdr->d_csize = ZZIP_GET32(d->z_csize); 
-        hdr->d_usize = ZZIP_GET32(d->z_usize); 
-        hdr->d_off   = ZZIP_GET32(d->z_off);
-        hdr->d_compr = (uint8_t)ZZIP_GET16(d->z_compr);
-        if (hdr->d_compr > 255) hdr->d_compr = 255;
+        hdr->d_crc32 = zzip_disk_entry_get_crc32 (d);
+        hdr->d_csize = zzip_disk_entry_get_csize (d); 
+        hdr->d_usize = zzip_disk_entry_get_usize (d);
+        hdr->d_off   = zzip_disk_entry_get_offset (d);
+        hdr->d_compr = zzip_disk_entry_get_compr (d);
+	if (hdr->d_compr > _255) hdr->d_compr = 255;
 
-	if (offset+sizeof(*d) + u_namlen > u_rootsize)
-	{ FAIL2("%i's name stretches beyond root directory", entries); break;}
+	if ((zzip_off64_t)(zz_offset+sizeof(*d) + u_namlen) > zz_rootsize ||
+	    (zzip_off64_t)(zz_offset+sizeof(*d) + u_namlen) < 0)
+	{ FAIL4("%li's name stretches beyond root directory (O:%li N:%li)", 
+		(long)entries, (long)(zz_offset), (long)(u_namlen)); break; }
 
 	if (fd_map) 
-	{  memcpy(hdr->d_name, fd_map+fd_gap+offset+sizeof(*d), u_namlen); }
-	else { io->read(fd, hdr->d_name, u_namlen); }
+	{  memcpy(hdr->d_name, fd_map+zz_fd_gap + zz_offset+sizeof(*d), u_namlen); }
+	else { io->fd.read(fd, hdr->d_name, u_namlen); }
         hdr->d_name[u_namlen] = '\0'; 
         hdr->d_namlen = u_namlen;
     
         /* update offset by the total length of this entry -> next entry */
-        offset += sizeof(*d) + u_namlen + u_extras + u_comment;
+        zz_offset += sizeof(*d) + u_namlen + u_extras + u_comment;
     
-        if (offset > (long)u_rootsize)
-	{ FAIL2("%i's end beyond root directory", entries); entries--; break;}
+        if (zz_offset > zz_rootsize)
+	{ FAIL3("%li's entry stretches beyond root directory (O:%li)", 
+		(long)entries, (long)(zz_offset)); entries--; break; }
 
-        HINT5("file %d { compr=%d crc32=$%x offset=%d", 
-	      entries,  hdr->d_compr, hdr->d_crc32, hdr->d_off);
+        HINT5("file %ld { compr=%d crc32=$%x offset=%d", 
+	      (long)entries,  hdr->d_compr, hdr->d_crc32, hdr->d_off);
         HINT5("csize=%d usize=%d namlen=%d extras=%d", 
 	      hdr->d_csize, hdr->d_usize, u_namlen, u_extras);
         HINT5("comment=%d name='%s' %s <sizeof %d> } ", 
@@ -432,8 +477,8 @@ __zzip_parse_root_directory(int fd,
     
     if (USE_MMAP && fd_map) 
     {
-	HINT3("unmap *%p len=%i",   fd_map, u_rootsize+fd_gap);
-        _zzip_munmap(io->use_mmap, fd_map, u_rootsize+fd_gap);
+	HINT3("unmap *%p len=%li",   fd_map, (long)(zz_rootsize+zz_fd_gap));
+        _zzip_munmap(io->fd.sys, fd_map, zz_rootsize+zz_fd_gap);
     }
     
     if (p_reclen)
@@ -456,11 +501,13 @@ static zzip_strings_t* zzip_get_default_ext(void)
 {
     static zzip_strings_t ext [] =
     {
+	/* *INDENT-OFF* */
        ".zip", ".ZIP", /* common extension */
-#  ifdef ZZIP_USE_ZIPLIKES
+#     ifdef ZZIP_USE_ZIPLIKES
        ".pk3", ".PK3", /* ID Software's Quake3 zipfiles */
        ".jar", ".JAR", /* Java zipfiles */ 
-#  endif
+#      endif
+	/* *INDENT-OFF* */
        0
     };
 
@@ -516,7 +563,7 @@ zzip_dir_free(ZZIP_DIR * dir)
     if (dir->refcount)
         return (dir->refcount); /* still open files attached */
 
-    if (dir->fd >= 0)      dir->io->close(dir->fd);
+    if (dir->fd >= 0)      dir->io->fd.close(dir->fd);
     if (dir->hdr0)         free(dir->hdr0);
     if (dir->cache.fp)     free(dir->cache.fp);
     if (dir->cache.buf32k) free(dir->cache.buf32k);
@@ -525,7 +572,7 @@ zzip_dir_free(ZZIP_DIR * dir)
     return 0;
 }
 
-/**
+/** => zzip_dir_free
  * It will also => free(2) the => ZZIP_DIR-handle given. 
  * the counterpart for => zzip_dir_open
  * see also => zzip_dir_free
@@ -542,7 +589,7 @@ zzip_dir_close(ZZIP_DIR * dir)
  * zip-archive as specified with the fd which points to an
  * already openend file. This function then search and parse
  * the zip's central directory.
- * <p> 
+ *  
  * NOTE: refcount is zero, so an _open/_close pair will also delete 
  *       this _dirhandle 
  */
@@ -588,23 +635,25 @@ __zzip_dir_parse (ZZIP_DIR* dir)
 {
     zzip_error_t rv;
     zzip_off_t filesize;
-    struct zzip_disk_trailer trailer;
+    struct _disk_trailer trailer;
     /* if (! dir || dir->fd < 0) 
      *     { rv = EINVAL; goto error; } 
      */
 
     HINT2("------------------ fd=%i", (int) dir->fd);
-    if ((filesize = dir->io->filesize(dir->fd)) < 0)
+    if ((filesize = dir->io->fd.filesize(dir->fd)) < 0)
         { rv = ZZIP_DIR_STAT; goto error; }
 
     HINT2("------------------ filesize=%ld", (long) filesize);
-    if ((rv = __zzip_find_disk_trailer(dir->fd, filesize, &trailer, 
+    if ((rv = __zzip_fetch_disk_trailer(dir->fd, filesize, &trailer, 
                                        dir->io)) != 0)
         { goto error; }
                 
-    HINT5("directory = { entries= %d/%d, size= %d, seek= %d } ", 
-	  ZZIP_GET16(trailer.z_entries),  ZZIP_GET16(trailer.z_finalentries),
-	  ZZIP_GET32(trailer.z_rootsize), ZZIP_GET32(trailer.z_rootseek));
+    HINT5("directory = { entries= %ld/%ld, size= %ld, seek= %ld } ", 
+	  (long) _disk_trailer_localentries (&trailer),
+	  (long) _disk_trailer_finalentries (&trailer),
+	  (long) _disk_trailer_rootsize (&trailer),
+	  (long) _disk_trailer_rootseek (&trailer));
     
     if ( (rv = __zzip_parse_root_directory(dir->fd, &trailer, &dir->hdr0, 
                                            dir->io)) != 0)
@@ -614,9 +663,13 @@ __zzip_dir_parse (ZZIP_DIR* dir)
 }
 
 /**
- * will attach a .zip extension and tries to open it
- * the with => open(2). This is a helper function for
- * => zzip_dir_open, => zzip_opendir and => zzip_open.
+ * This function will attach any of the .zip extensions then
+ * trying to open it the with => open(2). This is a helper 
+ * function for => zzip_dir_open, => zzip_opendir and => zzip_open.
+ *
+ * This function returns a new system file handle or -1 on error.
+ * On error this function leaves the errno(3) of the underlying
+ * open(2) call on the last file.
  */
 int
 __zzip_try_open(zzip_char_t* filename, int filemode, 
@@ -626,16 +679,16 @@ __zzip_try_open(zzip_char_t* filename, int filemode,
     int fd;
     zzip_size_t len = strlen (filename);
     
-    if (len+4 >= PATH_MAX) return -1;
+    if (len+4 >= PATH_MAX) { errno = ENAMETOOLONG; return -1; }
     memcpy(file, filename, len+1);
 
-    if (!io) io = zzip_get_default_io();
-    if (!ext) ext = zzip_get_default_ext();
+    if (! io) io = zzip_get_default_io();
+    if (! ext) ext = zzip_get_default_ext();
 
     for ( ; *ext ; ++ext)
     {
         strcpy (file+len, *ext);
-        fd = io->open(file, filemode);
+        fd = io->fd.open(file, filemode);
         if (fd != -1) return fd;
     }
     return -1;
@@ -662,18 +715,18 @@ zzip_dir_open_ext_io(zzip_char_t* filename, zzip_error_t* e,
 {
     int fd;
 
-    if (!io) io = zzip_get_default_io();
-    if (!ext) ext = zzip_get_default_ext();
+    if (! io) io = zzip_get_default_io();
+    if (! ext) ext = zzip_get_default_ext();
 
-    fd = io->open(filename, O_RDONLY|O_BINARY);
-    if (fd != -1) 
-      { return zzip_dir_fdopen_ext_io(fd, e, ext, io); }
-    else
+    fd = io->fd.open(filename, O_RDONLY|O_BINARY);
+    if (fd != -1) { 
+	return zzip_dir_fdopen_ext_io(fd, e, ext, io); 
+    } else
     {
         fd = __zzip_try_open(filename, O_RDONLY|O_BINARY, ext, io);
-        if (fd != -1) 
-          { return zzip_dir_fdopen_ext_io(fd, e, ext, io); }
-        else
+        if (fd != -1) { 
+	    return zzip_dir_fdopen_ext_io(fd, e, ext, io); 
+	} else
         {
             if (e) { *e = ZZIP_DIR_OPEN; } 
             return 0; 
@@ -681,10 +734,10 @@ zzip_dir_open_ext_io(zzip_char_t* filename, zzip_error_t* e,
     }
 }
 
-/**
+/** => zzip_dir_open
  * fills the dirent-argument with the values and 
  * increments the read-pointer of the dir-argument.
- * <p>
+ * 
  * returns 0 if there no entry (anymore).
  */
 int
@@ -697,10 +750,13 @@ zzip_dir_read(ZZIP_DIR * dir, ZZIP_DIRENT * d )
     d->st_size = dir->hdr->d_usize;
     d->d_name  = dir->hdr->d_name;
 
-    if (! dir->hdr->d_reclen) 
-    { dir->hdr = 0; }
-    else  
-    { dir->hdr = (struct zzip_dir_hdr *)((char *)dir->hdr + dir->hdr->d_reclen); }
+    if (! dir->hdr->d_reclen) { 
+	dir->hdr = 0; 
+    } else  
+    { 
+	dir->hdr = (struct zzip_dir_hdr *)
+	    ((char *)dir->hdr + dir->hdr->d_reclen); 
+    }
   
     return 1;
 }

@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <ctype.h>
 
 #include <zzip/zzip.h>
@@ -46,7 +47,7 @@ static zzip_ssize_t xor_read (int f, void* p, zzip_size_t l)
     return r;
 }
 
-static struct zzip_plugin_io xor_handlers;
+static zzip_plugin_io_handlers xor_handlers = { };
 static zzip_strings_t xor_fileext[] = { ".dat", "", 0 };
 
 int 
@@ -56,13 +57,18 @@ main (int argc, char ** argv)
     int exitcode = 0; 
     xor_value = 0x55;
 
-    if (argc <= 1)
+    if (argc <= 1 || ! strcmp (argv[1], "--help"))
     {
         printf (usage);
-        exit(0);
+        return 0;
+    }
+    if (! strcmp (argv[1], "--version"))
+    {
+	printf (__FILE__" version "ZZIP_PACKAGE" "ZZIP_VERSION"\n");
+	return 0;
     }
 
-    zzip_init_io (&xor_handlers, 0); xor_handlers.read = &xor_read;
+    zzip_init_io (&xor_handlers, 0); xor_handlers.fd.read = &xor_read;
     
     for (argn=1; argn < argc; argn++)
     {

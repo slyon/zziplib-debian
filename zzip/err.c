@@ -3,12 +3,12 @@
  *      Guido Draheim <guidod@gmx.de>
  *      Tomi Ollila <Tomi.Ollila@iki.fi>
  *
- *      Copyright (c) 1999,2000,2001,2002 Guido Draheim
+ *      Copyright (c) 1999,2000,2001,2002,2003 Guido Draheim
  *          All rights reserved,
  *          use under the restrictions of the
  *          Lesser GNU General Public License
- *          note the additional license information 
- *          that can be found in COPYING.ZZIP
+ *          or alternatively the restrictions 
+ *          of the Mozilla Public License 1.1
  */
 
 #include <zzip/lib.h>                                    /* exported... */
@@ -19,24 +19,29 @@
 
 #include <zzip/file.h>
 
+/* *INDENT-OFF* */
 static struct errlistentry { int code; const char* mesg; } 
 errlist[] = 
 {
-    { ZZIP_NO_ERROR, "No error" },
-    { ZZIP_OUTOFMEM, "could not get temporary memory for internal structures" },
-    { ZZIP_DIR_OPEN, "Failed to open zip-file %s" },
-    { ZZIP_DIR_STAT, "Failed to fstat zip-file %s" },
-    { ZZIP_DIR_SEEK, "Failed to lseek zip-file %s" },
-    { ZZIP_DIR_READ, "Failed to read zip-file %s"},  
+    { ZZIP_NO_ERROR,        "No error" },
+    { ZZIP_OUTOFMEM,        
+      "could not get temporary memory for internal structures" },
+    { ZZIP_DIR_OPEN,        "Failed to open zip-file %s" },
+    { ZZIP_DIR_STAT,        "Failed to fstat zip-file %s" },
+    { ZZIP_DIR_SEEK,        "Failed to lseek zip-file %s" },
+    { ZZIP_DIR_READ,        "Failed to read zip-file %s"},  
     { ZZIP_DIR_TOO_SHORT,   "zip-file %s too short" },
     { ZZIP_DIR_EDH_MISSING, "zip-file central directory not found" },
-    { ZZIP_DIRSIZE, "Directory size too big..." },
-    { ZZIP_ENOENT, "No such file found in zip-file %s" },
-    { ZZIP_UNSUPP_COMPR, "Unsupported compression format" },
-    { ZZIP_CORRUPTED, "Zipfile corrupted" }, 
-    { ZZIP_UNDEF,      "Some undefined error occurred" },
+    { ZZIP_DIRSIZE,         "Directory size too big..." },
+    { ZZIP_ENOENT,          "No such file found in zip-file %s" },
+    { ZZIP_UNSUPP_COMPR,    "Unsupported compression format" },
+    { ZZIP_CORRUPTED,       "Zipfile corrupted" }, 
+    { ZZIP_UNDEF,           "Some undefined error occurred" },
+    { ZZIP_DIR_LARGEFILE,   "Directory is largefile variant" },
     { 0, 0 },
 };
+/* *INDENT-ON* */
+
 
 #define errlistSIZE (sizeof(errlist)/sizeof(*errlist))
 
@@ -85,6 +90,7 @@ zzip_strerror_of(ZZIP_DIR* dir)
     return zzip_strerror(dir->errcode);
 }
 
+/* *INDENT-OFF* */
 static struct errnolistentry { int code; int e_no; } 
 errnolist[] =
 {
@@ -124,6 +130,7 @@ errnolist[] =
     { ZZIP_UNDEF, EINVAL },
     { 0, 0 },
 };    
+/* *INDENT-ON* */
 
 /**
  * map the error code to a system error code. This is used

@@ -5,6 +5,14 @@
  * where time-stamps are rather unimportant. Here we can create an 
  * archive with filenames and their data portions, possibly obfuscated.
  *
+ * DONT USE THIS
+ *
+ * The write support is supposed to be added directly into the main
+ * zziplib but it has not been implemented so far. It does however
+ * export the relevant call entries which will return EROFS (read-only
+ * filesystem) in case they are being called. That allows later programs
+ * to start up with earlier versions of zziplib that can only read ZIPs.
+ *
  * Author: 
  *      Guido Draheim <guidod@gmx.de>
  *
@@ -12,8 +20,8 @@
  *          All rights reserved,
  *          use under the restrictions of the
  *          Lesser GNU General Public License
- *          note the additional license information 
- *          that can be found in COPYING.ZZIP
+ *          or alternatively the restrictions 
+ *          of the Mozilla Public License 1.1
  */
 
 #define _ZZIP_WRITE_SOURCE
@@ -24,7 +32,7 @@
 #define _ZZIP_POSIX_WRITE
 #endif
 
-#include <zzip/lib.h>                                         /* exported...*/
+#include <zzip/write.h>                   /* #includes <zzip/lib.h> */
 #include <zzip/file.h>
 
 #include <string.h>
@@ -125,7 +133,7 @@ zzip_dir_creat_ext_io(zzip_char_t* name, int o_mode,
     }
 
 
-    if (!_ZZIP_TRY)
+    if (! _ZZIP_TRY)
     {  /* not implemented - however, we respect that a null argument to 
         * zzip_mkdir and zzip_creat works, so we silently still do the mkdir 
         */
@@ -148,14 +156,14 @@ zzip_dir_creat_ext_io(zzip_char_t* name, int o_mode,
         for (; *exx ; exx++)
         {
             if ((exx_len = strlen (*exx)+1) <= name_len &&
-                !memcmp (dir->realname+(name_len-exx_len), *exx, exx_len))
+                ! memcmp (dir->realname+(name_len-exx_len), *exx, exx_len))
                 break; /* keep unmodified */
             exx++; if (*exx) continue;
 
             if (! (exx_len = strlen (*exx)) || exx_len >= MAX_EXT_LEN) break; 
             memcpy (dir->realname+name_len, exx, exx_len); /* append! */
         }____;
-        fd  = io->open (dir->realname, O_CREAT|O_TRUNC|O_WRONLY, o_mode);
+        fd  = io->fd.open (dir->realname, O_CREAT|O_TRUNC|O_WRONLY, o_mode);
         dir->realname[name_len] = '\0'; /* keep ummodified */
         if (fd != -1) { dir->fd = fd; return dir; } 
      error:
@@ -207,7 +215,7 @@ zzip_createdir(zzip_char_t* name, int o_mode)
         return zzip_dir_creat (name, o_mode);
 }
 
-/** => zzip_file_creat                         => mkdir(2), zzip_dir_creat
+/** => zzip_file_creat              also: mkdir(2), creat(2), zzip_dir_creat
  *
  * This function has an additional primary argument over the posix
  * mkdir(2) - if it is null then this function behaves just like
@@ -245,7 +253,7 @@ zzip_file_mkdir(ZZIP_DIR* dir, zzip_char_t* name, int o_mode)
     if (! dir)
         return _mkdir(name, o_mode);
 
-    if (!_ZZIP_TRY)
+    if (! _ZZIP_TRY)
     {/* not implemented */
         errno = EROFS;
         return -1;
@@ -255,7 +263,7 @@ zzip_file_mkdir(ZZIP_DIR* dir, zzip_char_t* name, int o_mode)
     }
 }
 
-/** start next file entry in a zip archive             => creat(2)
+/** start next file entry in a zip archive
  *
  * This function will create a new file within a zzip archive, the
  * one given as the primary argument and additionally to the posix
@@ -277,7 +285,7 @@ zzip_file_creat(ZZIP_DIR* dir, zzip_char_t* name, int o_mode)
     if (! dir)
         return zzip_open (name, o_mode);
 
-    if (!_ZZIP_TRY)
+    if (! _ZZIP_TRY)
     {/* not implemented */
         errno = EROFS;
         return 0;
@@ -317,7 +325,7 @@ zzip_write(ZZIP_FILE* file, const void* ptr, zzip_size_t len)
 zzip_ssize_t
 zzip_file_write(ZZIP_FILE* file, const void* ptr, zzip_size_t len) 
 {
-    if (!_ZZIP_TRY)
+    if (! _ZZIP_TRY)
     {/* not implemented */
         errno = EROFS;
         return -1;
@@ -367,8 +375,8 @@ zzip_fwrite(const void* ptr, zzip_size_t len, zzip_size_t multiply,
          zzip_file_mkdir(zzip_savefile,name,mode)
  *
  */
-int
-zzip_mkdir(zzip_char_t* name, int o_mode) inline
+int inline
+zzip_mkdir(zzip_char_t* name, int o_mode)
 {
     return zzip_file_creat(zzip_savefile, name, mode);
 }
@@ -390,8 +398,8 @@ zzip_mkdir(zzip_char_t* name, int o_mode) inline
  #define zzip_creat(name,mode) \ -
          zzip_file_creat(zzip_savefile,name,mode)
  */
-ZZIP_FILE*
-zzip_creat(zzip_char_t* name, int o_mode) inline
+ZZIP_FILE* inline
+zzip_creat(zzip_char_t* name, int o_mode)
 {
     return zzip_file_creat(zzip_savefile, name, mode);
 }
@@ -422,8 +430,8 @@ zzip_creat(zzip_char_t* name, int o_mode) inline
  * => zzip_creat and => zzip_mkdir to run as => creat(2) / => mkdir(2) 
  * on the real filesystem.
  */
-void
-zzip_mkfifo(zzip_char_t* name, int o_mode) inline
+void inline
+zzip_mkfifo(zzip_char_t* name, int o_mode)
 {   
     if (zzip_savefile) zzip_closedir (zzip_savefile); 
     zzip_savefile = zzip_createdir(name, o_mode);
@@ -447,8 +455,8 @@ zzip_mkfifo(zzip_char_t* name, int o_mode) inline
        { zzip_closedir(zzip_savefile); zzip_savefile = 0; }
  *
  */
-void
-zzip_sync(void) inline
+void inline
+zzip_sync(void) 
 {   
     zzip_closedir (zzip_savefile); zzip_savefile = 0; 
 }

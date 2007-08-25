@@ -1,17 +1,21 @@
 AUTOMAKE_OPTIONS = 1.4 foreign dist-bzip2
-AUTOTOOL_VERSION=autoconf-2.52 automake-1.5 libtool-1.4.2
+ACLOCAL_AMFLAGS = -I m4
+WANT_AUTOMAKE = 1.7
+WANT_AUTOCONF = 2.57
 
-DIST_SUBDIRS = zzip zzipwrap bins test docs  SDL  zziplib
+DIST_SUBDIRS = zzip zzipwrap bins test docs  SDL
 SUBDIRS =      zzip zzipwrap bins test docs @SDL@
 
 # see Makefile.mk for the "make rpm" target
 rpm2: dist-bzip2 $(PACKAGE).spec
-	rpm -ta $(PACKAGE)-$(VERSION).tar.bz2
+	rpmbuild -ta $(PACKAGE)-$(VERSION).tar.bz2
 
-zzip.html zzip.xml zzip.pdf \
-doc docs docu clean-doc clean-docs clean-docu \
-man manpages htmpages unpack clean-unpack \
-omf install-omf install-doc install-sfnet install-man3 x :
+indent-check:
+	(cd zzip && $(MAKE) `basename $@`)
+
+doc docs docu clean-doc clean-docs clean-docu   zzip.html zzip.xml zzip.pdf \
+man mans manpages htmpages unpack clean-unpack  changes.htm pdfs \
+omf install-omf install-doc install-docs install-sf install-man3 install-mans :
 	(cd docs && $(MAKE) `basename $@`)
 
 sdl testsdl test-sdl install-sdl :
@@ -21,6 +25,15 @@ check-test0 check-test1 check-zzdir check-zzcat \
 check-zzxor check-zzxordir check-zzxorcat \
 check-sfx     check-readme : \
 	(cd test && $(MAKE) `basename $@`)
+
+MSVC8 =   msvc8/README.TXT msvc8/zip.exe msvc8/test1.zip msvc8/test.zip \
+msvc8/zzdir.vcproj    msvc8/zzipself.vcproj     msvc8/zzip.vcproj \
+msvc8/zziplib.sln     msvc8/zzipsetstub.sln     msvc8/zzobfuscated.sln \
+msvc8/zziplib.vcproj  msvc8/zzipsetstub.vcproj  msvc8/zzobfuscated.vcproj \
+msvc8/zzcat.sln       msvc8/zzipself.bat        msvc8/zzip.sln \
+msvc8/zzcat.vcproj    msvc8/zzipself.sln        msvc8/zziptest.sln \
+msvc8/zzdir.sln       msvc8/zzipself.txt        msvc8/zziptest.vcproj \
+                      msvc8/zzipfseeko.vcproj   msvc8/zzipmmapped.vcproj 
 
 MSVC7 =   msvc7/pkzip.exe msvc7/test1.zip msvc7/test.zip \
 msvc7/zzdir.vcproj    msvc7/zzipself.vcproj     msvc7/zzip.vcproj \
@@ -35,59 +48,12 @@ msvc6/zzcat.dsp        msvc6/zziplib.dsp      msvc6/zzipwrap.dsp \
 msvc6/zzdir.dsp        msvc6/zziplib.dsw      msvc6/zzobfuscated.dsp \
 msvc6/zziptest.dsp     msvc6/zzip.dsp  
 
-EXTRA_DIST =   zziplib.spec zzipback.sed Makefile.mk $(MSVC7) $(MSVC6)
+EXTRA_DIST =   zziplib.spec zzipback.sed Makefile.mk \
+               $(MSVC8) $(MSVC7) $(MSVC6) $(am__aclocal_m4_deps)
 
-.PHONY : auto boottrap rpm doc docs man manpages htmpages sdl testsdl \
-         comp compats msvc6 msvc7
+PHONY = auto boottrap rpm doc docs man manpages htmpages sdl testsdl \
+	comp compats msvc6 msvc7
 # ------------------------------------------------------------------------
-
-compatsrcdir=$(srcdir)
-C = $(compatsrcdir)/zziplib
-S = $(srcdir)
-ZZIPBACK = sed -f $(srcdir)/zzipback.sed
-comp compats : zzipback.sed
-	cp $S//ChangeLog $C
-	cp $S//config.h.in $C
-	head $S//zziplib.spec > $C/zziplib.spec
-	$(ZZIPBACK) $S/zzip/__debug.h        > $C/__debug.h
-	$(ZZIPBACK) $S/zzip/__dirent.h       > $C/__dirent.h
-	$(ZZIPBACK) $S/zzip/__hints.h        > $C/__hints.h
-	$(ZZIPBACK) $S/zzip/__mmap.h         > $C/__mmap.h
-#	$(ZZIPBACK) $S/zzip/_config.h        > $C/zzip-config.h
-#	$(ZZIPBACK) $S/zzip/_msvc.h          > $C/zzip-msvc.h
-	$(ZZIPBACK) $S/zzip/conf.h           > $C/zzip-conf.h
-	$(ZZIPBACK) $S/zzip/dir.c            > $C/zzip-dir.c
-	$(ZZIPBACK) $S/zzip/err.c            > $C/zzip-err.c
-	$(ZZIPBACK) $S/zzip/file.c           > $C/zzip-file.c
-	$(ZZIPBACK) $S/zzip/file.h           > $C/zzip-file.h
-	$(ZZIPBACK) $S/zzip/format.h         > $C/zzipformat.h
-	$(ZZIPBACK) $S/zzip/info.c           > $C/zzip-info.c
-	$(ZZIPBACK) $S/zzip/lib.h            > $C/zzip.h
-	$(ZZIPBACK) $S/zzip/plugin.c         > $C/zzip-io.c
-	$(ZZIPBACK) $S/zzip/plugin.h         > $C/zzip-plugin.h
-	$(ZZIPBACK) $S/zzip/stat.c           > $C/zzip-stat.c
-	$(ZZIPBACK) $S/zzip/stdint.h         > $C/zzip-stdint.h
-	$(ZZIPBACK) $S/zzip/zip.c            > $C/zzip-zip.c
-	$(ZZIPBACK) $S/zzip/zzip.h           > $C/zziplib.h
-	$(ZZIPBACK) $S/zzipwrap/wrap.c       > $C/zzipwrap-mem.c
-	$(ZZIPBACK) $S/zzipwrap/wrap.h       > $C/zzipwrap.h
-	$(ZZIPBACK) $S/zzipwrap/zzipwrap.c   > $C/zzipwrap.c
-	$(ZZIPBACK) $S/bins/zzcat.c          > $C/zzcat.c
-	$(ZZIPBACK) $S/bins/zzdir.c          > $C/zzdir.c
-	$(ZZIPBACK) $S/bins/zzip-config.in   > $C/zzip-config.in
-	$(ZZIPBACK) $S/bins/zziptest.c       > $C/zziptest.c
-	$(ZZIPBACK) $S/bins/zzobfuscated.c   > $C/zzobfuscated.c
-	$(ZZIPBACK) $S/bins/zzxorcat.c       > $C/zzxorcat.c
-	$(ZZIPBACK) $S/bins/zzxorcopy.c      > $C/zzxorcopy.c
-	$(ZZIPBACK) $S/bins/zzxordir.c       > $C/zzxordir.c
-	$(ZZIPBACK) $S/SDL/SDL_rwops_zzcat.c > $C/SDL_rwops_zzcat.c
-	$(ZZIPBACK) $S/SDL/SDL_rwops_zzip.c  > $C/SDL_rwops_zzip.c
-	$(ZZIPBACK) $S/SDL/SDL_rwops_zzip.h  > $C/SDL_rwops_zzip.h
-
-dist-hook :
-	$(MAKE) compats "C=$(distdir)/zziplib"
-	sed -e 's/top_builddir *=.*/top_builddir = ./' $S/zziplib/Makefile.in \
-		                             > $(distdir)/zziplib/Makefile.in
 
 test-comp:
 	test ! -d testing || rm -r testing
@@ -112,3 +78,49 @@ msvc :
 	zip -9r $(srcdir)/$(PACKAGE)-$(VERSION)-msvc6-bin.zip bin/
 	zip -9r $(srcdir)/$(PACKAGE)-$(VERSION)-msvc6-lib.zip lib/ include/
 	rm -r bin lib include
+
+# ------------------------------------------------------------------ zzip64
+_FILE_OFFSET64 = -D_ZZIP_LARGEFILE -D_FILE_OFFSET_BITS=64
+_RELEASEINFO64 = "RELEASE_INFO=-release 0-64"
+
+zzip64-setup: zzip64-setup.tmp
+zzip64-setup.tmp : zzip/Makefile zzip/_config.h zzip/.deps/* zzip/zziplib.pc
+	- mkdir zzip64
+	cp -a zzip/Makefile zzip/_config.h zzip/.deps/ zzip/zziplib.pc zzip64/
+	date > zzip64.dir
+zzip64-build: zzip64-build.tmp
+zzip64-build.tmp : zzip64-setup.tmp $(top_srcdir)/zzip/*
+	cd zzip64 && $(MAKE) "AM_CFLAGS=$(_FILE_OFFSET64)" $(_RELEASEINFO64)
+zzip64-install: zzip64-install.tmp
+zzip64-install.tmp : zzip64-build.tmp
+	cd zzip64 && $(MAKE) install $(_RELEASEINFO64)
+	cd $(DESTDIR)$(libdir) && mv    libzzip.so   libzzip64.so
+	cd $(DESTDIR)$(libdir) && mv    libzzip.a    libzzip64.a
+	cd $(DESTDIR)$(libdir) && \
+        sed -e 's/zzip.so/zzip64.so/' \
+            -e 's/zzip.a/zzip64.a/'     libzzip.la > libzzip64.la
+	cd $(DESTDIR)$(libdir)/pkgconfig && \
+	sed -e 's/largefile=/largefile= %_FILE_OFFSET64/' \
+	    -e 's/-lzzip/-lzzip64/' \
+	    -e 's/zziplib/zziplib64/'   zziplib.pc > zziplib64.pc
+zzip32-postinstall:
+	cd $(DESTDIR)$(libdir) && mv    libzzip.so   libzzip32.so
+	cd $(DESTDIR)$(libdir) && mv    libzzip.a    libzzip32.a
+	cd $(DESTDIR)$(libdir) && ln -s libzzip32.so libzzip.so
+	cd $(DESTDIR)$(libdir) && ln -s libzzip32.a  libzzip.a
+	cd $(DESTDIR)$(libdir) && \
+	sed -e 's/zzip.so/zzip32.so/' \
+	    -e 's/zzip.a/zzip32.a/'     libzzip.la > libzzip32.la
+	cd $(DESTDIR)$(libdir)/pkgconfig && \
+	sed -e 's/-lzzip/-lzzip32/' \
+	     -e 's/zziplib/zziplib32/'  zziplib.pc > zziplib32.pc
+zzip-postinstall:
+	: "the 12.8x and 11.8x and 10.8x packages are all the same actually"
+	cd $(DESTDIR)$(libdir) || exit 1 \
+	; for i in libzzip*.so.1? ; do : \
+	; v10=`echo $i | sed -e "s/.so.../.so.10/"` \
+	; v11=`echo $i | sed -e "s/.so.../.so.11/"` \
+	; v12=`echo $i | sed -e "s/.so.../.so.12/"` \
+	; test ! -e $v10 && test -e $v12 && ln -s $v12 $v10 \
+	; test ! -e $v12 && test -e $v10 && ln -s $v10 $v12 \
+	; ln -s $v10 $v11 || true; done

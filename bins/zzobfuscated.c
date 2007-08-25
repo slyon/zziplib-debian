@@ -22,6 +22,13 @@
 #include <unistd.h> /* read */
 #elif defined ZZIP_HAVE_IO_H
 #include <io.h>     /* win32 */
+#else
+#endif
+
+#ifdef _MSC_VER
+#define _MSC_VER_NULL NULL
+#else
+#define _MSC_VER_NULL
 #endif
 
 /*
@@ -40,7 +47,7 @@ static zzip_ssize_t our_read(int fd, void* buf, zzip_size_t len)
     return bytes;
 }
 
-static struct zzip_plugin_io our_handlers;
+static zzip_plugin_io_handlers our_handlers = { _MSC_VER_NULL };
 static const char* const our_fileext [] = { ".dat", ".sav", 0 };
 
 
@@ -59,10 +66,15 @@ static const char usage[] =
 int 
 main (int argc, char* argv[])
 {
-    if (argc <= 1 || argc > 3)
+    if (argc <= 1 || argc > 3 || ! strcmp (argv[1], "--help"))
     {
         printf (usage);
-        exit (0);
+        return 0;
+    }
+    if (! strcmp (argv[1], "--version"))
+    {
+	printf (__FILE__" version "ZZIP_PACKAGE" "ZZIP_VERSION"\n");
+	return 0;
     }
 
     if (strlen(argv[1]) > 128) {
@@ -95,7 +107,7 @@ main (int argc, char* argv[])
 
     /* install our I/O hander */
     zzip_init_io(&our_handlers, 0);
-    our_handlers.read = &our_read;
+    our_handlers.fd.read = &our_read;
 
     {
 #       define argn 2

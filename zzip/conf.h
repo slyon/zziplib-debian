@@ -1,11 +1,21 @@
 /*
+ * Here we postprocess autoconf generated prefix-config.h entries.
+ * This is generally for things like "off_t" which is left undefined
+ * in plain config.h if the host system does already have it but we do
+ * need the prefix variant - so we add here a #define _zzip_off_t off_t
+ *
+ * This file is supposed to only carry '#define's. 
+ * See <zzip/types.h> for definitions that might be seen by the compiler.
+ *
  * Author: 
  *      Guido Draheim <guidod@gmx.de>
  *
- *      Copyright (c) 2001,2002,2003 Guido Draheim
+ *      Copyright (c) 2001,2002,2003,2004 Guido Draheim
  *          All rights reserved,
  *          use under the restrictions of the
  *          Lesser GNU General Public License
+ *          or alternatively the restrictions 
+ *          of the Mozilla Public License 1.1
  */
 
 #ifndef _ZZIP_CONF_H
@@ -38,6 +48,14 @@
 #endif
 #endif
 
+#ifndef _zzip_off64_t
+#ifdef   ZZIP_off64_t
+#define _zzip_off64_t ZZIP_off64_t
+#else
+#define _zzip_off64_t off64_t
+#endif
+#endif
+
 /* currently unused, all current zziplib-users do have ansi-C94 compilers. */
 #ifndef _zzip_const
 #ifdef   ZZIP_const
@@ -53,6 +71,21 @@
 #define _zzip_inline inline
 #endif
 #endif
+#ifndef _zzip_restrict
+#ifdef   ZZIP_restrict
+#define _zzip_restrict ZZIP_restrict
+#else
+#define _zzip_restrict restrict
+#endif
+#endif
+#if defined __linux__ && __GNUC__+0 >= 4
+#define zzip__new__ __attribute__((malloc))
+#elif defined __linux__ && __GNUC__+0 >= 3 && __GNUC_MINOR_+0 >= 3
+#define zzip__new__  __attribute__((malloc))
+#else
+#define zzip__new__
+#endif
+
 #ifndef _zzip_size_t
 #ifdef   ZZIP_size_t
 #define _zzip_size_t ZZIP_size_t
@@ -65,6 +98,13 @@
 #define _zzip_ssize_t ZZIP_ssize_t
 #else
 #define _zzip_ssize_t ssize_t
+#endif
+#endif
+#ifndef _zzip___int64
+#ifdef   ZZIP___int64
+#define _zzip___int64 ZZIP___int64
+#else
+#define _zzip___int64 long long
 #endif
 #endif
 
@@ -131,11 +171,14 @@
 #  ifndef _zzip_read
 #  define _zzip_read _read
 #  endif
-/*
+#  ifndef _zzip_write
+#  define _zzip_write _write
+#  endif
+#      if 0
 #  ifndef _zzip_stat
 #  define _zzip_stat _stat
 #  endif
-*/
+#      endif
 # endif /* !__STDC__ */
 #endif
   /*MSVC*/
@@ -154,15 +197,21 @@
 #  define _zzip_read  read
 #  endif
 
-/*
+#  ifndef _zzip_write
+#  define _zzip_write  write
+#  endif
+
+#      if 0
 #  ifndef _zzip_stat
 #  define _zzip_stat  stat
 #  endif
-*/
+#     endif
 
 
-#if !defined __GNUC__ && !defined __attribute__
-#define __attribute__(X) 
+#if defined __GNUC__ || defined __attribute__
+#define __zzip_attribute__(X) __attribute__(X)
+#else
+#define __zzip_attribute__(X) 
 #endif
 
 #if defined ZZIP_EXPORTS || defined ZZIPLIB_EXPORTS

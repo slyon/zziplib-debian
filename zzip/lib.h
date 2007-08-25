@@ -3,12 +3,12 @@
  *      Guido Draheim <guidod@gmx.de>
  *      Tomi Ollila <Tomi.Ollila@iki.fi>
  *
- *      Copyright (c) 1999,2000,2001,2002 Guido Draheim
+ * Copyright (c) 1999,2000,2001,2002,2003 Guido Draheim
  *          All rights reserved
  *          use under the restrictions of the
  *          Lesser GNU General Public License
- *          note the additional license information 
- *          that can be found in COPYING.ZZIP
+ *          or alternatively the restrictions 
+ *          of the Mozilla Public License 1.1
  *
  * This is the private header containing definitions that are not
  * use by a libzzip user application. Writing an extension lib that
@@ -21,6 +21,10 @@
 #include <zzip/zzip.h>
 #include <zzip/plugin.h>
 #include <zzip/stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*
  * this structure cannot be wildly enlarged... (see zzip-zip.c)
@@ -48,9 +52,10 @@ struct zzip_dir
     int fd;
     int errcode; /* zzip_error_t */
     long refcount;
-    struct {
-        struct zzip_file * fp;  /* reduce a lot of alloc/deallocations by */
-        char * buf32k;         /* caching one entry of these data structures */
+    struct { /* reduce a lot of alloc/deallocations by caching these: */
+	int * volatile locked;
+        struct zzip_file * volatile fp;  
+        char * volatile buf32k; 
     } cache;
     struct zzip_dir_hdr * hdr0;  /* zfi; */
     struct zzip_dir_hdr * hdr;   /* zdp; directory pointer, for dirent stuff */
@@ -78,17 +83,8 @@ zzip_dir_fdopen_ext_io(int fd, zzip_error_t * errorcode_p,
 ZZIP_DIR* /*depracated*/
 zzip_dir_alloc_ext_io (zzip_strings_t* ext, const zzip_plugin_io_t io);
 
-/* get 16/32 bits from little-endian zip-file to host byteorder */
-uint32_t __zzip_get32(unsigned char * s);
-uint16_t __zzip_get16(unsigned char * s);
-
-#ifdef __i386__
-#define ZZIP_GET32(x) (*(uint32_t*)(x))
-#define ZZIP_GET16(x) (*(uint16_t*)(x))
-#else
-#define ZZIP_GET32(x) (__zzip_get32(x))
-#define ZZIP_GET16(x) (__zzip_get16(x))
+#ifdef __cplusplus
+}
 #endif
-
 #endif /* _ZZIP_H */
 

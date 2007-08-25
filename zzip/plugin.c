@@ -1,14 +1,14 @@
 /*
  * Author: 
  *	Guido Draheim <guidod@gmx.de>
- *      Mike Nordell <tamlin@algonet.se>
+ *      Mike Nordell <tamlin-@-algonet-se>
  *
- *	Copyright (c) 2002 Guido Draheim
+ * Copyright (c) 2002,2003 Guido Draheim
  * 	    All rights reserved,
  *	    use under the restrictions of the
  *	    Lesser GNU General Public License
- *          note the additional license information 
- *          that can be found in COPYING.ZZIP
+ *          or alternatively the restrictions 
+ *          of the Mozilla Public License 1.1
  */
 
 #include <zzip/lib.h>
@@ -33,7 +33,7 @@ zzip_filesize(int fd)
   if (fstat(fd, &st) < 0)
     return -1;
 
-# ifdef DEBUG 
+# if defined DEBUG && ! defined _WIN32
   if (! st.st_size && st.st_blocks > 1) /* seen on some darwin 10.1 machines */
       fprintf(stderr, "broken fstat(2) ?? st_size=%ld st_blocks=%ld\n", 
 	      (long) st.st_size, (long) st.st_blocks);
@@ -42,26 +42,15 @@ zzip_filesize(int fd)
   return st.st_size;
 }
 
-#if defined ZZIP_WRAPWRAP
-int		zzip_wrap_read(int fd, void* p, unsigned int len)
-				{ return _zzip_read (fd, p, len); }
-zzip_off_t	zzip_wrap_lseek(int fd, zzip_off_t offset, int whence)
-				{ return _zzip_lseek (fd, offset, whence); }
-#else
-#define zzip_wrap_read  _zzip_read
-#define zzip_wrap_lseek _zzip_lseek
-#endif
-
 static const struct zzip_plugin_io default_io =
 {
     &open,
     &close,
-    /* (int (*)(int, void*, unsigned)) */
-    &zzip_wrap_read,
-    /* (zzip_off_t (*)(int, zzip_off_t, int)) */
-    &zzip_wrap_lseek,
+    &_zzip_read,
+    &_zzip_lseek,
     &zzip_filesize,
-    1
+    1, 1,
+    &_zzip_write
 };
 
 /** => zzip_init_io
@@ -71,20 +60,20 @@ static const struct zzip_plugin_io default_io =
 zzip_plugin_io_t
 zzip_get_default_io()
 {
-    return &default_io;
+    return (zzip_plugin_io_t) &default_io;
 }
 
 /**
  * This function initializes the users handler struct to default values 
  * being the posix io functions in default configured environments.
  */
-int zzip_init_io(struct zzip_plugin_io* io, int flags)
+int zzip_init_io(zzip_plugin_io_handlers_t io, int flags)
 {
-    if (!io) {
+    if (! io) {
         return ZZIP_ERROR;
     }
     memcpy(io, &default_io, sizeof(default_io));
-    io->use_mmap = flags;
+    io->fd.sys = flags;
     return 0;
 }
 
