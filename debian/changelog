@@ -1,3 +1,13 @@
+zziplib (0.13.49-3) unstable; urgency=low
+
+  * Fixed SIGSEGV on hppa, ia64, sparc, closes: #443880.
+    Patch by brian m. carlson <sandals@crustytoothpaste.ath.cx>
+    Patch: 01-zip.c.patch
+  * Fixed FTBFS if build twice in a row, closes: #442779.
+  * Build-depends on quilt
+
+ -- Anibal Monsalve Salazar <anibal@debian.org>  Wed, 07 Nov 2007 17:43:35 +1100
+
 zziplib (0.13.49-2) unstable; urgency=low
 
   * debian/rules: added configure option --datadir, closes: #439395.

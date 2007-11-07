@@ -6,6 +6,7 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
+include /usr/share/quilt/quilt.make
 
 # These are used for cross-compiling and for saving the configure script
 # from having to guess our platform (since we know it already)
@@ -46,7 +47,7 @@ configure-stamp:
 
 	touch configure-stamp
 
-build: build-stamp
+build: patch build-stamp
 build-stamp: configure-stamp
 	dh_testdir
 
@@ -55,11 +56,11 @@ build-stamp: configure-stamp
 
 	touch build-stamp
 
-clean:
+clean: unpatch
 	dh_testdir
 	dh_testroot
 	rm -f configure-stamp build-stamp 
-	rm -f config.sub config.guess zziplib/config.sub zziplib/config.guess
+	rm -f config.sub config.guess zziplib/config.sub zziplib/config.guess docs/zzipdoc/*.pyc
 	[ ! -f Makefile ] || $(MAKE) distclean
 	dh_clean 
 
