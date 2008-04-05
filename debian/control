@@ -3,7 +3,8 @@ Section: libs
 Priority: optional
 Maintainer: Anibal Monsalve Salazar <anibal@debian.org>
 Build-Depends: debhelper (>= 5), autotools-dev, pkg-config, zlib1g-dev, python, quilt
-Standards-Version: 3.7.2
+Standards-Version: 3.7.3
+Homepage: http://zziplib.sourceforge.net
 
 Package: zziplib-bin
 Section: utils
@@ -18,9 +19,6 @@ Description: library providing read access on ZIP-archives - binaries
  .
  This package contains some useful binaries to extract data from zip
  archives.
- .
-  Author: Guido Draheim <guidod@gmx.de>
-  Homepage: http://zziplib.sourceforge.net
 
 Package: libzzip-0-13
 Section: libs
@@ -36,9 +34,6 @@ Description: library providing read access on ZIP-archives - library
  with the zlib algorithm which is actually used by the zip/unzip tools.
  .
  This package contains the zziplib runtime library.
- .
-  Author: Guido Draheim <guidod@gmx.de>
-  Homepage: http://zziplib.sourceforge.net
 
 Package: libzzip-dev
 Section: libdevel
@@ -53,7 +48,3 @@ Description: library providing read access on ZIP-archives - development
  .
  This package contains the header files and static library needed to
  compile applications that use zziplib.
- .
-  Author: Guido Draheim <guidod@gmx.de>
-  Homepage: http://zziplib.sourceforge.net
-

@@ -1,3 +1,20 @@
+zziplib (0.13.49-4) unstable; urgency=low
+
+  * NMU acknowledgement. Closes: #443880 
+  * Fixed the following lintian issues:
+    - zziplib source: out-of-date-standards-version 3.7.2 (current is 3.7.3)
+    - zziplib: description-contains-homepage
+
+ -- Anibal Monsalve Salazar <anibal@debian.org>  Sun, 06 Apr 2008 08:13:02 +1000
+
+zziplib (0.13.49-3.1) unstable; urgency=low
+
+  * NMU from the Cambridge BSP
+  * Fixed SIGBUS due to alignment problems, closes: #443880.
+    Patch: 01-fetch.patch
+
+ -- Steve McIntyre <93sam@debian.org>  Sat, 05 Apr 2008 17:54:27 +0100
+
 zziplib (0.13.49-3) unstable; urgency=low
 
   * Fixed SIGSEGV on hppa, ia64, sparc, closes: #443880.
