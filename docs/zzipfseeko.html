@@ -1,49 +1,48 @@
 <html><head><title>zziplib Library Functions</title>
 </head><body>
-<h2>zziplib Library Functions</h2><p>Version 0.13.49</p><p><big><b><code>#include &lt;zzip/fseeko.h&gt;</code></b></big></p><table width="100%"><tr><td valign="top"><code><b><code><a href="#zzip_entry_fopen">zzip_entry_fopen</a></code></b>(ZZIP_ENTRY* entry, int takeover)
- : zzip__new__ ZZIP_ENTRY_FILE*
-</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_ffile">zzip_entry_ffile</a></code></b>(FILE* disk, char* filename)
- : zzip__new__ ZZIP_ENTRY_FILE*
-</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_fread">zzip_entry_fread</a></code></b>(void* ptr, zzip_size_t sized, zzip_size_t nmemb,
-		  ZZIP_ENTRY_FILE* file)
+<h2>zziplib Library Functions</h2><p>Version 0.13.50</p><p><big><b><code>#include &lt;zzip/fseeko.h&gt;</code></b></big></p><table width="100%"><tr><td valign="top"><code><b><code><a href="#zzip_entry_fopen">zzip_entry_fopen</a></code></b>(ZZIP_ENTRY * entry, int takeover)
+ : zzip__new__ ZZIP_ENTRY_FILE *
+</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_ffile">zzip_entry_ffile</a></code></b>(FILE * disk, char *filename)
+ : zzip__new__ ZZIP_ENTRY_FILE *
+</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_fread">zzip_entry_fread</a></code></b>(void *ptr, zzip_size_t sized, zzip_size_t nmemb,
+                 ZZIP_ENTRY_FILE * file)
  : zzip_size_t
-</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_fclose">zzip_entry_fclose</a></code></b>(ZZIP_ENTRY_FILE* file)
+</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_fclose">zzip_entry_fclose</a></code></b>(ZZIP_ENTRY_FILE * file)
  : int
-</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_feof">zzip_entry_feof</a></code></b>(ZZIP_ENTRY_FILE* file)
+</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_feof">zzip_entry_feof</a></code></b>(ZZIP_ENTRY_FILE * file)
  : int
-</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_data_offset">zzip_entry_data_offset</a></code></b>(ZZIP_ENTRY* entry)
+</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_data_offset">zzip_entry_data_offset</a></code></b>(ZZIP_ENTRY * entry)
  : zzip_off_t
-</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_fread_file_header">zzip_entry_fread_file_header</a></code></b>(ZZIP_ENTRY* entry, 
-			     struct zzip_file_header* file_header)
+</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_fread_file_header">zzip_entry_fread_file_header</a></code></b>(ZZIP_ENTRY * entry,
+                             struct zzip_file_header *file_header)
  : static zzip_off_t
-</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_strdup_name">zzip_entry_strdup_name</a></code></b>(ZZIP_ENTRY* entry)
- : zzip__new__ char*
-</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_findfile">zzip_entry_findfile</a></code></b>(FILE* disk, char* filename, 
-		    ZZIP_ENTRY* _zzip_restrict entry, 
-		    zzip_strcmp_fn_t compare)
- : zzip__new__ ZZIP_ENTRY*
-</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_findfirst">zzip_entry_findfirst</a></code></b>(FILE* disk)
- : zzip__new__ ZZIP_ENTRY*
-</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_findnext">zzip_entry_findnext</a></code></b>(ZZIP_ENTRY* _zzip_restrict entry)
- : zzip__new__ ZZIP_ENTRY*
-</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_free">zzip_entry_free</a></code></b>(ZZIP_ENTRY* entry)
+</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_strdup_name">zzip_entry_strdup_name</a></code></b>(ZZIP_ENTRY * entry)
+ : zzip__new__ char *
+</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_findfile">zzip_entry_findfile</a></code></b>(FILE * disk, char *filename,
+                    ZZIP_ENTRY * _zzip_restrict entry, zzip_strcmp_fn_t compare)
+ : zzip__new__ ZZIP_ENTRY *
+</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_findfirst">zzip_entry_findfirst</a></code></b>(FILE * disk)
+ : zzip__new__ ZZIP_ENTRY *
+</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_findnext">zzip_entry_findnext</a></code></b>(ZZIP_ENTRY * _zzip_restrict entry)
+ : zzip__new__ ZZIP_ENTRY *
+</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_free">zzip_entry_free</a></code></b>(ZZIP_ENTRY * entry)
  : int
-</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_findmatch">zzip_entry_findmatch</a></code></b>(FILE* disk, char* filespec, 
-		     ZZIP_ENTRY* _zzip_restrict entry,
-		     zzip_fnmatch_fn_t compare, int flags)
- : zzip__new__ ZZIP_ENTRY*
-</code></td></tr></table><h3>Documentation</h3><dl><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_entry_fopen">zzip_entry_fopen</a></b>(ZZIP_ENTRY* entry, int takeover)
- : zzip__new__ ZZIP_ENTRY_FILE*
-</code></td></tr><tr><td valign="top"><code><b><a name="zzip_entry_ffile">zzip_entry_ffile</a></b>(FILE* disk, char* filename)
- : zzip__new__ ZZIP_ENTRY_FILE*
-</code></td></tr><tr><td valign="top"><code><b><a name="zzip_entry_fread">zzip_entry_fread</a></b>(void* ptr, zzip_size_t sized, zzip_size_t nmemb,
-		  ZZIP_ENTRY_FILE* file)
+</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_entry_findmatch">zzip_entry_findmatch</a></code></b>(FILE * disk, char *filespec,
+                     ZZIP_ENTRY * _zzip_restrict entry,
+                     zzip_fnmatch_fn_t compare, int flags)
+ : zzip__new__ ZZIP_ENTRY *
+</code></td></tr></table><h3>Documentation</h3><dl><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_entry_fopen">zzip_entry_fopen</a></b>(ZZIP_ENTRY * entry, int takeover)
+ : zzip__new__ ZZIP_ENTRY_FILE *
+</code></td></tr><tr><td valign="top"><code><b><a name="zzip_entry_ffile">zzip_entry_ffile</a></b>(FILE * disk, char *filename)
+ : zzip__new__ ZZIP_ENTRY_FILE *
+</code></td></tr><tr><td valign="top"><code><b><a name="zzip_entry_fread">zzip_entry_fread</a></b>(void *ptr, zzip_size_t sized, zzip_size_t nmemb,
+                 ZZIP_ENTRY_FILE * file)
  : zzip_size_t
-</code></td></tr><tr><td valign="top"><code><b><a name="zzip_entry_fclose">zzip_entry_fclose</a></b>(ZZIP_ENTRY_FILE* file)
+</code></td></tr><tr><td valign="top"><code><b><a name="zzip_entry_fclose">zzip_entry_fclose</a></b>(ZZIP_ENTRY_FILE * file)
  : int
-</code></td></tr><tr><td valign="top"><code><b><a name="zzip_entry_feof">zzip_entry_feof</a></b>(ZZIP_ENTRY_FILE* file)
+</code></td></tr><tr><td valign="top"><code><b><a name="zzip_entry_feof">zzip_entry_feof</a></b>(ZZIP_ENTRY_FILE * file)
  : int
-</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> open a file within a zip disk for reading</em> </td><td align="right"> <em><small>zzip/fseeko.c</small></em></td></table><p>
+</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> open a file within a zip disk for reading</em> </td><td align="right"> <em><small>/vol/8/src/cvs/zzip-0/zzip/fseeko.c</small></em></td></table><p>
   The <code>zzip_entry_fopen</code> function does take an "entry" argument and copies it (or just takes
   it over as owner) to a new ZZIP_ENTRY_FILE handle structure. That
   structure contains also a zlib buffer for decoding. The <code>zzip_entry_fopen</code> function does
@@ -73,14 +72,14 @@
   Actually, if we found an error but we did already reach eof then we
   just keep on saying that it was an eof, so the app can just continue.
 </p>
-</td></tr></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_entry_data_offset">zzip_entry_data_offset</a></b>(ZZIP_ENTRY* entry)
+</td></tr></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_entry_data_offset">zzip_entry_data_offset</a></b>(ZZIP_ENTRY * entry)
  : zzip_off_t
-</code></td></tr><tr><td valign="top"><code><b><a name="zzip_entry_fread_file_header">zzip_entry_fread_file_header</a></b>(ZZIP_ENTRY* entry, 
-			     struct zzip_file_header* file_header)
+</code></td></tr><tr><td valign="top"><code><b><a name="zzip_entry_fread_file_header">zzip_entry_fread_file_header</a></b>(ZZIP_ENTRY * entry,
+                             struct zzip_file_header *file_header)
  : static zzip_off_t
-</code></td></tr><tr><td valign="top"><code><b><a name="zzip_entry_strdup_name">zzip_entry_strdup_name</a></b>(ZZIP_ENTRY* entry)
- : zzip__new__ char*
-</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> helper functions for (fseeko) zip access api</em> </td><td align="right"> <em><small>zzip/fseeko.c</small></em></td></table><p>
+</code></td></tr><tr><td valign="top"><code><b><a name="zzip_entry_strdup_name">zzip_entry_strdup_name</a></b>(ZZIP_ENTRY * entry)
+ : zzip__new__ char *
+</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> helper functions for (fseeko) zip access api</em> </td><td align="right"> <em><small>/vol/8/src/cvs/zzip-0/zzip/fseeko.c</small></em></td></table><p>
   The <code>zzip_entry_data_offset</code> functions returns the seekval offset of the data portion of the
   file referenced by the given zzip_entry. It requires an intermediate
   check of the file_header structure (i.e. it reads it from disk). After 
@@ -99,21 +98,20 @@
   in the zip central directory but if not then we fallback to the filename
   given in the file_header of each compressed data portion.
 </p>
-</td></tr></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_entry_findfile">zzip_entry_findfile</a></b>(FILE* disk, char* filename, 
-		    ZZIP_ENTRY* _zzip_restrict entry, 
-		    zzip_strcmp_fn_t compare)
- : zzip__new__ ZZIP_ENTRY*
-</code></td></tr><tr><td valign="top"><code><b><a name="zzip_entry_findfirst">zzip_entry_findfirst</a></b>(FILE* disk)
- : zzip__new__ ZZIP_ENTRY*
-</code></td></tr><tr><td valign="top"><code><b><a name="zzip_entry_findnext">zzip_entry_findnext</a></b>(ZZIP_ENTRY* _zzip_restrict entry)
- : zzip__new__ ZZIP_ENTRY*
-</code></td></tr><tr><td valign="top"><code><b><a name="zzip_entry_free">zzip_entry_free</a></b>(ZZIP_ENTRY* entry)
+</td></tr></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_entry_findfile">zzip_entry_findfile</a></b>(FILE * disk, char *filename,
+                    ZZIP_ENTRY * _zzip_restrict entry, zzip_strcmp_fn_t compare)
+ : zzip__new__ ZZIP_ENTRY *
+</code></td></tr><tr><td valign="top"><code><b><a name="zzip_entry_findfirst">zzip_entry_findfirst</a></b>(FILE * disk)
+ : zzip__new__ ZZIP_ENTRY *
+</code></td></tr><tr><td valign="top"><code><b><a name="zzip_entry_findnext">zzip_entry_findnext</a></b>(ZZIP_ENTRY * _zzip_restrict entry)
+ : zzip__new__ ZZIP_ENTRY *
+</code></td></tr><tr><td valign="top"><code><b><a name="zzip_entry_free">zzip_entry_free</a></b>(ZZIP_ENTRY * entry)
  : int
-</code></td></tr><tr><td valign="top"><code><b><a name="zzip_entry_findmatch">zzip_entry_findmatch</a></b>(FILE* disk, char* filespec, 
-		     ZZIP_ENTRY* _zzip_restrict entry,
-		     zzip_fnmatch_fn_t compare, int flags)
- : zzip__new__ ZZIP_ENTRY*
-</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> search for files in the (fseeko) zip central directory</em> </td><td align="right"> <em><small>zzip/fseeko.c</small></em></td></table><p>
+</code></td></tr><tr><td valign="top"><code><b><a name="zzip_entry_findmatch">zzip_entry_findmatch</a></b>(FILE * disk, char *filespec,
+                     ZZIP_ENTRY * _zzip_restrict entry,
+                     zzip_fnmatch_fn_t compare, int flags)
+ : zzip__new__ ZZIP_ENTRY *
+</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> search for files in the (fseeko) zip central directory</em> </td><td align="right"> <em><small>/vol/8/src/cvs/zzip-0/zzip/fseeko.c</small></em></td></table><p>
   The <code>zzip_entry_findfile</code> function is given a filename as an additional argument, to find the 
   disk_entry matching a given filename. The compare-function is usually 
   strcmp or strcasecmp or perhaps strcoll, if null then strcmp is used. 

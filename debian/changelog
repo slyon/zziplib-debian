@@ -1,3 +1,14 @@
+zziplib (0.13.50-1) unstable; urgency=low
+
+  * New upstream version 
+    - Update 01-fetch.patch
+  * debhelper compat version is 7
+  * Standards version is 3.8.1
+  * Run dh_prep instead of dh_clean -k
+  * Add debian/watch
+
+ -- Anibal Monsalve Salazar <anibal@debian.org>  Mon, 23 Mar 2009 21:13:57 +1100
+
 zziplib (0.13.49-4) unstable; urgency=low
 
   * NMU acknowledgement. Closes: #443880 

@@ -1,7 +1,7 @@
 %define lib   lib010
 Summary:      ZZipLib - libZ-based ZIP-access Library
 Name:         zziplib
-Version:      0.13.49
+Version:      0.13.50
 Release:      1
 License:      LGPL
 Group:        Development/Libraries
@@ -36,6 +36,8 @@ Provides:     libzzip-0.so.10
 %package doc
 Summary:      ZZipLib - Documentation Files
 Group:        Development/Libraries
+BuildRequires: python
+BuildRequires: xmlto
 
 %package devel
 Summary:      ZZipLib - Development Files
@@ -72,9 +74,15 @@ Requires:     zziplib-%lib = %version
 #'
 %setup
 # fixing relink problems during install too
-LDFLAGS="-L%buildroot%_libdir" \
+# LDFLAGS="-L%buildroot%_libdir" \
+#
+
 CFLAGS="$RPM_OPT_FLAGS" \
-sh configure --prefix=%{_prefix} --with-docdir=%{_docdir} --mandir=%{_mandir} \
+sh configure --prefix=%{_prefix} \
+             --with-docdir=%{_docdir} \
+             --mandir=%{_mandir} \
+             --bindir=%{_bindir} \
+             --libdir=%{_libdir} \
              --enable-sdl  TIMEOUT=9
 make zzip64-setup
 

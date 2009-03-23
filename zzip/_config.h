@@ -171,7 +171,7 @@
 
 /* The number of bytes in type long */
 #ifndef ZZIP_SIZEOF_LONG 
-#define ZZIP_SIZEOF_LONG  4 
+#define ZZIP_SIZEOF_LONG  8 
 #endif
 
 /* The number of bytes in type short */
@@ -186,7 +186,7 @@
 
 /* Version number of package */
 #ifndef ZZIP_VERSION 
-#define ZZIP_VERSION  "0.13.49" 
+#define ZZIP_VERSION  "0.13.50" 
 #endif
 
 /* Define to 1 if your processor stores words with the most significant byte
@@ -194,9 +194,7 @@
 /* #undef WORDS_BIGENDIAN */
 
 /* Number of bits in a file offset, on hosts where this is settable. */
-#ifndef ZZIP__FILE_OFFSET_BITS 
-#define ZZIP__FILE_OFFSET_BITS  64 
-#endif
+/* #undef _FILE_OFFSET_BITS */
 
 /* Define for large files, on AIX-style hosts. */
 /* #undef _LARGE_FILES */
