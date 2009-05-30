@@ -6,8 +6,6 @@
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 
-include /usr/share/quilt/quilt.make
-
 # These are used for cross-compiling and for saving the configure script
 # from having to guess our platform (since we know it already)
 DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
@@ -47,7 +45,7 @@ configure-stamp:
 
 	touch configure-stamp
 
-build: patch build-stamp
+build: build-stamp
 build-stamp: configure-stamp
 	dh_testdir
 
@@ -56,7 +54,7 @@ build-stamp: configure-stamp
 
 	touch build-stamp
 
-clean: unpatch
+clean: 
 	dh_testdir
 	dh_testroot
 	rm -f configure-stamp build-stamp 
@@ -76,14 +74,12 @@ install: build
 	# Move all files in their corresponding package
 	dh_install --list-missing -s --sourcedir=debian/tmp
 
-	cd $(CURDIR)/debian/libzzip-dev/usr/share/man/man3/ \
-		&& ar x $(CURDIR)/docs/zziplib-manpages.ar
+	cd $(CURDIR)/debian/libzzip-dev/usr/share/man/ \
+		&& tar xf $(CURDIR)/docs/zziplib-manpages.tar
 
-#	cd $(CURDIR)/debian/libzzip-dev/usr/share/doc/libzzip-dev/html/ \
-#		&& ar x $(CURDIR)/docs/htmpages.ar \
-#		&& rm written.lst
-	
-	
+	cd $(CURDIR)/debian/libzzip-dev/usr/share/man/man3/ \
+		&& patch -p1 < $(CURDIR)/debian/man3.patch
+
 # Build architecture-independent files here.
 binary-indep: build install
 # We have nothing to do by default.

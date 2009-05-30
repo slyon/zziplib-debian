@@ -54,12 +54,16 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_compile_check_sizeof.m4 \
 	$(top_srcdir)/m4/ax_expand_prefix.m4 \
 	$(top_srcdir)/m4/ax_maintainer_mode_auto_silent.m4 \
 	$(top_srcdir)/m4/ax_not_enable_frame_pointer.m4 \
+	$(top_srcdir)/m4/ax_pax_tar.m4 \
 	$(top_srcdir)/m4/ax_prefix_config_h.m4 \
 	$(top_srcdir)/m4/ax_set_version_info.m4 \
 	$(top_srcdir)/m4/ax_spec_file.m4 \
 	$(top_srcdir)/m4/ax_spec_package_version.m4 \
 	$(top_srcdir)/m4/ax_warning_default_aclocaldir.m4 \
 	$(top_srcdir)/m4/ax_warning_default_pkgconfig.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 \
 	$(top_srcdir)/m4/patch_libtool_on_darwin_zsh_overquoting.m4 \
 	$(top_srcdir)/m4/patch_libtool_sys_lib_search_path_spec.m4 \
 	$(top_srcdir)/m4/patch_libtool_to_add_host_cc.m4 \
@@ -69,12 +73,10 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(SHELL) $(top_srcdir)/uses/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-am_zzcatsdl_OBJECTS = SDL_rwops_zzcat.$(OBJEXT)
+am_zzcatsdl_OBJECTS = SDL_rwops_zzcat.$(OBJEXT) \
+	SDL_rwops_zzip.$(OBJEXT)
 zzcatsdl_OBJECTS = $(am_zzcatsdl_OBJECTS)
 zzcatsdl_LDADD = $(LDADD)
-zzcatsdl_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(zzcatsdl_LDFLAGS) \
-	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/uses/depcomp
 am__depfiles_maybe = depfiles
@@ -95,9 +97,10 @@ am__vpath_adj = case $$p in \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(sdldir)" "$(DESTDIR)$(pkgconfigdir)"
-sdlDATA_INSTALL = $(INSTALL_DATA)
-DATA = $(sdl_DATA)
+am__installdirs = "$(DESTDIR)$(zzipsdldir)" \
+	"$(DESTDIR)$(pkgconfigdir)"
+zzipsdlDATA_INSTALL = $(INSTALL_DATA)
+DATA = $(zzipsdl_DATA)
 pkgconfigHEADERS_INSTALL = $(INSTALL_HEADER)
 HEADERS = $(pkgconfig_HEADERS)
 ETAGS = etags
@@ -113,47 +116,49 @@ AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
-CFLAGS = @CFLAGS@
+CFLAGS = -I$(srcdir) $(ZZIP_CFLAGS) $(SDL_CFLAGS)
 CONFIG_FILES = @CONFIG_FILES@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
-CXX = @CXX@
-CXXCPP = @CXXCPP@
-CXXDEPMODE = @CXXDEPMODE@
-CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DLLTOOL = @DLLTOOL@
 DSYMUTIL = @DSYMUTIL@
-ECHO = @ECHO@
+DUMPBIN = @DUMPBIN@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
-F77 = @F77@
-FFLAGS = @FFLAGS@
+FGREP = @FGREP@
+GNUTAR = @GNUTAR@
 GREP = @GREP@
+GTAR = @GTAR@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LARGEFILE_CFLAGS = @LARGEFILE_CFLAGS@
+LD = @LD@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
-LIBS = @LIBS@
+LIBS = $(ZZIP_LIBS) $(SDL_LIBS)
 LIBTOOL = @LIBTOOL@
+LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
 MKZIP = @MKZIP@
+NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
+OTOOL = @OTOOL@
+OTOOL64 = @OTOOL64@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
@@ -161,6 +166,9 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PAX = @PAX@
+PAX_TAR_CREATE = @PAX_TAR_CREATE@
+PAX_TAR_EXTRACT = @PAX_TAR_EXTRACT@
 PERL = @PERL@
 PKG_CONFIG = @PKG_CONFIG@
 PYTHON = @PYTHON@
@@ -172,6 +180,7 @@ SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+TAR = @TAR@
 THREAD_SAFE = @THREAD_SAFE@
 VERSION = @VERSION@
 VERSION_INFO = @VERSION_INFO@
@@ -186,8 +195,7 @@ abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_ct_CC = @ac_ct_CC@
-ac_ct_CXX = @ac_ct_CXX@
-ac_ct_F77 = @ac_ct_F77@
+ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 aclocaldir = @aclocaldir@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
@@ -220,6 +228,7 @@ libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
+lt_ECHO = @lt_ECHO@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
@@ -241,24 +250,21 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
+top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = 1.4 foreign
 AUTOTOOL_VERSION = autoconf-2.52 automake-1.5 libtool-1.4.2
-sdldir = ${pkgdatadir}/SDL
-sdl_DATA = SDL_rwops_zzip.c SDL_rwops_zzip.h
+zzipsdldir = ${includedir}/SDL_rwops_zzip
+zzipsdl_DATA = SDL_rwops_zzip.c SDL_rwops_zzip.h
 EXTRA_DIST = $(sdl_DATA)
-zzcatsdl_SOURCES = SDL_rwops_zzcat.c
-zzcatsdl_LDFLAGS = `sdl-config --libs`   `./zzip-config --libs` 
-zzcatsdl_cflags = `sdl-config --cflags` `./zzip-config --cflags`
-
-### if it wouldn't be for the zzip-config then we could write it like this
-# zzcatsdl_SOURCES = SDL_rwops_zzcat.c SDL_rwops_zzip.c
-# zzcatsdl_LDADD   = `sdl-config --libs`   `zzip-config --libs` 
-# CFLAGS  = `sdl-config --cflags` `zzip-config --cflags`
-###
+zzcatsdl_SOURCES = SDL_rwops_zzcat.c SDL_rwops_zzip.c
+ZZIP_CFLAGS = `PKG_CONFIG_PATH=../zzip; pkg-config zziplib --cflags` 
+ZZIP_LIBS = `PKG_CONFIG_PATH=../zzip; pkg-config zziplib --libs`
+SDL_CFLAGS = `pkg-config sdl --cflags` 
+SDL_LIBS = `pkg-config sdl --libs`
 CLEANFILES = *.pc *.omf
-pkgconfig_HEADERS = zzip-sdl-config.pc zzip-sdl-rwops.pc
+pkgconfig_HEADERS = SDL_rwops_zzip.pc
 ERRNULL = 2>/dev/null
 all: all-am
 
@@ -300,6 +306,9 @@ clean-checkPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
+zzcatsdl$(EXEEXT): $(zzcatsdl_OBJECTS) $(zzcatsdl_DEPENDENCIES) 
+	@rm -f zzcatsdl$(EXEEXT)
+	$(LINK) $(zzcatsdl_OBJECTS) $(zzcatsdl_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -308,6 +317,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SDL_rwops_zzcat.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SDL_rwops_zzip.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -335,22 +345,22 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
-install-sdlDATA: $(sdl_DATA)
+install-zzipsdlDATA: $(zzipsdl_DATA)
 	@$(NORMAL_INSTALL)
-	test -z "$(sdldir)" || $(MKDIR_P) "$(DESTDIR)$(sdldir)"
-	@list='$(sdl_DATA)'; for p in $$list; do \
+	test -z "$(zzipsdldir)" || $(MKDIR_P) "$(DESTDIR)$(zzipsdldir)"
+	@list='$(zzipsdl_DATA)'; for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  f=$(am__strip_dir) \
-	  echo " $(sdlDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(sdldir)/$$f'"; \
-	  $(sdlDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(sdldir)/$$f"; \
+	  echo " $(zzipsdlDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(zzipsdldir)/$$f'"; \
+	  $(zzipsdlDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(zzipsdldir)/$$f"; \
 	done
 
-uninstall-sdlDATA:
+uninstall-zzipsdlDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(sdl_DATA)'; for p in $$list; do \
+	@list='$(zzipsdl_DATA)'; for p in $$list; do \
 	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(sdldir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(sdldir)/$$f"; \
+	  echo " rm -f '$(DESTDIR)$(zzipsdldir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(zzipsdldir)/$$f"; \
 	done
 install-pkgconfigHEADERS: $(pkgconfig_HEADERS)
 	@$(NORMAL_INSTALL)
@@ -448,7 +458,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(DATA) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(sdldir)" "$(DESTDIR)$(pkgconfigdir)"; do \
+	for dir in "$(DESTDIR)$(zzipsdldir)" "$(DESTDIR)$(pkgconfigdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -497,7 +507,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-pkgconfigHEADERS install-sdlDATA
+install-data-am: install-pkgconfigHEADERS install-zzipsdlDATA
 
 install-dvi: install-dvi-am
 
@@ -533,7 +543,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-pkgconfigHEADERS uninstall-sdlDATA
+uninstall-am: uninstall-pkgconfigHEADERS uninstall-zzipsdlDATA
 
 .MAKE: install-am install-strip
 
@@ -546,25 +556,12 @@ uninstall-am: uninstall-pkgconfigHEADERS uninstall-sdlDATA
 	install-exec-am install-html install-html-am install-info \
 	install-info-am install-man install-pdf install-pdf-am \
 	install-pkgconfigHEADERS install-ps install-ps-am \
-	install-sdlDATA install-strip installcheck installcheck-am \
+	install-strip install-zzipsdlDATA installcheck installcheck-am \
 	installdirs maintainer-clean maintainer-clean-generic \
 	mostlyclean mostlyclean-compile mostlyclean-generic \
 	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-pkgconfigHEADERS uninstall-sdlDATA
+	uninstall-am uninstall-pkgconfigHEADERS uninstall-zzipsdlDATA
 
-
-SDL_rwops_zzip.$(OBJEXT) :  zzip-config  @srcdir@/SDL_rwops_zzip.c
-	$(COMPILE) $(zzcatsdl_cflags) -c @srcdir@/SDL_rwops_zzip.c  -o $@ 
-SDL_rwops_zzcat.$(OBJEXT) : zzip-config  @srcdir@/SDL_rwops_zzcat.c
-	$(COMPILE) $(zzcatsdl_cflags) -c @srcdir@/SDL_rwops_zzcat.c -o $@
-zzcatsdl$(EXEEXT): SDL_rwops_zzip.$(OBJEXT) SDL_rwops_zzcat.$(OBJEXT)
-	$(LINK)    SDL_rwops_zzip.$(OBJEXT) SDL_rwops_zzcat.$(OBJEXT) \
-	           $(zzcatsdl_LDFLAGS)  -o $@
-
-zzip-config : ../bins/zzip-config
-	sed -e 's:includedir=.*:includedir=..:' \
-	    -e 's:libdir=.*:libdir=../zzip:'  $? > $@
-	chmod +x $@
 
 test.zip : @top_srcdir@/test/test.zip
 	$(LN_S) $? $@
@@ -574,27 +571,16 @@ testsdl test-sdl : test.zip zzcatsdl$(EXEEXT)
 
 sdl : all
 install-sdl : install-data # and not the binary
-zzip-sdl-config.pc : Makefile
-	@ echo "prefix="`sdl-config --prefix $(ERRNULL)` >$@
-	@ echo "sdl_static_libs="`sdl-config --static-libs $(ERRNULL)` >>$@
-	@ echo "sdl_libs="`sdl-config --libs $(ERRNULL)` >>$@
-	@ echo "sdl_cflags="`sdl-config --cflags $(ERRNULL)` >>$@
-	@ echo " " >>$@
-	@ echo "Name: zzip-sdl-config" >>$@
-	@ echo "Version: "`sdl-config --version $(ERRNULL)` >>$@
-	@ echo "Description: SDL Config (for ZZipLib)" >>$@
-	echo 'Libs: $${sdl_libs}' >>$@
-	echo 'Cflags: $${sdl_cflags}' >>$@
 
-zzip-sdl-rwops.pc : Makefile
-	@ echo 'zzipdatadir=$(pkgdatadir)' >$@
-	@ echo 'zzipsdlrwops=$${zzipdatadir}/SDL' >>$@
+SDL_rwops_zzip.pc : Makefile
+	@ echo 'prefix=$(prefix)' >$@
+	@ echo 'zzipsdldir=$(zzipsdldir)' >>$@
 	@ echo " " >>$@
-	@ echo "Name: zzip-sdl-rwops" >>$@
+	@ echo "Name: SDL_rwops_zzip" >>$@
 	@ echo "Version: $(VERSION)" >>$@
 	@ echo "Description: SDL_rwops for ZZipLib" >>$@
-	echo 'Requires: zzip-sdl-config, zziplib' >>$@
-	echo 'Cflags: -I$${zzipsdlrwops}' >>$@
+	echo 'Requires: sdl, zziplib' >>$@
+	echo 'Cflags: -I$${zzipsdldir}' >>$@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

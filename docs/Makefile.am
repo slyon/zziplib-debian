@@ -24,9 +24,9 @@ EXTRA_DIST = make-doc.py $(doc_FILES) $(htm_FILES) $(SDL_RWOPS) \
              make-doc.pl make-dbk.pl   mksite.sh mksite.pl body.htm \
              $(zzipdoc_FILES) sdocbook.css \
              zziplib-manpages.dbk zziplib-master.dbk \
-             zziplib-manpages.ar 
+             zziplib-manpages.tar
 CLEANFILES = *.pc *.omf
-DISTCLEANFILES = zziplib.spec manpages.ar htmpages.ar *.html *.xml
+DISTCLEANFILES = zziplib.spec manpages.tar htmpages.tar *.html *.xml
 
 zzipdoc_FILES = makedocs.py               zzipdoc/__init__.py \
 	zzipdoc/commentmarkup.py          zzipdoc/match.py    \
@@ -52,27 +52,30 @@ install-data-local : @MAINTAINER_MODE_FALSE@ install-mans
 zziplib.spec : @top_srcdir@/$(PACKAGE).spec
 	@ $(LN_S) $? $@ # the two zzip-doc.* will grep thru zziplib.spec
 doc  : $(doc_FILES) site.html
-docs : doc manpages.ar htmpages.ar
+docs : doc manpages.tar htmpages.tar
 # docu : docs
 docu : 
 	- rm zziplib2.html zzipmmapped.html zzipfseeko.html
-	$(MAKE) manpages.ar htmpages.ar DELETE=exit
+	$(MAKE) manpages.tar htmpages.tar DELETE=exit
 
-zziplib.html zziplib.xml : zziplib.spec $(srcdir)/Makefile.am \
+zziplib.html: zziplib.xml
+zziplib.xml: zziplib.spec $(srcdir)/Makefile.am \
                  $(srcdir)/zzipdoc/*.py \
                  $(srcdir)/makedocs.py @top_srcdir@/zzip/*.c
 	$(PYRUN) $(srcdir)/makedocs.py @top_srcdir@/zzip/*.c $(zziplib) \
                    "--package=$(PACKAGE)" "--version=$(VERSION)" \
                    "--onlymainheader=zzip/lib.h" "--output=zziplib"
 	test -s zziplib.docbook && mv zziplib.docbook zziplib.xml
-zzipmmapped.html zzipmmapped.xml : zziplib.spec $(srcdir)/Makefile.am \
+zzipmmapped.html: zzipmmapped.xml 
+zzipmmapped.xml: zziplib.spec $(srcdir)/Makefile.am \
                  $(srcdir)/zzipdoc/*.py \
                  $(srcdir)/makedocs.py @top_srcdir@/zzip/*.c
 	$(PYRUN) $(srcdir)/makedocs.py @top_srcdir@/zzip/*.c $(zziplib) \
                    "--package=$(PACKAGE)" "--version=$(VERSION)" \
                    "--onlymainheader=zzip/mmapped.h" "--output=zzipmmapped"
 	test -s zzipmmapped.docbook && mv zzipmmapped.docbook zzipmmapped.xml
-zzipfseeko.html zzipfseeko.xml : zziplib.spec $(srcdir)/Makefile.am \
+zzipfseeko.html: zzipfseeko.xml 
+zzipfseeko.xml: zziplib.spec $(srcdir)/Makefile.am \
                  $(srcdir)/zzipdoc/*.py \
                  $(srcdir)/makedocs.py @top_srcdir@/zzip/*.c
 	$(PYRUN) $(srcdir)/makedocs.py @top_srcdir@/zzip/*.c $(zziplib) \
@@ -82,7 +85,6 @@ zzipfseeko.html zzipfseeko.xml : zziplib.spec $(srcdir)/Makefile.am \
 
 omfdir=${datadir}/omf
 pkgomfdir=${omfdir}/${PACKAGE}
-SFNETDIR=/groups/z/zz/zziplib/htdocs
 pkgdocdir=${mandir}/../doc/${PACKAGE}
 bins = @top_srcdir@/bins
 DOCEXAMPLES = $(bins)/zzdir.c $(bins)/zzcat.c \
@@ -90,7 +92,7 @@ DOCEXAMPLES = $(bins)/zzdir.c $(bins)/zzcat.c \
               $(bins)/zzxordir.c $(bins)/zzxorcat.c \
 	      $(bins)/zzxorcopy.c        $(SDL_RWOPS)
 
-install-docs: $(doc_FILES) $(man_FILES) site.html htmpages.ar
+install-docs: $(doc_FILES) $(man_FILES) site.html htmpages.tar
 	$(mkinstalldirs) $(DESTDIR)$(pkgdocdir)
 	$(INSTALL_DATA) $(html_FILES) $(DESTDIR)$(pkgdocdir)
 	for i in $(doc_FILES) $(DOCEXAMPLES) $(changelog) $(srcdir)/README.* \
@@ -98,32 +100,38 @@ install-docs: $(doc_FILES) $(man_FILES) site.html htmpages.ar
 	    $(DESTDIR)$(pkgdocdir) ; done
 	cd $(DESTDIR)$(pkgdocdir) && ln -sf zzip-index.html index.html
 	$(mkinstalldirs) $(DESTDIR)$(pkgdocdir)/man
-	@ echo ar x htmpages.ar '>>>' $(DESTDIR)$(pkgdocdir)/man/ \
-	; test -f htmpages.ar || cd "$srcdir" ; P=`pwd` \
-	; cd $(DESTDIR)$(pkgdocdir)/man && ar x $$P/htmpages.ar
+	@ echo $(PAX_TAR_EXTRACT) htmpages.tar '>>>' $(DESTDIR)$(pkgdocdir)/man/ \
+	; test -f htmpages.tar || cd "$srcdir" \
+	; P=`pwd` ; test -s htmpages.tar || exit 1 \
+	; cd $(DESTDIR)$(pkgdocdir)/man && $(PAX_TAR_EXTRACT) $$P/htmpages.tar \
+	; true
 
 install-doc : install-docs $(PACKAGE)-doc.omf
 	$(mkinstalldirs) $(DESTDIR)$(pkgomfdir)
 	$(INSTALL_DATA) $(PACKAGE)-doc.omf $(DESTDIR)$(pkgomfdir)/
 	- test ".$(DESTDIR)" != "." || scrollkeeper-update
 
-install-sf:
+SOURCEFORGE_GROUP=zziplib
+SOURCEFORGE_HOST=web.sourceforge.net
+SOURCEFORGE_PATH=/home/groups/z/zz/zziplib/htdocs
+www: upload-sourceforge
+upload-sourceforge:
 	$(MAKE) install-docs DESTDIR=/tmp/zziplib-htdocs-$$USER/
-	echo scp ... shell.sf.net:$(pkgdocdir)/ ; sleep 4
+	echo scp ... $(SOURCEFORGE_HOST):$(SOURCEFORGE_PATH)/ ; sleep 4
 	scp -r /tmp/zziplib-htdocs-$$USER/$(pkgdocdir)/* \
-               shell.sf.net:/home/$(SFNETDIR)/
+               $$USER,$(SOURCEFORGE_GROUP)@$(SOURCEFORGE_HOST):$(SOURCEFORGE_PATH)
 	rm -r /tmp/zziplib-htdocs-$$USER/
 
 # ------------------------------------------------------------ package manpages
 mans : manpages
 install-mans : install-man3
 
-man3 man manpages : manpages.ar
-html htm htmpages : htmpages.ar
+man3 man manpages : manpages.tar
+html htm htmpages : htmpages.tar
 
-zziplib-manpages.ar : manpages.ar
+zziplib-manpages.tar : manpages.tar
 	test -s "$@" || test -s "$(srcdir)/$@"
-manpages.ar : zziplib.xml zzipmmapped.xml zzipfseeko.xml
+manpages.tar : zziplib.xml zzipmmapped.xml zzipfseeko.xml
 	: "unix man format of the manpages - goes to ../share/man/man3"
 	@ if test "$(XMLTO)" != ":" \
 	; then echo going to regenerate "$@" in subdir "'"man"'" \
@@ -137,8 +145,8 @@ manpages.ar : zziplib.xml zzipmmapped.xml zzipfseeko.xml
 	;       $(XMLTO) -o man3 man zzipfseeko.xml  \
 	; echo 'chmod 664 man3/*.3' \
 	;       chmod 664 man3/*.3  \
-	; echo 'ar qc "$@" man3/*.3' \
-	;       ar qc "$@" man3/*.3  \
+	; echo '$(PAX_TAR_CREATE) "$@" man3/*.3' \
+	;       $(PAX_TAR_CREATE) "$@" man3/*.3  \
 	; echo '$(DELETE); rm man3/*.3 ; rmdir man3' \
 	;       $(DELETE); rm man3/*.3 ; rmdir man3  \
 	; fi ; true
@@ -147,9 +155,9 @@ manpages.ar : zziplib.xml zzipmmapped.xml zzipfseeko.xml
 	; else echo cp $(srcdir)/zziplib-$@ $@; cp $(srcdir)/zziplib-$@ $@ \
 	; fi
 
-zziplib-htmpages.ar : htmpages.ar
+zziplib-htmpages.tar : htmpages.tar
 	test -s "$@" || test -s "$(srcdir)/$@"
-htmpages.ar : zziplib.xml zzipmmapped.xml zzipfseeko.xml zziplib-manpages.dbk
+htmpages.tar : zziplib.xml zzipmmapped.xml zzipfseeko.xml zziplib-manpages.dbk
 	: "html format of the manpages - put into zziplib/htdocs/man/*"
 	@ if test "$(XMLTO)" != ":" \
 	; then echo going to regenerate "$@" in subdir "'"html"'" \
@@ -159,8 +167,8 @@ htmpages.ar : zziplib.xml zzipmmapped.xml zzipfseeko.xml zziplib-manpages.dbk
 	;       cp $(srcdir)/zziplib-manpages.dbk zziplib-manpages.xml \
 	; echo '$(XMLTO) -o html html zziplib-manpages.xml | tee written.lst' \
 	;       $(XMLTO) -o html html zziplib-manpages.xml | tee written.lst \
-	; echo 'ar qc $@ html/*.*' \
-	;       ar qc $@ html/*.*  \
+	; echo '$(PAX_TAR_CREATE) $@ html/*.*' \
+	;       $(PAX_TAR_CREATE) $@ html/*.*  \
 	; echo '$(DELETE); rm html/*.* ; rmdir html' \
 	;       $(DELETE); rm html/*.* ; rmdir html  \
 	; fi ; true
@@ -169,14 +177,16 @@ htmpages.ar : zziplib.xml zzipmmapped.xml zzipfseeko.xml zziplib-manpages.dbk
 	; else echo cp $(srcdir)/zziplib-$@ $@; cp $(srcdir)/zziplib-$@ $@ \
 	; fi
 
-install-man3 : manpages.ar
+install-man3 : manpages.tar
 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man3
-	P=`pwd` ; cd $(DESTDIR)$(mandir)/man3 \
-        && ar x $$P/manpages.ar
+	P=`pwd` ; test -s manpages.tar || exit 1 \
+	; cd $(DESTDIR)$(mandir)/man3 && $(PAX_TAR_EXTRACT) $$P/manpages.tar \
+        ; true
 
-unpack : manpages.ar htmpages.ar
-	(rm -rf _htm && mkdir _htm && cd _htm && ar x ../htmpages.ar)
-	(rm -rf _man && mkdir _man && cd _man && ar x ../manpages.ar)
+unpack : manpages.tar htmpages.tar
+	test -s manpages.tar && test -s htmpages.tar
+	(rm -rf _htm && mkdir _htm && cd _htm && $(PAX_TAR_EXTRACT) ../htmpages.tar)
+	(rm -rf _man && mkdir _man && cd _man && $(PAX_TAR_EXTRACT) ../manpages.tar)
 clean-unpack : 
 	rm -rf _htm
 	rm -rf _man

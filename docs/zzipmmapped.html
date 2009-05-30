@@ -1,6 +1,6 @@
 <html><head><title>zziplib Library Functions</title>
 </head><body>
-<h2>zziplib Library Functions</h2><p>Version 0.13.50</p><p><big><b><code>#include &lt;zzip/mmapped.h&gt;</code></b></big></p><table width="100%"><tr><td valign="top"><code><b><code><a href="#zzip_disk_entry_to_data">zzip_disk_entry_to_data</a></code></b>(ZZIP_DISK * disk, struct zzip_disk_entry * entry)
+<h2>zziplib Library Functions</h2><p>Version 0.13.54</p><p><big><b><code>#include &lt;zzip/mmapped.h&gt;</code></b></big></p><table width="100%"><tr><td valign="top"><code><b><code><a href="#zzip_disk_entry_to_data">zzip_disk_entry_to_data</a></code></b>(ZZIP_DISK * disk, struct zzip_disk_entry * entry)
  : zzip_byte_t *
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_disk_entry_to_file_header">zzip_disk_entry_to_file_header</a></code></b>(ZZIP_DISK * disk, struct zzip_disk_entry *entry)
  : struct zzip_file_header *
@@ -50,7 +50,7 @@
  : zzip__new__ char *
 </code></td></tr><tr><td valign="top"><code><b><a name="zzip_disk_entry_strdup_comment">zzip_disk_entry_strdup_comment</a></b>(ZZIP_DISK * disk, struct zzip_disk_entry *entry)
  : zzip__new__ char *
-</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> helper functions for (mmapped) zip access api</em> </td><td align="right"> <em><small>/vol/8/src/cvs/zzip-0/zzip/mmapped.c</small></em></td></table><p>
+</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> helper functions for (mmapped) zip access api</em> </td><td align="right"> <em><small>zzip/mmapped.c</small></em></td></table><p>
   The <code>zzip_disk_entry_to_data</code> function augments the other zzip_disk_entry_* helpers: here we move 
   a disk_entry pointer (as returned by _find* functions) into a pointer to
   the data block right after the file_header. Only disk->buffer would be
@@ -79,7 +79,7 @@
                     struct zzip_disk_entry *after,
                     zzip_fnmatch_fn_t compare, int flags)
  : struct zzip_disk_entry *
-</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> search for files in the (mmapped) zip central directory</em> </td><td align="right"> <em><small>/vol/8/src/cvs/zzip-0/zzip/mmapped.c</small></em></td></table><p>
+</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> search for files in the (mmapped) zip central directory</em> </td><td align="right"> <em><small>zzip/mmapped.c</small></em></td></table><p>
   The <code>zzip_disk_findfile</code> function is given a filename as an additional argument, to find the 
   disk_entry matching a given filename. The compare-function is usually 
   strcmp or strcasecmp or perhaps strcoll, if null then strcmp is used. 
@@ -142,7 +142,7 @@
  : int
 </code></td></tr><tr><td valign="top"><code><b><a name="zzip_disk_feof">zzip_disk_feof</a></b>(ZZIP_DISK_FILE * file)
  : int
-</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> openening a file part wrapped within a (mmapped) zip archive</em> </td><td align="right"> <em><small>/vol/8/src/cvs/zzip-0/zzip/mmapped.c</small></em></td></table><p>
+</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> openening a file part wrapped within a (mmapped) zip archive</em> </td><td align="right"> <em><small>zzip/mmapped.c</small></em></td></table><p>
   The <code>zzip_disk_fopen</code> function opens a file found by name, so it does a search into
   the zip central directory with <code><a href="#zzip_disk_findfile">zzip_disk_findfile</a></code> and whatever
   is found first is given to <code><a href="#zzip_disk_entry_fopen">zzip_disk_entry_fopen</a></code>
@@ -183,7 +183,7 @@
  : ZZIP_DISK *zzip__new__
 </code></td></tr><tr><td valign="top"><code><b><a name="zzip_disk_close">zzip_disk_close</a></b>(ZZIP_DISK * disk)
  : int
-</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> turn a filehandle into a mmapped zip disk archive handle</em> </td><td align="right"> <em><small>/vol/8/src/cvs/zzip-0/zzip/mmapped.c</small></em></td></table><p>
+</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> turn a filehandle into a mmapped zip disk archive handle</em> </td><td align="right"> <em><small>zzip/mmapped.c</small></em></td></table><p>
   The <code>zzip_disk_mmap</code> function uses the given file-descriptor to detect the length of the 
   file and calls the system <a href="http://www.opengroup.org/onlinepubs/000095399/functions/mmap.html"><code>mmap(2)</code></a> to put it in main memory. If it is
   successful then a newly allocated ZZIP_DISK* is returned with 

@@ -1,18 +1,88 @@
+2009-05-24 guidod <guidod@gmx.de>
+    * zzip/fetch.c - remove SET/GET fetch definitions that already
+       exist in zzip/fetch.h where they have been corrected lately.
+    * docs/Makefile.am - change from install-sf via shell.sf.net to
+       upload-sourceforge via web.sf.net - and alias to "www" shorthand
+    * docs/referentials.htm - fix typo.
+    * 0.13.54
+
+2009-05-23  guidod  <guidod@gmx.de>
+    * SDL/Makefile.am - remove dependency on zzip-config (and sdl-config)
+       which do not exist any since quite a time - instead use pkg-config
+       > Thanks to Michael Sterret for bringing it up
+    * SDL/SDL_rwops_zzcat.c: the SDL_rwops example was fixed, as the
+         nmemb/size of the sdl-read call were swapped over. The testsdl
+         self check (based on zzcatsdl) works OK.
+    * SDL/Makefile.am - the targe installation paths for the example
+         was fixed to include/SDL_rwops_zzip - additionally there is now
+         an SDL_rwops_zzip.pc pkgconfig script that will refer to the new
+         location (it had been previously installed in include/SDL, ouch).
+    * Note that the old zzip-sdl pkgconfig-files are gone now. Given that the
+         example was not quite working, it is improbable that anyone had
+         been using them in real code, so there's nothing breaking here.
+    * create a new package SDL_rwops-devel in zziplib.spec that will catch
+         the example code, SDL_rwops_zzip includes and SDL_rwops_zzip pkgconfig
+    * append "make check" and "make test-sdl" to zziplib.spec for  minimal
+         pre-installation check.
+    * Makefile.am: fix zzip-postinstall
+    * zziplib.spec: specifiy %version for the Provides:-clauses
+    * configure.ac: do not let autoconfigured LDFLAGS/LIBS bleed into zziplib.pc
+    * zip.c: ensure that the zzip64_trailer entries is being used and that the
+        parse_root_directory function honours the full 64bit in the "entries" counter
+        (rejecting the patch from Tulipánt Gergely which would allow to get away with
+        non-standard zip archives that do use a normal zzip_trailer with a 16bit entries
+        counter that happens to store only the modulo value of the real entries in the
+        archive - zippers should fail beyond 65535 entries or switch to the ZIP64 format).
+     * docs/referentials.htm - include reference to  http://www.ogre3d.org/
+     * zzip/fseeko.c: check some more return values from fseeko/fread calls.
+     * 0.13.53
+
+2009-05-22  guidod  <guidod@gmx.de>
+	* docs/Makefile.am: break a dual target into two lines as
+	   suggested by ticket:2405440
+	* m4/ax_cflags_no_writable_strings.m4 update with sed-call
+	   suggested by ticket:2155649
+	* m4/ax_check_aligned_access_required.m4 update for the cross_compiling
+	   case with libpcap-list of host_cpu targets thare require aligned access
+	   suggested by ticket:2479788
+	* introduce ax_pax_tar.m4 to use *.tar format for manpages.tar (instead of .ar)
+	* 0.13.52
+
+2009-05-21  guidod  <guidod@gmx.de>
+
+	* docs/Makefile.am: make install-docs install-man3 rules so that
+	     a failing "ar x" (on OpenBSD/vax) will not kill the whole
+	     configure / make / make install cycle. However it simply
+	     means that there will be no manpages on such platforms.
+	     May be OpenBSD/vax has a "gar" (gnu ar) installed somewhere?
+	* closes Patches item #2716806, was opened at 2009-03-27 13:01
+	* 0.13.51
+
+2009-05-21 guidod <guidod@gmx.de>
+    * zzip/fetch.h: ensure that either direct-bswap or direc-deref is only used
+               on platforms that do not require aligned memory access. The
+               latest report from Sylvain Beucler has shown an error a MIPS
+               platform (named  http://www.freedink.org/ running on PSP).
+    * zzip/fetch.h: replace _zzip_attribute(const) with defines from zzip/__hints.h
+    * zzip/__hints.h: introduced ZZIP_GNUC_PACKED for __attribute__((packed))
+    * zzip/format.h: replace _zzip_attribute(packed) with defines from zzip/__hints.h
+    * zzip/conf.h: remove _zzip_attribute - not needed anymore.
+
 2008-12-27 guidod <guidod@pc3>
     * ax_create_pkgconfig_info needs a definition for datarootdir (introduced
        in latest autoconf/automake making for an error in ogre3d configuration
        as reported by Ignaz Forster)
+	* release 0.13.50
 
 2008-12-24 guidod <guidod@pc3>
 	* add the dir-zzip-* to the cvs repo (as used on some webs)
 	* move "make rpm" to *.am (instead of *.mk)
 	* amd64 should be in libdir=$prefix/lib64 (in the spec file)
-	* release 0.13.50
 
 2008-11-24 guidod <guidod@pc3>
 	* BuildRequires: python (for %package doc)
 
-	
+
 2008-03-22  guidod  <guidod@pc3>
 
 	* zzip/fetch.h: honor ZZIP_HAVE_ALIGNED_ACCESS_REQUIRED for the Linux bswap

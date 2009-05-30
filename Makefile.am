@@ -15,7 +15,8 @@ indent-check:
 
 doc docs docu clean-doc clean-docs clean-docu   zzip.html zzip.xml zzip.pdf \
 man mans manpages htmpages unpack clean-unpack  changes.htm pdfs \
-omf install-omf install-doc install-docs install-sf install-man3 install-mans :
+omf install-omf install-doc install-docs install-man3 install-mans \
+upload-sourceforge www:
 	(cd docs && $(MAKE) `basename $@`)
 
 sdl testsdl test-sdl install-sdl :
@@ -118,9 +119,9 @@ zzip-postinstall:
 	: "the 12.8x and 11.8x and 10.8x packages are all the same actually"
 	cd $(DESTDIR)$(libdir) || exit 1 \
 	; for i in libzzip*.so.1? ; do : \
-	; v10=`echo $i | sed -e "s/.so.../.so.10/"` \
-	; v11=`echo $i | sed -e "s/.so.../.so.11/"` \
-	; v12=`echo $i | sed -e "s/.so.../.so.12/"` \
-	; test ! -e $v10 && test -e $v12 && ln -s $v12 $v10 \
-	; test ! -e $v12 && test -e $v10 && ln -s $v10 $v12 \
-	; ln -s $v10 $v11 || true; done
+	; v10=`echo $$i | sed -e "s/.so.../.so.10/"` \
+	; v11=`echo $$i | sed -e "s/.so.../.so.11/"` \
+	; v12=`echo $$i | sed -e "s/.so.../.so.12/"` \
+	; test ! -e "$$v10" && test -e "$$v12" && test "$$v10" != "$$v12" && ln -s "$$v12" "$$v10" \
+	; test ! -e "$$v12" && test -e "$$v10" && test "$$v12" != "$$v10" && ln -s "$$v10" "$$v12" \
+	; test "$$v10" != "$$v11" && ln -s "$$v10" "$$v11" || true; done

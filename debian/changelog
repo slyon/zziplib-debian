@@ -1,3 +1,12 @@
+zziplib (0.13.54-1) unstable; urgency=low
+
+  * New Maintainer. Closes: #529561
+  * New Upstream Version. Closes: #530850
+  * Fixed the lintian warnings of manpages.
+  * 01-fetch.patch: dropped as it was merged upstream
+
+ -- LIU Qi <liuqi82@gmail.com>  Sun, 31 May 2009 00:08:56 +0800
+
 zziplib (0.13.50-1) unstable; urgency=low
 
   * New upstream version 
