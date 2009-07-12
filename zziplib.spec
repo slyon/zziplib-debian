@@ -1,7 +1,8 @@
+# norootforbuild
 %define lib   lib010
 Summary:      ZZipLib - libZ-based ZIP-access Library
 Name:         zziplib
-Version:      0.13.54
+Version:      0.13.56
 Release:      1
 License:      LGPL
 Group:        Development/Libraries
@@ -15,6 +16,7 @@ Packager:     Guido Draheim <guidod@gmx.de>
 Requires:      zlib
 BuildRequires: zlib-devel
 BuildRequires: SDL-devel
+BuildRequires: zip
 
 #Begin3
 # Author1:        too@iki.fi (Tomi Ollila)
@@ -38,18 +40,20 @@ Summary:      ZZipLib - Documentation Files
 Group:        Development/Libraries
 BuildRequires: python
 BuildRequires: xmlto
+PreReq: scrollkeeper
 
 %package devel
 Summary:      ZZipLib - Development Files
 Group:        Development/Libraries
 Requires:     zziplib-%lib = %version
-# Requires: pkgconfig (not yet)
+Requires:     pkgconfig
 
 %package SDL_rwops-devel
 Summary:      ZZipLib - Development Files for SDL_rwops
 Group:        Development/Libraries
 Requires:     zziplib-%lib = %version
 Requires:     pkgconfig
+BuildRequires: SDL-devel
 
 %description
  : zziplib provides read access to zipped files in a zip-archive,
@@ -132,8 +136,6 @@ sh configure --prefix=%{_prefix} \
       %{_datadir}/doc/*
 %dir  %{_datadir}/omf/%{name}
       %{_datadir}/omf/%{name}/*
-      %{_datadir}/doc
-      %{_datadir}/omf
 
 %post doc
 test ! -f %_bindir/scrollkeeper-update || %_bindir/scrollkeeper-update

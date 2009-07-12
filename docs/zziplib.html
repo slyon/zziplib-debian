@@ -1,6 +1,6 @@
 <html><head><title>zziplib Library Functions</title>
 </head><body>
-<h2>zziplib Library Functions</h2><p>Version 0.13.54</p><p><big><b><code>#include &lt;zzip/lib.h&gt;</code></b></big></p><table width="100%"><tr><td valign="top"><code><b><code><a href="#zzip_error">zzip_error</a></code></b>(ZZIP_DIR * dir)
+<h2>zziplib Library Functions</h2><p>Version 0.13.56</p><p><big><b><code>#include &lt;zzip/lib.h&gt;</code></b></big></p><table width="100%"><tr><td valign="top"><code><b><code><a href="#zzip_error">zzip_error</a></code></b>(ZZIP_DIR * dir)
  : int
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_seterror">zzip_seterror</a></code></b>(ZZIP_DIR * dir, int errcode)  : void
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_open">zzip_open</a></code></b>(zzip_char_t * filename, int o_flags)
@@ -132,34 +132,9 @@
                     zzip_char_t * filename, int o_flags, int o_modes,
                     zzip_strings_t * ext, zzip_plugin_io_t io)
  : ZZIP_FILE *
-</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>                                                        </em> </td><td align="right"> <em><small>zzip/file.c</small></em></td></table><p>  The <code>zzip_open</code> function will <a href="http://www.opengroup.org/onlinepubs/000095399/functions/open.html"><code>open(2)</code></a> a real/zipped file
-</p><p>
-  It has some magic functionality builtin - it will first try to open
-  the given <em>filename</em> as a normal file. If it does not
-  exist, the given path to the filename (if any) is split into
-  its directory-part and the file-part. A ".zip" extension is
-  then added to the directory-part to create the name of a
-  zip-archive. That zip-archive (if it exists) is being searched
-  for the file-part, and if found a zzip-handle is returned. 
-</p><p>
-  Note that if the file is found in the normal fs-directory the
-  returned structure is mostly empty and the <code><a href="#zzip_read">zzip_read</a></code> call will
-  use the libc <code><u>read</u></code> to obtain data. Otherwise a <code><a href="#zzip_file_open">zzip_file_open</a></code> 
-  is performed and any error mapped to <a href="http://www.opengroup.org/onlinepubs/000095399/functions/errno.html"><code>errno(3)</code></a>.
-</p><p>
-  There was a possibility to transfer zziplib-specific openmodes
-  through o_flags but you should please not use them anymore and
-  look into <code><a href="#zzip_open_ext_io">zzip_open_ext_io</a></code> to submit them down. The <code>zzip_open</code> function
-  is shallow in that it just extracts the zzipflags and calls 
-</p><ul><li><p> <code>zzip_open_ext_io(filename, o_flags, zzipflags|0664, 0, 0) </code> </p></li>
-</ul><p>  you must stop using this extra functionality (not well known anyway) 
-  since zzip_open might be later usable to open files for writing 
-  in which case the _EXTRAFLAGS will get in conflict.
-</p><p>
-  compare with  <a href="http://www.opengroup.org/onlinepubs/000095399/functions/open.html"><code>open(2)</code></a> and <code><a href="#zzip_fopen">zzip_fopen</a></code>
-</p>
+</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>...</em> </td><td align="right"> <em><small>zzip/file.c</small></em></td></table>
 </td></tr><tr><td valign="top"><p>
-  The <code>zzip_open_ext_io</code> function uses explicit ext and io instead of the internal 
+  The <code>zzip_open_ext_io</code> function uses explicit ext and io instead of the internal
   defaults, setting them to zero is equivalent to <code><a href="#zzip_open">zzip_open</a></code>
 </p><p>
   note that the two flag types have been split into an o_flags
@@ -173,8 +148,8 @@
 </p>
 </td></tr><tr><td valign="top"><p>
   The <code>zzip_open_shared_io</code> function takes an extra stream argument - if a handle has been
-  then ext/io can be left null and the new stream handle will pick up 
-  the ext/io. This should be used only in specific environment however 
+  then ext/io can be left null and the new stream handle will pick up
+  the ext/io. This should be used only in specific environment however
   since <code><a href="#zzip_file_real">zzip_file_real</a></code> does not store any ext-sequence.
 </p><p>
   The benefit for the <code>zzip_open_shared_io</code> function comes in when the old file handle
@@ -183,7 +158,7 @@
   will be shared. It is even quicker, as no check needs to be done
   anymore trying to guess the zip archive place in the filesystem,
   here we just check whether the zip archive's filepath is a prefix
-  part of the filename to be opened. 
+  part of the filename to be opened.
 </p><p>
   Note that the <code>zzip_open_shared_io</code> function is also used by <code><a href="#zzip_freopen">zzip_freopen</a></code> that
   will unshare the old handle, thereby possibly closing the handle.
@@ -299,18 +274,18 @@
   its directory-part and the file-part. A ".zip" extension is
   then added to the directory-part to create the name of a
   zip-archive. That zip-archive (if it exists) is being searched
-  for the file-part, and if found a zzip-handle is returned. 
+  for the file-part, and if found a zzip-handle is returned.
 </p><p>
   Note that if the file is found in the normal fs-directory the
   returned structure is mostly empty and the <code><a href="#zzip_read">zzip_read</a></code> call will
-  use the libc <code><u>read</u></code> to obtain data. Otherwise a <code><a href="#zzip_file_open">zzip_file_open</a></code> 
+  use the libc <code><u>read</u></code> to obtain data. Otherwise a <code><a href="#zzip_file_open">zzip_file_open</a></code>
   is performed and any error mapped to <a href="http://www.opengroup.org/onlinepubs/000095399/functions/errno.html"><code>errno(3)</code></a>.
 </p><p>
   unlike the posix-wrapper <code><a href="#zzip_open">zzip_open</a></code> the mode-argument is
   a string which allows for more freedom to support the extra
   zzip modes called ZZIP_CASEINSENSITIVE and ZZIP_IGNOREPATH.
   Currently, this <code><a href="#zzip_fopen">zzip_fopen</a></code> call will convert the following
-  characters in the mode-string into their corrsponding mode-bits: 
+  characters in the mode-string into their corrsponding mode-bits:
 </p><ul><li><p> <code> "r" : O_RDONLY : </code> read-only </p></li>
 <li><p> <code> "b" : O_BINARY : </code> binary (win32 specific) </p></li>
 <li><p> <code> "f" : O_NOCTTY : </code> no char device (unix) </p></li>
@@ -348,8 +323,8 @@
   the filename matches a zipped file that is incidently in the very
   same zip arch as the old filename wrapped in the stream struct.
 </p><p>
-  That's simply because the zip arch's central directory does not 
-  need to be read again. As an extension for the <code>zzip_freopen</code> function, if the 
+  That's simply because the zip arch's central directory does not
+  need to be read again. As an extension for the <code>zzip_freopen</code> function, if the
   mode-string contains a "q" then the old stream is not closed but
   left untouched, instead it is only given as a hint that a new
   file handle may share/copy the zip arch structures of the old file
@@ -377,16 +352,7 @@
  : zzip_ssize_t
 </code></td></tr><tr><td valign="top"><code><b><a name="zzip_fread">zzip_fread</a></b>(void *ptr, zzip_size_t size, zzip_size_t nmemb, ZZIP_FILE * file)
  : zzip_size_t
-</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>                                                               </em> </td><td align="right"> <em><small>zzip/file.c</small></em></td></table><p>  The <code>zzip_read</code> function will read(2) data from a real/zipped file.
-</p><p>
-  the replacement for <a href="http://www.opengroup.org/onlinepubs/000095399/functions/read.html"><code>read(2)</code></a> will fill the given buffer with bytes from
-  the opened file. It will return the number of bytes read, so if the EOF
-  is encountered you will be prompted with the number of bytes actually read.
-</p><p>
-  If the file-handle is wrapping a stat'able file then it will actually just
-  perform a normal <a href="http://www.opengroup.org/onlinepubs/000095399/functions/read.html"><code>read(2)</code></a>-call, otherwise <code><a href="#zzip_file_read">zzip_file_read</a></code> is called
-  to decompress the data stream and any error is mapped to <a href="http://www.opengroup.org/onlinepubs/000095399/functions/errno.html"><code>errno(3)</code></a>.
-</p>
+</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>...</em> </td><td align="right"> <em><small>zzip/file.c</small></em></td></table>
 </td></tr><tr><td valign="top">
 </td></tr></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_dir_free">zzip_dir_free</a></b>(ZZIP_DIR * dir)
  : int
@@ -401,11 +367,7 @@
  : int
 </code></td></tr><tr><td valign="top"><code><b><a name="zzip_close">zzip_close</a></b>(ZZIP_FILE * fp)
  : int
-</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>                                                             </em> </td><td align="right"> <em><small>zzip/file.c</small></em></td></table><p>  The <code>zzip_fclose</code> function closes the given ZZIP_FILE handle. 
-</p><p>
-  If the ZZIP_FILE wraps a normal stat'fd then it is just that int'fd 
-  that is being closed and the otherwise empty ZZIP_FILE gets freed.
-</p>
+</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>...</em> </td><td align="right"> <em><small>zzip/file.c</small></em></td></table>
 </td></tr><tr><td valign="top">
 </td></tr></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_dir_fdopen">zzip_dir_fdopen</a></b>(int fd, zzip_error_t * errcode_p)
  : ZZIP_DIR *
@@ -446,53 +408,16 @@
 </code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>...</em> </td><td align="right"> <em><small>zzip/file.c</small></em></td></table>
 </td></tr></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_file_read">zzip_file_read</a></b>(ZZIP_FILE * fp, void *buf, zzip_size_t len)
  : zzip_ssize_t
-</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>                                                              </em> </td><td align="right"> <em><small>zzip/file.c</small></em></td></table><p>  The <code>zzip_file_read</code> functions read data from zip-contained file.
-</p><p>
-  It works like <a href="http://www.opengroup.org/onlinepubs/000095399/functions/read.html"><code>read(2)</code></a> and will fill the given buffer with bytes from
-  the opened file. It will return the number of bytes read, so if the <code><u>EOF</u></code>
-  is encountered you will be prompted with the number of bytes actually read.
-</p><p>
-  This is the routines that needs the <code><u>buf32k</u></code> buffer, and it would have
-  need for much more polishing but it does already work quite well.
-</p><p>
-  Note: the 32K buffer is rather big. The original inflate-algorithm
-        required just that but the latest zlib would work just fine with
-        a smaller buffer.
-</p>
+</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>...</em> </td><td align="right"> <em><small>zzip/file.c</small></em></td></table>
 </td></tr></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_rewind">zzip_rewind</a></b>(ZZIP_FILE * fp)
  : int
-</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>                                                                </em> </td><td align="right"> <em><small>zzip/file.c</small></em></td></table><p>  The <code>zzip_rewind</code> function will rewind a real/zipped file. 
-</p><p>
-  It seeks to the beginning of this file's data in the zip, 
-  or the beginning of the file for a stat'fd.
-</p>
+</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>...</em> </td><td align="right"> <em><small>zzip/file.c</small></em></td></table>
 </td></tr></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_seek">zzip_seek</a></b>(ZZIP_FILE * fp, zzip_off_t offset, int whence)
  : zzip_off_t
-</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>  </em> </td><td align="right"> <em><small>zzip/file.c</small></em></td></table><p>  The <code>zzip_seek</code> function will perform a <a href="http://www.opengroup.org/onlinepubs/000095399/functions/lseek.html"><code>lseek(2)</code></a> operation on a real/zipped file
-</p><p>
-  It will try to seek to the offset specified by offset, relative to whence, 
-  which is one of SEEK_SET, SEEK_CUR or SEEK_END.
-</p><p>
-  If the file-handle is wrapping a stat'able file then it will actually just
-  perform a normal <a href="http://www.opengroup.org/onlinepubs/000095399/functions/lseek.html"><code>lseek(2)</code></a>-call. Otherwise the relative offset
-  is calculated, negative offsets are transformed into positive ones
-  by rewinding the file, and then data is read until the offset is
-  reached.  This can make the function terribly slow, but this is
-  how gzio implements it, so I'm not sure there is a better way
-  without using the internals of the algorithm.
-</p>
+</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>...</em> </td><td align="right"> <em><small>zzip/file.c</small></em></td></table>
 </td></tr></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_tell">zzip_tell</a></b>(ZZIP_FILE * fp)
  : zzip_off_t
-</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>                                                                  </em> </td><td align="right"> <em><small>zzip/file.c</small></em></td></table><p>  The <code>zzip_tell</code> function will <a href="http://www.opengroup.org/onlinepubs/000095399/functions/tell.html"><code>tell(2)</code></a> the current position in a real/zipped file
-</p><p>
-  It will return the current offset within the real/zipped file, 
-  measured in uncompressed bytes for the zipped-file case.
-</p><p>
-  If the file-handle is wrapping a stat'able file then it will actually just
-  perform a normal <a href="http://www.opengroup.org/onlinepubs/000095399/functions/tell.html"><code>tell(2)</code></a>-call, otherwise the offset is
-  calculated from the amount of data left and the total uncompressed
-  size;
-</p>
+</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>...</em> </td><td align="right"> <em><small>zzip/file.c</small></em></td></table>
 </td></tr></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_compr_str">zzip_compr_str</a></b>(int compr)
  : zzip_char_t *
 </code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>...</em> </td><td align="right"> <em><small>zzip/info.c</small></em></td></table>

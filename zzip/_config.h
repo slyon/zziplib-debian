@@ -195,7 +195,7 @@
 
 /* Version number of package */
 #ifndef ZZIP_VERSION 
-#define ZZIP_VERSION  "0.13.54" 
+#define ZZIP_VERSION  "0.13.56" 
 #endif
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most

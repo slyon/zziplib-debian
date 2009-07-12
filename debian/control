@@ -3,8 +3,10 @@ Section: libs
 Priority: optional
 Maintainer: LIU Qi <liuqi82@gmail.com>
 Build-Depends: debhelper (>= 7), autotools-dev, pkg-config, zlib1g-dev, python
-Standards-Version: 3.8.1
+Standards-Version: 3.8.2
 Homepage: http://zziplib.sourceforge.net
+Vcs-Browser: http://git.printk.org/?p=liuqi/debian/zziplib.git;a=summary
+Vcs-git: git://git.printk.org/liuqi/debian/zziplib.git
 
 Package: zziplib-bin
 Section: utils

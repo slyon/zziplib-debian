@@ -621,15 +621,6 @@ diff -Nur man3.old/zzip_fclose.3 man3.new/zzip_fclose.3
  .ps +2
  .ft B
  .ne (2v + 1u)
-@@ -167,7 +167,7 @@
- .\" * MAIN CONTENT STARTS HERE *
- .\" -----------------------------------------------------------------
- .SH "Name"
--zzip_fclose, zzip_close \- 
-+zzip_fclose, zzip_close \- \&.\&.\&.
- .SH "Synopsis"
- .sp
- .ft B
 diff -Nur man3.old/__zzip_fetch_disk_trailer.3 man3.new/__zzip_fetch_disk_trailer.3
 --- man3.old/__zzip_fetch_disk_trailer.3	2009-05-24 20:36:32.000000000 +0800
 +++ man3.new/__zzip_fetch_disk_trailer.3	2009-06-07 03:13:42.000000000 +0800
@@ -737,15 +728,6 @@ diff -Nur man3.old/zzip_file_read.3 man3.new/zzip_file_read.3
  .ps +2
  .ft B
  .ne (2v + 1u)
-@@ -167,7 +167,7 @@
- .\" * MAIN CONTENT STARTS HERE *
- .\" -----------------------------------------------------------------
- .SH "Name"
--zzip_file_read \- 
-+zzip_file_read \- \&.\&.\&.
- .SH "Synopsis"
- .sp
- .ft B
 @@ -181,7 +181,8 @@
  .ft
  .fam C
@@ -890,15 +872,6 @@ diff -Nur man3.old/zzip_open.3 man3.new/zzip_open.3
  .ps +2
  .ft B
  .ne (2v + 1u)
-@@ -167,7 +167,7 @@
- .\" * MAIN CONTENT STARTS HERE *
- .\" -----------------------------------------------------------------
- .SH "Name"
--zzip_open, zzip_open_ext_io, zzip_open_shared_io \- 
-+zzip_open, zzip_open_ext_io, zzip_open_shared_io \- \&.\&.\&.
- .SH "Synopsis"
- .sp
- .ft B
 @@ -185,11 +185,17 @@
  .fam
  .fam C
@@ -1005,15 +978,6 @@ diff -Nur man3.old/zzip_read.3 man3.new/zzip_read.3
  .ps +2
  .ft B
  .ne (2v + 1u)
-@@ -167,7 +167,7 @@
- .\" * MAIN CONTENT STARTS HERE *
- .\" -----------------------------------------------------------------
- .SH "Name"
--zzip_read, zzip_fread \- 
-+zzip_read, zzip_fread \- \&.\&.\&.
- .SH "Synopsis"
- .sp
- .ft B
 @@ -185,7 +185,8 @@
  .fam
  .fam C
@@ -1066,15 +1030,6 @@ diff -Nur man3.old/zzip_rewind.3 man3.new/zzip_rewind.3
  .ps +2
  .ft B
  .ne (2v + 1u)
-@@ -167,7 +167,7 @@
- .\" * MAIN CONTENT STARTS HERE *
- .\" -----------------------------------------------------------------
- .SH "Name"
--zzip_rewind \- 
-+zzip_rewind \- \&.\&.\&.
- .SH "Synopsis"
- .sp
- .ft B
 diff -Nur man3.old/zzip_rewinddir.3 man3.new/zzip_rewinddir.3
 --- man3.old/zzip_rewinddir.3	2009-05-24 20:36:32.000000000 +0800
 +++ man3.new/zzip_rewinddir.3	2009-06-07 02:09:12.000000000 +0800
@@ -1126,15 +1081,6 @@ diff -Nur man3.old/zzip_seek.3 man3.new/zzip_seek.3
  .ps +2
  .ft B
  .ne (2v + 1u)
-@@ -167,7 +167,7 @@
- .\" * MAIN CONTENT STARTS HERE *
- .\" -----------------------------------------------------------------
- .SH "Name"
--zzip_seek \- 
-+zzip_seek \- \&.\&.\&.
- .SH "Synopsis"
- .sp
- .ft B
 diff -Nur man3.old/zzip_strerror.3 man3.new/zzip_strerror.3
 --- man3.old/zzip_strerror.3	2009-05-24 20:36:32.000000000 +0800
 +++ man3.new/zzip_strerror.3	2009-06-07 02:09:12.000000000 +0800
@@ -1177,15 +1123,6 @@ diff -Nur man3.old/zzip_tell.3 man3.new/zzip_tell.3
  .ps +2
  .ft B
  .ne (2v + 1u)
-@@ -167,7 +167,7 @@
- .\" * MAIN CONTENT STARTS HERE *
- .\" -----------------------------------------------------------------
- .SH "Name"
--zzip_tell \- 
-+zzip_tell \- \&.\&.\&.
- .SH "Synopsis"
- .sp
- .ft B
 diff -Nur man3.old/__zzip_try_open.3 man3.new/__zzip_try_open.3
 --- man3.old/__zzip_try_open.3	2009-05-24 20:36:32.000000000 +0800
 +++ man3.new/__zzip_try_open.3	2009-06-07 02:25:26.000000000 +0800

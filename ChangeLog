@@ -1,3 +1,42 @@
+2009-06-27  guidod  <guidod@gmx.de>
+
+	* zziplib.spec: 0.13.56 - and make build.opensuse.org happy by
+	   removing the %if/%endif sections. (it seems one buildserver
+	   script understands it while the other don't - and effectivly
+	   all variants fail if it is left in. Hopefully no other platforms
+	   have problems with the additional buildrequires that are put here)
+	* zzip/mmapped.c (zzip_disk_new): malloc(sizof()) was errornously
+	    using a pointer instead of ZZIP_DISK. Not part of libzzip but
+	    of the extra library libzzipmmapped that is in-memory-only.
+	    (problem reported and solution shown by JP Dai [Goldleaf])
+	* configure.ac: disable search for python2.2 (gentoo bug 275247+174189)
+
+2009-06-22  guidod  <guidod@gmx.de>
+    * zziplib.spec: 0.13.55 and integrate patches for build.opensuse.org
+	* zzip/zip.c (__zzip_parse_root_directory): rework parse_directory
+	   to allow for ZZIP_ALLOW_MODULO_ENTRIES version as required for
+	   some cases where more than 65535 entries are packed into a
+	   non-ZIP64 archive. The modulo_entries variant is disabled by
+	   default but the know for the problem space was put into code to
+	   check for two more error conditions and report them in debug mode.
+	   (problem space was described carefully by Tulipánt Gergely and
+	    the provided patch was a good foundation for the ifdef code)
+	* configure.ac: use $can_build_shared from linker-config to allow
+	    build on platforms that do not support a shared library concept
+	    or where it is disabled (the commandline switch overrides it?)
+	    (should fix the SF bug ID 2796485 reported by Giovanni Bechis)
+	* zzip/file.c: errornous usage of currentfp before setting it to
+	   the new fp value in zzip_seek(). In the good case it would seek
+	   on the wrong file and in the bad case it goes off on sigbus/NPE.
+	   The problem occurs only if two+ zips are accessed simultanously.
+	   (problem reported and patch kindly provided by Evgeniy Muhin)
+	* docs/Makefile.am: fixup for newer xmlto may be to generate
+	   a subdirectory "man3" inside of our output directory "man3"
+	   and gard against usage of man3/man3 for the tarball unpacking.
+	   (problem reported by Liu Qi [debian package maintainer])
+	* zzip/__hints.h: add else-part for ZZIP_GNUC_PACKED
+		(makes for problems with MSVC as reported by Denny Kunker)
+
 2009-05-24 guidod <guidod@gmx.de>
     * zzip/fetch.c - remove SET/GET fetch definitions that already
        exist in zzip/fetch.h where they have been corrected lately.

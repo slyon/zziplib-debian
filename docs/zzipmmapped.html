@@ -1,6 +1,6 @@
 <html><head><title>zziplib Library Functions</title>
 </head><body>
-<h2>zziplib Library Functions</h2><p>Version 0.13.54</p><p><big><b><code>#include &lt;zzip/mmapped.h&gt;</code></b></big></p><table width="100%"><tr><td valign="top"><code><b><code><a href="#zzip_disk_entry_to_data">zzip_disk_entry_to_data</a></code></b>(ZZIP_DISK * disk, struct zzip_disk_entry * entry)
+<h2>zziplib Library Functions</h2><p>Version 0.13.56</p><p><big><b><code>#include &lt;zzip/mmapped.h&gt;</code></b></big></p><table width="100%"><tr><td valign="top"><code><b><code><a href="#zzip_disk_entry_to_data">zzip_disk_entry_to_data</a></code></b>(ZZIP_DISK * disk, struct zzip_disk_entry * entry)
  : zzip_byte_t *
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_disk_entry_to_file_header">zzip_disk_entry_to_file_header</a></code></b>(ZZIP_DISK * disk, struct zzip_disk_entry *entry)
  : struct zzip_file_header *
@@ -51,7 +51,7 @@
 </code></td></tr><tr><td valign="top"><code><b><a name="zzip_disk_entry_strdup_comment">zzip_disk_entry_strdup_comment</a></b>(ZZIP_DISK * disk, struct zzip_disk_entry *entry)
  : zzip__new__ char *
 </code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> helper functions for (mmapped) zip access api</em> </td><td align="right"> <em><small>zzip/mmapped.c</small></em></td></table><p>
-  The <code>zzip_disk_entry_to_data</code> function augments the other zzip_disk_entry_* helpers: here we move 
+  The <code>zzip_disk_entry_to_data</code> function augments the other zzip_disk_entry_* helpers: here we move
   a disk_entry pointer (as returned by _find* functions) into a pointer to
   the data block right after the file_header. Only disk->buffer would be
   needed to perform the seek but we check the mmapped range end as well.
@@ -80,36 +80,36 @@
                     zzip_fnmatch_fn_t compare, int flags)
  : struct zzip_disk_entry *
 </code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> search for files in the (mmapped) zip central directory</em> </td><td align="right"> <em><small>zzip/mmapped.c</small></em></td></table><p>
-  The <code>zzip_disk_findfile</code> function is given a filename as an additional argument, to find the 
-  disk_entry matching a given filename. The compare-function is usually 
-  strcmp or strcasecmp or perhaps strcoll, if null then strcmp is used. 
-  - use null as argument for "after"-entry when searching the first 
+  The <code>zzip_disk_findfile</code> function is given a filename as an additional argument, to find the
+  disk_entry matching a given filename. The compare-function is usually
+  strcmp or strcasecmp or perhaps strcoll, if null then strcmp is used.
+  - use null as argument for "after"-entry when searching the first
   matching entry, otherwise the last returned value if you look for other
   entries with a special "compare" function (if null then a doubled search
   is rather useless with this variant of _findfile).
 </p>
 </td></tr><tr><td valign="top"><p>
   The <code>zzip_disk_findfirst</code> function is the first call of all the zip access functions here.
-  It contains the code to find the first entry of the zip central directory. 
+  It contains the code to find the first entry of the zip central directory.
   Here we require the mmapped block to represent a real zip file where the
-  disk_trailer is _last_ in the file area, so that its position would be at 
-  a fixed offset from the end of the file area if not for the comment field 
+  disk_trailer is _last_ in the file area, so that its position would be at
+  a fixed offset from the end of the file area if not for the comment field
   allowed to be of variable length (which needs us to do a little search
-  for the disk_tailer). However, in this simple implementation we disregard 
+  for the disk_tailer). However, in this simple implementation we disregard
   any disk_trailer info telling about multidisk archives, so we just return
   a pointer to the zip central directory.
 </p><p>
-  For an actual means, we are going to search backwards from the end 
-  of the mmaped block looking for the PK-magic signature of a 
+  For an actual means, we are going to search backwards from the end
+  of the mmaped block looking for the PK-magic signature of a
   disk_trailer. If we see one then we check the rootseek value to
   find the first disk_entry of the root central directory. If we find
-  the correct PK-magic signature of a disk_entry over there then we 
+  the correct PK-magic signature of a disk_entry over there then we
   assume we are done and we are going to return a pointer to that label.
 </p><p>
   The return value is a pointer to the first zzip_disk_entry being checked
   to be within the bounds of the file area specified by the arguments. If
-  no disk_trailer was found then null is returned, and likewise we only 
-  accept a disk_trailer with a seekvalue that points to a disk_entry and 
+  no disk_trailer was found then null is returned, and likewise we only
+  accept a disk_trailer with a seekvalue that points to a disk_entry and
   both parts have valid PK-magic parts. Beyond some sanity check we try to
   catch a common brokeness with zip archives that still allows us to find
   the start of the zip central directory.
@@ -127,7 +127,7 @@
   platform has fnmatch available then null-compare will use that one
   and otherwise we fall back to mere strcmp, so if you need fnmatch
   searching then please provide an implementation somewhere else.
-  - use null as argument for "after"-entry when searching the first 
+  - use null as argument for "after"-entry when searching the first
   matching entry, or the last disk_entry return-value to find the
   next entry matching the given filespec.
 </p>
@@ -167,7 +167,7 @@
   and dumps the ZZIP_DISK_FILE* then.
 </p>
 </td></tr><tr><td valign="top"><p>
-  The <code>zzip_disk_feof</code> function allows to distinguish an error from an eof condition. 
+  The <code>zzip_disk_feof</code> function allows to distinguish an error from an eof condition.
   Actually, if we found an error but we did already reach eof then we
   just keep on saying that it was an eof, so the app can just continue.
 </p>
@@ -184,9 +184,9 @@
 </code></td></tr><tr><td valign="top"><code><b><a name="zzip_disk_close">zzip_disk_close</a></b>(ZZIP_DISK * disk)
  : int
 </code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> turn a filehandle into a mmapped zip disk archive handle</em> </td><td align="right"> <em><small>zzip/mmapped.c</small></em></td></table><p>
-  The <code>zzip_disk_mmap</code> function uses the given file-descriptor to detect the length of the 
+  The <code>zzip_disk_mmap</code> function uses the given file-descriptor to detect the length of the
   file and calls the system <a href="http://www.opengroup.org/onlinepubs/000095399/functions/mmap.html"><code>mmap(2)</code></a> to put it in main memory. If it is
-  successful then a newly allocated ZZIP_DISK* is returned with 
+  successful then a newly allocated ZZIP_DISK* is returned with
   disk->buffer pointing to the mapview of the zipdisk content.
 </p>
 </td></tr><tr><td valign="top"><p>  The <code>zzip_disk_init</code> function does primary initialization of a disk-buffer struct.
@@ -197,7 +197,7 @@
   munmap(2) on the buffer area and <a href="http://www.opengroup.org/onlinepubs/000095399/functions/free.html"><code>free(3)</code></a> on the ZZIP_DISK structure.
 </p>
 </td></tr><tr><td valign="top"><p>
-  The <code>zzip_disk_open</code> function opens the given archive by name and turn the filehandle 
+  The <code>zzip_disk_open</code> function opens the given archive by name and turn the filehandle
   to  <code><a href="#zzip_disk_mmap">zzip_disk_mmap</a></code> for bringing it to main memory. If it can not
   be <a href="http://www.opengroup.org/onlinepubs/000095399/functions/mmap.html"><code>mmap(2)</code></a>'ed then we slurp the whole file into a newly <a href="http://www.opengroup.org/onlinepubs/000095399/functions/malloc.html"><code>malloc(2)</code></a>'ed
   memory block. Only if that fails too then we return null. Since handling

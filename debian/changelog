@@ -1,3 +1,13 @@
+zziplib (0.13.56-1) unstable; urgency=low
+
+  * New Upstream Version
+    - update debian/man3.patch
+    - remove msvc8/zip.exe and msvc7/pkzip.exe
+  * Upgrade the standard version to 3.8.2
+  * Add the vcs information to debian/control
+
+ -- LIU Qi <liuqi82@gmail.com>  Sun, 12 Jul 2009 14:37:46 +0800
+
 zziplib (0.13.54-1) unstable; urgency=low
 
   * New Maintainer. Closes: #529561

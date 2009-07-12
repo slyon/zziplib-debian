@@ -12,7 +12,7 @@ suffix=
 
 Name: zzipfseeko
 Description: ZZipLib - libZ-based ZIP-access Library
-Version: 0.13.54
+Version: 0.13.56
 Requires: zzip-zlib-config
 Libs: -L${libdir}  -lzzipfseeko
 Cflags: -I${includedir} 
