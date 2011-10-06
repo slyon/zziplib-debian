@@ -1,3 +1,14 @@
+zziplib (0.13.56-1.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Fix "FTBFS: x86_64-linux-gnu-gcc: error: unrecognized option 
+    '--export-dynamic'": apply patch from Ubuntu / Matthias Klose: 
+    - Pass correct linker option. LP: #832895. Closes: #625064.
+  * Fix "Emptying dependency_libs in .la files": use recipe provided by Neil
+    Williams in the bug report. Closes: #633335
+
+ -- gregor herrmann <gregoa@debian.org>  Thu, 06 Oct 2011 20:07:37 +0200
+
 zziplib (0.13.56-1) unstable; urgency=low
 
   * New Upstream Version

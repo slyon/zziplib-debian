@@ -74,6 +74,9 @@ install: build
 	# Move all files in their corresponding package
 	dh_install --list-missing -s --sourcedir=debian/tmp
 
+	# empty dependency_libs in .la files
+	sed -i "/dependency_libs/ s/'.*'/''/" `find debian/ -name '*.la'`
+
 	cd $(CURDIR)/debian/libzzip-dev/usr/share/man/ \
 		&& tar xf $(CURDIR)/docs/zziplib-manpages.tar
 

@@ -288,7 +288,7 @@ case "$host_os" in
 
     if ".$can_build_shared" = .no
     then ZZIPLIB_LDFLAGS=""
-    else ZZIPLIB_LDFLAGS="--export-dynamic"
+    else ZZIPLIB_LDFLAGS="-Wl,--export-dynamic"
     fi
     RESOLVES=' # '
   ;;
