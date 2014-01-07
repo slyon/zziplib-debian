@@ -1,0 +1,27 @@
+Description:Fix "FTBFS: x86_64-linux-gnu-gcc: error: unrecognized option
+ '--export-dynamic'": apply patch from Ubuntu / Matthias Klose:
+Author: gregor herrmann <gregoa@debian.org>
+Bug-Debian: http://bugs.debian.org/625064
+Bug-Ubuntu: https://bugs.launchpad.net/bugs/832895
+--- zziplib-0.13.56.orig/configure.ac
++++ zziplib-0.13.56/configure.ac
+@@ -288,7 +288,7 @@ case "$host_os" in
+ 
+     if ".$can_build_shared" = .no
+     then ZZIPLIB_LDFLAGS=""
+-    else ZZIPLIB_LDFLAGS="--export-dynamic"
++    else ZZIPLIB_LDFLAGS="-Wl,--export-dynamic"
+     fi
+     RESOLVES=' # '
+   ;;
+--- zziplib-0.13.56.orig/configure
++++ zziplib-0.13.56/configure
+@@ -16179,7 +16179,7 @@ case "$host_os" in
+ 
+     if ".$can_build_shared" = .no
+     then ZZIPLIB_LDFLAGS=""
+-    else ZZIPLIB_LDFLAGS="--export-dynamic"
++    else ZZIPLIB_LDFLAGS="-Wl,--export-dynamic"
+     fi
+     RESOLVES=' # '
+   ;;

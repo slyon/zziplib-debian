@@ -1,3 +1,20 @@
+zziplib (0.13.56-2) unstable; urgency=low
+
+  * Adopting package (Closes: #733144)
+  * use source/format 3.0 (quilt), and separate debian changes into
+    patch "export-dynamic.patch"
+  * simple dh rules
+    - multiarch enabled
+    - use --with autotools-dev (Closes: #717837)
+  * build depend on zip so build checks run
+  * added symbols file
+  * No longer conflict with zziplib-0-12 (no reason to conflict)
+    (Closes: #565982)
+  * Removed unneeded -lz from .pc file (Closes: #471065)
+    - debian/patches/remove_extra_z_linking.patch
+
+ -- Scott Howard <showard@debian.org>  Tue, 07 Jan 2014 13:57:57 -0500
+
 zziplib (0.13.56-1.1) unstable; urgency=low
 
   * Non-maintainer upload.
