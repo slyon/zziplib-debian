@@ -1,8 +1,8 @@
 AUTOMAKE_OPTIONS = 1.4 foreign
 AUTOTOOL_VERSION=autoconf-2.52 automake-1.5 libtool-1.4.2
 
-PYRUN = $(PYDEFS) @PYTHON@ $(PYFLAGS)
-PLRUN = $(PLDEFS) @PERL@   $(PLFLAGS)
+PYRUN = PYTHONDONTWRITEBYTECODE=1 $(PYDEFS) @PYTHON@ $(PYFLAGS)
+PLRUN = PERL_DL_NONLAZY=1         $(PLDEFS) @PERL@   $(PLFLAGS)
 DELETE = echo deleting...
 
 doc_FILES = README.MSVC6 README.SDL COPYING.MPL COPYING.LIB COPYING.ZLIB \
@@ -50,7 +50,7 @@ install-data-local : @MAINTAINER_MODE_FALSE@ install-mans
 
 # -------------------------------------------------------------------
 zziplib.spec : @top_srcdir@/$(PACKAGE).spec
-	@ $(LN_S) $? $@ # the two zzip-doc.* will grep thru zziplib.spec
+	@ cp $? $@ # the two zzip-doc.* will grep thru zziplib.spec
 doc  : $(doc_FILES) site.html
 docs : doc manpages.tar htmpages.tar
 # docu : docs

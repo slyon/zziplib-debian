@@ -1,6 +1,6 @@
 <html><head><title>zziplib Library Functions</title>
 </head><body>
-<h2>zziplib Library Functions</h2><p>Version 0.13.56</p><p><big><b><code>#include &lt;zzip/lib.h&gt;</code></b></big></p><table width="100%"><tr><td valign="top"><code><b><code><a href="#zzip_error">zzip_error</a></code></b>(ZZIP_DIR * dir)
+<h2>zziplib Library Functions</h2><p>Version 0.13.62</p><p><big><b><code>#include &lt;zzip/lib.h&gt;</code></b></big></p><table width="100%"><tr><td valign="top"><code><b><code><a href="#zzip_error">zzip_error</a></code></b>(ZZIP_DIR * dir)
  : int
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_seterror">zzip_seterror</a></code></b>(ZZIP_DIR * dir, int errcode)  : void
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_open">zzip_open</a></code></b>(zzip_char_t * filename, int o_flags)
@@ -25,6 +25,10 @@
  : void *
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_realfd">zzip_realfd</a></code></b>(ZZIP_FILE * fp)
  : int
+</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_tell">zzip_tell</a></code></b>(ZZIP_FILE * fp)
+ : zzip_off_t
+</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_tell32">zzip_tell32</a></code></b>(ZZIP_FILE * fp)
+ : long
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_dir_stat">zzip_dir_stat</a></code></b>(ZZIP_DIR * dir, zzip_char_t * name, ZZIP_STAT * zs, int flags)
  : int
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_file_stat">zzip_file_stat</a></code></b>(ZZIP_FILE * file, ZZIP_STAT * zs)
@@ -44,13 +48,17 @@
  : int
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_init_io">zzip_init_io</a></code></b>(zzip_plugin_io_handlers_t io, int flags)
  : int
-</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_get_default_io">zzip_get_default_io</a></code></b>()
+</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_get_default_io">zzip_get_default_io</a></code></b>(void)
  : zzip_plugin_io_t
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_rewinddir">zzip_rewinddir</a></code></b>(ZZIP_DIR * dir)
  : void
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_telldir">zzip_telldir</a></code></b>(ZZIP_DIR * dir)
  : zzip_off_t
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_seekdir">zzip_seekdir</a></code></b>(ZZIP_DIR * dir, zzip_off_t offset)
+ : void
+</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_telldir32">zzip_telldir32</a></code></b>(ZZIP_DIR * dir)
+ : long
+</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_seekdir32">zzip_seekdir32</a></code></b>(ZZIP_DIR * dir, long offset)
  : void
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_fopen">zzip_fopen</a></code></b>(zzip_char_t * filename, zzip_char_t * mode)
  : ZZIP_FILE *
@@ -60,6 +68,10 @@
  : ZZIP_DIR *
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_dirfd">zzip_dirfd</a></code></b>(ZZIP_DIR * dir)
  : int
+</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_seek">zzip_seek</a></code></b>(ZZIP_FILE * fp, zzip_off_t offset, int whence)
+ : zzip_off_t
+</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_seek32">zzip_seek32</a></code></b>(ZZIP_FILE * fp, long offset, int whence)
+ : long
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_read">zzip_read</a></code></b>(ZZIP_FILE * fp, void *buf, zzip_size_t len)
  : zzip_ssize_t
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_fread">zzip_fread</a></code></b>(void *ptr, zzip_size_t size, zzip_size_t nmemb, ZZIP_FILE * file)
@@ -97,10 +109,6 @@
  : zzip_ssize_t
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_rewind">zzip_rewind</a></code></b>(ZZIP_FILE * fp)
  : int
-</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_seek">zzip_seek</a></code></b>(ZZIP_FILE * fp, zzip_off_t offset, int whence)
- : zzip_off_t
-</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_tell">zzip_tell</a></code></b>(ZZIP_FILE * fp)
- : zzip_off_t
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_compr_str">zzip_compr_str</a></code></b>(int compr)
  : zzip_char_t *
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#__zzip_fetch_disk_trailer">__zzip_fetch_disk_trailer</a></code></b>(int fd, zzip_off_t filesize,
@@ -118,10 +126,8 @@
 </code></td></tr></table><h3>Documentation</h3><dl><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_error">zzip_error</a></b>(ZZIP_DIR * dir)
  : int
 </code></td></tr><tr><td valign="top"><code><b><a name="zzip_seterror">zzip_seterror</a></b>(ZZIP_DIR * dir, int errcode)  : void
-</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> </em> </td><td align="right"> <em><small>zzip/info.c</small></em></td></table><p>   just returns dir->errcode of the ZZIP_DIR handle 
-   see: <code><a href="#zzip_dir_open">zzip_dir_open</a></code>, <code><u>zzip_diropen</u></code>, <code><a href="#zzip_readdir">zzip_readdir</a></code>, <code><a href="#zzip_dir_read">zzip_dir_read</a></code>
-</p>
-</td></tr><tr><td valign="top"><p>   The <code>zzip_seterror</code> function just does dir->errcode = errcode 
+</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>...</em> </td><td align="right"> <em><small>zzip/info.c</small></em></td></table>
+</td></tr><tr><td valign="top"><p>   The <code>zzip_seterror</code> function just does dir->errcode = errcode
 </p>
 </td></tr></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_open">zzip_open</a></b>(zzip_char_t * filename, int o_flags)
  : ZZIP_FILE *
@@ -145,6 +151,9 @@
 </p><p>
   The <code>zzip_open_ext_io</code> function returns a new zzip-handle (use <code><a href="#zzip_close">zzip_close</a></code> to return
   it). On error the <code>zzip_open_ext_io</code> function will return null setting <a href="http://www.opengroup.org/onlinepubs/000095399/functions/errno.html"><code>errno(3)</code></a>.
+</p><p>
+  If any ext_io handlers were used then the referenced structure
+  should be static as the allocated ZZIP_FILE does not copy them.
 </p>
 </td></tr><tr><td valign="top"><p>
   The <code>zzip_open_shared_io</code> function takes an extra stream argument - if a handle has been
@@ -184,8 +193,8 @@
 </code></td></tr><tr><td valign="top"><code><b><a name="zzip_realfd">zzip_realfd</a></b>(ZZIP_FILE * fp)
  : int
 </code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>...</em> </td><td align="right"> <em><small>zzip/info.c</small></em></td></table>
-</td></tr><tr><td valign="top"><p>  The <code>zzip_dir_real</code> function checks if the ZZIP_DIR-handle is wrapping 
-  a real directory or a zip-archive. 
+</td></tr><tr><td valign="top"><p>  The <code>zzip_dir_real</code> function checks if the ZZIP_DIR-handle is wrapping
+  a real directory or a zip-archive.
   Returns 1 for a stat'able directory, and 0 for a handle to zip-archive.
 </p>
 </td></tr><tr><td valign="top"><p>  The <code>zzip_realdir</code> function returns the posix DIR* handle (if one exists).
@@ -196,7 +205,14 @@
   Check before with <code><a href="#zzip_file_real">zzip_file_real</a></code> if the
   the ZZIP_FILE points to a real file.
 </p>
-</td></tr></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_dir_stat">zzip_dir_stat</a></b>(ZZIP_DIR * dir, zzip_char_t * name, ZZIP_STAT * zs, int flags)
+</td></tr></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_tell">zzip_tell</a></b>(ZZIP_FILE * fp)
+ : zzip_off_t
+</code></td></tr><tr><td valign="top"><code><b><a name="zzip_tell32">zzip_tell32</a></b>(ZZIP_FILE * fp)
+ : long
+</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>...</em> </td><td align="right"> <em><small>zzip/file.c</small></em></td></table>
+</td></tr><tr><td valign="top"><p>  The <code>zzip_tell32</code> function is provided for users who can not use any largefile-mode.
+</p>
+</td></tr></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_dir_stat">zzip_dir_stat</a></b>(ZZIP_DIR * dir, zzip_char_t * name, ZZIP_STAT * zs, int flags)
  : int
 </code></td></tr><tr><td valign="top"><code><b><a name="zzip_file_stat">zzip_file_stat</a></b>(ZZIP_FILE * file, ZZIP_STAT * zs)
  : int
@@ -233,6 +249,8 @@
 </code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>...</em> </td><td align="right"> <em><small>zzip/zip.c</small></em></td></table>
 </td></tr><tr><td valign="top"><p>  the <code>zzip_dir_open_ext_io</code> function uses explicit ext and io instead of the internal
   defaults. Setting these to zero is equivalent to <code><a href="#zzip_dir_open">zzip_dir_open</a></code>
+  Note that the referenced ext_io plugin handlers structure must be 
+  static as it is not copied to the returned ZZIP_DIR structure.
 </p>
 </td></tr><tr><td valign="top"><p>  fills the dirent-argument with the values and
   increments the read-pointer of the dir-argument.
@@ -241,17 +259,22 @@
 </p>
 </td></tr></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_init_io">zzip_init_io</a></b>(zzip_plugin_io_handlers_t io, int flags)
  : int
-</code></td></tr><tr><td valign="top"><code><b><a name="zzip_get_default_io">zzip_get_default_io</a></b>()
+</code></td></tr><tr><td valign="top"><code><b><a name="zzip_get_default_io">zzip_get_default_io</a></b>(void)
  : zzip_plugin_io_t
 </code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>...</em> </td><td align="right"> <em><small>zzip/plugin.c</small></em></td></table>
 </td></tr><tr><td valign="top"><p>  The <code>zzip_get_default_io</code> function returns a zzip_plugin_io_t handle to static defaults
-  wrapping the posix io file functions for actual file access.
+  wrapping the posix io file functions for actual file access. The
+  returned structure is shared by all threads in the system.
 </p>
-</td></tr></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_rewinddir">zzip_rewinddir</a></b>(ZZIP_DIR * dir)
+</td></tr></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_rewinddir">zzip_rewinddir</a></b>(ZZIP_DIR * dir)
  : void
 </code></td></tr><tr><td valign="top"><code><b><a name="zzip_telldir">zzip_telldir</a></b>(ZZIP_DIR * dir)
  : zzip_off_t
 </code></td></tr><tr><td valign="top"><code><b><a name="zzip_seekdir">zzip_seekdir</a></b>(ZZIP_DIR * dir, zzip_off_t offset)
+ : void
+</code></td></tr><tr><td valign="top"><code><b><a name="zzip_telldir32">zzip_telldir32</a></b>(ZZIP_DIR * dir)
+ : long
+</code></td></tr><tr><td valign="top"><code><b><a name="zzip_seekdir32">zzip_seekdir32</a></b>(ZZIP_DIR * dir, long offset)
  : void
 </code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> </em> </td><td align="right"> <em><small>zzip/dir.c</small></em></td></table><p>  The <code>zzip_rewinddir</code> function is the equivalent of a <a href="http://www.opengroup.org/onlinepubs/000095399/functions/rewinddir.html"><code>rewinddir(2)</code></a> for a realdir or
   the zipfile in place of a directory. The ZZIP_DIR handle returned from
@@ -262,7 +285,11 @@
 </p>
 </td></tr><tr><td valign="top"><p>  The <code>zzip_seekdir</code> function is the equivalent of <a href="http://www.opengroup.org/onlinepubs/000095399/functions/seekdir.html"><code>seekdir(2)</code></a> for a realdir or zipfile.
 </p>
-</td></tr></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_fopen">zzip_fopen</a></b>(zzip_char_t * filename, zzip_char_t * mode)
+</td></tr><tr><td valign="top"><p>  The <code>zzip_telldir32</code> function is provided for users who can not use any largefile-mode.
+</p>
+</td></tr><tr><td valign="top"><p>  The <code>zzip_seekdir32</code> function is provided for users who can not use any largefile-mode.
+</p>
+</td></tr></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_fopen">zzip_fopen</a></b>(zzip_char_t * filename, zzip_char_t * mode)
  : ZZIP_FILE *
 </code></td></tr><tr><td valign="top"><code><b><a name="zzip_freopen">zzip_freopen</a></b>(zzip_char_t * filename, zzip_char_t * mode, ZZIP_FILE * stream)
  : ZZIP_FILE *
@@ -278,7 +305,7 @@
 </p><p>
   Note that if the file is found in the normal fs-directory the
   returned structure is mostly empty and the <code><a href="#zzip_read">zzip_read</a></code> call will
-  use the libc <code><u>read</u></code> to obtain data. Otherwise a <code><a href="#zzip_file_open">zzip_file_open</a></code>
+  use the libc <a href="http://www.opengroup.org/onlinepubs/000095399/functions/read.html"><code>read(2)</code></a> to obtain data. Otherwise a <code><a href="#zzip_file_open">zzip_file_open</a></code>
   is performed and any error mapped to <a href="http://www.opengroup.org/onlinepubs/000095399/functions/errno.html"><code>errno(3)</code></a>.
 </p><p>
   unlike the posix-wrapper <code><a href="#zzip_open">zzip_open</a></code> the mode-argument is
@@ -337,16 +364,19 @@
  : ZZIP_DIR *
 </code></td></tr><tr><td valign="top"><code><b><a name="zzip_dirfd">zzip_dirfd</a></b>(ZZIP_DIR * dir)
  : int
-</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> </em> </td><td align="right"> <em><small>zzip/info.c</small></em></td></table><p>  The <code>zzip_dirhandle</code> function will just return fp->dir 
-</p><p>
-  If a ZZIP_FILE is contained within a zip-file that one will be a valid
-  pointer, otherwise a NULL is returned and the ZZIP_FILE wraps a real file.
-</p>
-</td></tr><tr><td valign="top"><p>   The <code>zzip_dirfd</code> function will just return dir->fd 
+</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>...</em> </td><td align="right"> <em><small>zzip/info.c</small></em></td></table>
+</td></tr><tr><td valign="top"><p>   The <code>zzip_dirfd</code> function will just return dir->fd
 </p><p>
   If a ZZIP_DIR does point to a zipfile then the file-descriptor of that
-  zipfile is returned, otherwise a NULL is returned and the ZZIP_DIR wraps 
+  zipfile is returned, otherwise a NULL is returned and the ZZIP_DIR wraps
   a real directory DIR (if you have dirent on your system).
+</p>
+</td></tr></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_seek">zzip_seek</a></b>(ZZIP_FILE * fp, zzip_off_t offset, int whence)
+ : zzip_off_t
+</code></td></tr><tr><td valign="top"><code><b><a name="zzip_seek32">zzip_seek32</a></b>(ZZIP_FILE * fp, long offset, int whence)
+ : long
+</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>...</em> </td><td align="right"> <em><small>zzip/file.c</small></em></td></table>
+</td></tr><tr><td valign="top"><p>  The <code>zzip_seek32</code> function is provided for users who can not use any largefile-mode.
 </p>
 </td></tr></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_read">zzip_read</a></b>(ZZIP_FILE * fp, void *buf, zzip_size_t len)
  : zzip_ssize_t
@@ -412,16 +442,10 @@
 </td></tr></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_rewind">zzip_rewind</a></b>(ZZIP_FILE * fp)
  : int
 </code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>...</em> </td><td align="right"> <em><small>zzip/file.c</small></em></td></table>
-</td></tr></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_seek">zzip_seek</a></b>(ZZIP_FILE * fp, zzip_off_t offset, int whence)
- : zzip_off_t
-</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>...</em> </td><td align="right"> <em><small>zzip/file.c</small></em></td></table>
-</td></tr></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_tell">zzip_tell</a></b>(ZZIP_FILE * fp)
- : zzip_off_t
-</code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>...</em> </td><td align="right"> <em><small>zzip/file.c</small></em></td></table>
 </td></tr></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_compr_str">zzip_compr_str</a></b>(int compr)
  : zzip_char_t *
 </code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em>...</em> </td><td align="right"> <em><small>zzip/info.c</small></em></td></table>
-</td></tr></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="__zzip_fetch_disk_trailer">__zzip_fetch_disk_trailer</a></b>(int fd, zzip_off_t filesize,
+</td></tr></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"><tr><td valign="top"><code><b><a name="__zzip_fetch_disk_trailer">__zzip_fetch_disk_trailer</a></b>(int fd, zzip_off_t filesize,
                           struct _disk_trailer *_zzip_restrict trailer,
                           zzip_plugin_io_t io)
  : int

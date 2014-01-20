@@ -6,13 +6,17 @@
 
 override_dh_clean:
 	dh_clean
-	rm -rf Makefile Linux_3.11.0-14-generic_i686.d/ testdata.d/ docs/zzipdoc/*.pyc
+	rm -rf Makefile Linux_*.d/ testdata.d/ docs/zzipdoc/*.pyc
 
 override_dh_install:
-	cd $(CURDIR)/debian/libzzip-dev/usr/share/man/ \
-		&& tar xf $(CURDIR)/docs/zziplib-manpages.tar
-	cd $(CURDIR)/debian/libzzip-dev/usr/share/man/man3/ \
-		&& patch -p1 < $(CURDIR)/debian/man3.patch
+	# need to refresh patch and do it in debian/tmp/usr/share/man/man3
+	#cd $(CURDIR)/debian/libzzip-dev/usr/share/man/ \
+	#	&& tar xf $(CURDIR)/docs/zziplib-manpages.tar
+	#cd $(CURDIR)/debian/libzzip-dev/usr/share/man/man3/ \
+	#	&& patch -p1 < $(CURDIR)/debian/man3.patch
 	dh_install
 	# empty dependency_libs in .la files
 	sed -i "/dependency_libs/ s/'.*'/''/" `find debian/ -name '*.la'`
+
+get-orig-source:
+	uscan --download-current-version --rename

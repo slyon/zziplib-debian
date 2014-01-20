@@ -1,3 +1,183 @@
+2012-03-11  guidod  <guidod@gmx.de>
+
+	* configure.ac: fallback to libtool -export-dynamic unless being sure to
+	   use gnu-ld --export-dynamic. The darwin case is a bit special here 
+	   as the c-compiler and linker might be from different worlds.
+	* next 0.13.62 - needs a fix for mingw 
+	   (-mconsole is not a linker option, only the gcc should see it)
+
+2010-12-30 guidod <guidod@gmx.de>
+        * done 0.13.60 release, tagged, and announced.
+        * prepare 0.13.61
+
+2010-12-29 guidod <guidod@gmx.de>
+        * Makefile.am: allow nonstaic build
+        * wrap fd.open like in the Fedora patch
+
+2010-12-28 guidod <guidod@gmx.de>
+        * zziplib.spec - simplify the spec based on distro specs.
+
+2010-12-27 guidod <guidod@gmx.de>
+        * adding fetch.h/fetch.c to msvc8/zziplib.vcproj to allow
+          tests with Visual Studio C++ Express 2005
+
+2010-12-27 guidod <guidod@gmx.de>
+        * fix stat.c to check ZZIP_CASELESS instead of the deprecated
+          ZZIP_CASEINSENSITIVE. The latter is still recognized for
+          compatibility reasons and implicitly mapped to ZZIP_CASELESS.
+        * fixes the zziplib-Patches-3078188 which reported the bug.
+
+2010-12-27 guidod <guidod@gmx.de>
+        * apply patches by Peter Breitenlohner for better compatibility
+          with AIX host system. Also the Sun Studio compiler insists on
+          static inline functions or else assumes extern inline.
+        * also fixes zziplib-Patches-3011551 on the AIX problem.
+
+2010-12-27 guidod <guidod@gmx.de>
+        * add hints that the ext_io plugin handlers should be static.
+
+2010-05-09  guidod  <guidod@gmx.de>
+
+	* zzip/__fnmatch.h: add include <string.h> to make mingw32 happy.
+	     Patches item #2995373 by Gregory Smith 
+
+2010-05-08  guidod  <guidod@gmx.de>
+
+	* SDL/Makefile.am: fix generation of sdl-uninstalled.pc that was
+	   not recognized during compilation.
+
+2010-04-05  guidod  <guidod@gmx.de>
+
+	* Makefile.am: fix "osc rm" and fix "test-sdl" if SDL was not found.
+	* configure.ac: SDL example builds on pkgconfig/sdl.pc which
+	
+	    was introduced with SDL 1.2.11 - CentOs5 ships 1.2.10 which
+	    does only have "sdl-config" and it made for a mismatch in
+	    in the build configuration: sdl-devel yes, pkgconfig sdl no.
+	* zzip/zip.c (__zzip_parse_root_directory): move the check for
+	     zzip_disk_entry_check_magic to be after the the check that
+	     the seek-value is more than a header's size before the end.
+	     (based on a segfault report by Tulipánt Gergely when the
+	      new modulo_entries code is enabled (which is off by default))
+
+2010-03-30  guidod  <guidod@gmx.de>
+
+	* zzip/Makefile.am:  fixing symlinks for lib* - use only for Linux
+	    Thanks to Ryan Schmidt (macports):
+		... likes to install some symlinks that don't make sense on Mac OS X:
+		$ ls -l /opt/local/lib/*zzip*so*
+		lrwxr-xr-x  /opt/local/lib/libzzip*.so.10 -> libzzip*.so.13
+		lrwxr-xr-x  /opt/local/lib/libzzip*.so.11 -> libzzip*.so.13
+		lrwxr-xr-x  /opt/local/lib/libzzip*.so.12 -> libzzip*.so.13
+		Yes, the filenames literally contain an asterisk.
+	
+    * prepare 0.13.60
+
+2010-03-29  guidod  <guidod@gmx.de>
+
+	* Makefile.am: change osc to new home:guidod:zziplib-13
+	* configure.ac: update to autoconf 2.61 which does some things differently
+	* m4/ax_pax_tar.m4: bug report http://trac.macports.org/ticket/24227
+	  showed a problem on MacOsX where some "pax" tools where advertising
+	  an "-O" option in their "--help" page but it did not work. Therefore
+	  rewriting the macro to actually test some "-w -O" to create a tarfile.
+
+2010-03-26  guidod  <guidod@gmx.de>
+
+	* zzip/dir.c: and zzip/file.c - adding comments to the compat32
+	   functions such that they appear near their off_t variants.
+	   Also added the ifdef-EOVERFLOW check that is needed on Win32.
+
+2010-03-25  guidod  <guidod@gmx.de>
+
+	* Makefile.mk: add "-I m4" and re-autoconf with newest autotools.
+	* zzip/zzip32.h: introducing compat32 functions that take "long"
+	     arguments where the others use "off_t". Basically, there are
+	     two calls per each off_t-function on all systems where 
+	     previously that had been only done for those 64on32 systems. 
+	     This scheme maximized binary compatibility - if an application
+	     can not be compiled with _LARGEFILE_SOURCE then they can use
+	     the compat32 variants to be always sure to do the right thing.
+
+2010-02-15  guidod  <guidod@gmx.de>
+
+	* zzip/Makefile.am: newest "install" does not like to install fetch.h
+	                   three times ("...not overwite... it just installed")
+	* Makefile.am: allow to build locally with "osc" (opensuse buildservice) 
+
+2010-02-14  guidod  <guidod@gmx.de>
+
+	* zzip/Makefile.am: use install-*-hook instead of install-*-local
+	* docs/Makefile.am: PYTHONDONTWRITEBYTECODE=1 to ensure running
+	   python with a read-only source code repository (dynamic workspaces)
+	   NOTE: python -B was introduced with Python 2.6 (so use environment)
+	* zzip/plugin.c: missing "void"
+	   again thanks to Peter Breitenlohner (tex-live tug org)
+	* test/Makefile.am: build-zips outside of source tree
+	* m4/ax_prefix_config_h.m4: reduce error to warning as suggested
+	* m4/ax_check_aligned_access_required.m4: merging with derived
+	    macro zziplib-aligned-access.m4 by Peter Breitenlohner
+
+
+2009-09-24  guidod  <guidod@gmx.de>
+    * zziplib.spec: prepare 0.13.59
+    * configure.ac: add --with-defines to allow compile-definitions
+        for easy,harden,allow_modulo_entries (also for documentation)
+	* zzip/zip.c: add ZZIP_EASY to disable the ZZIP_CORRECT_ROOTSEEK
+	    feature
+	* zzip/zip.c (__zzip_parse_root_directory): add parenthesis to fix
+		ZZIP_ALLOW_MODULO_ENTRIES (as reported by Tulipánt Gergely)
+	* zzip/fetch.h: add MSVC defines for x86/x64 that allows direct access
+
+2009-08-23  guidod  <guidod@gmx.de>
+
+	* Makefile.mk: remove some old stuff related to the compilefarm
+	* zziplib.spec: prepare 0.13.58
+    * add ports/symbian-S60/zziplib-symbian.zip (thanks to Rangel Reale)
+	* switch from CVS to SVN (!!!!) and update some docs/*.htm files
+	* zzip/mmapped.c (zzip_disk_mmap): compile error on win32-mingw [1771707]
+
+2009-08-16  guidod  <guidod@gmx.de>
+
+	* configure.ac: reorder ax_gcc_flags as the extra options were
+	  disabled (do not know why) and add -Wstrict-aliasing to the set.
+	  Then fix issues in source files (mostly signed-comparision warnings)
+	* zzip/file.c (zzip_file_open): ZZIP_CASELESS will include a
+	   mapping of "\" into "/" to get away with windows-orientied
+	   programs. The backslash however is only active for those
+	   windows' binaries. Fixes an issue with non-msvc win32-builds.
+
+2009-08-04  guidod  <guidod@gmx.de>
+
+        * m4/ac_sys_largefile_sensitive.m4: update, fixes ticket:2825391
+	* zzip/mmapped.h: zzip/memdisk.h: replace buflen argument
+	  from "int" to "size_t" type for init from some mem area.
+
+2009-08-03  guidod  <guidod@gmx.de>
+
+	* zziplib.spec: prepare 0.13.57
+	* bins/zziptest.c: redefine to win32-Sleep() when seen WINDOWS_H
+	  which allows it to compile also with a gcc/mingw/msvcrt target
+	* bins/Makefile.am: ZZIP_LDFLAGS are not needed for *.exe targets
+	  in fact they make for problems in crosscompiling without libtool
+	* zzip/fseeko.c: typo "fseeko" -> "fseek" made for a compile error
+	  on systems that do not have fseeko like windows msvcrt
+	  (reported by Josh Heidenreich)
+
+2009-07-03  guidod  <guidod@gmx.de>
+
+	* zzip/mmapped.c: insert zzip_disk_buffer and
+	* zzip/memdisk.c: zzip_mem_disk_buffer where both functions
+	    will actually wrap an external buffer (e.g. mmapped from
+	    another resource such as shared memory).
+	* zzip/mmapped.c and zzip/mmapped.h: uncovered a bug for the
+	   MATCH_NOCASE handling and WRAPPED_BUFFER handling that is
+	   now handled by explicit ->flags values. The actual flag
+	   values are now exported to the header instead of just using
+	   a simple "1".
+	* ideas for zzip_disk_buffer / zzip_mem_disk_buffer sprang from
+	   a proposal by JP Dai [Goldleaf] who offerd very similar code.
+
 2009-06-27  guidod  <guidod@gmx.de>
 
 	* zziplib.spec: 0.13.56 - and make build.opensuse.org happy by

@@ -1,5 +1,4 @@
 libzzip-0.so.13 libzzip-0-13 #MINVER#
- __zzip_aligned4@Base 0.13.56
  __zzip_fetch_disk_trailer@Base 0.13.56
  __zzip_get16@Base 0.13.56
  __zzip_get32@Base 0.13.56
@@ -58,12 +57,16 @@ libzzip-0.so.13 libzzip-0-13 #MINVER#
  zzip_realfd@Base 0.13.56
  zzip_rewind@Base 0.13.56
  zzip_rewinddir@Base 0.13.56
+ zzip_seek32@Base 0.13.62
  zzip_seek@Base 0.13.56
+ zzip_seekdir32@Base 0.13.62
  zzip_seekdir@Base 0.13.56
  zzip_seterror@Base 0.13.56
  zzip_strerror@Base 0.13.56
  zzip_strerror_of@Base 0.13.56
+ zzip_tell32@Base 0.13.62
  zzip_tell@Base 0.13.56
+ zzip_telldir32@Base 0.13.62
  zzip_telldir@Base 0.13.56
  zzip_write@Base 0.13.56
 libzzipfseeko-0.so.13 libzzip-0-13 #MINVER#
@@ -92,6 +95,7 @@ libzzipmmapped-0.so.13 libzzip-0-13 #MINVER#
  __zzip_set16@Base 0.13.56
  __zzip_set32@Base 0.13.56
  __zzip_set64@Base 0.13.56
+ zzip_disk_buffer@Base 0.13.62
  zzip_disk_close@Base 0.13.56
  zzip_disk_entry_fopen@Base 0.13.56
  zzip_disk_entry_get_mktime@Base 0.13.56
@@ -112,6 +116,7 @@ libzzipmmapped-0.so.13 libzzip-0-13 #MINVER#
  zzip_disk_munmap@Base 0.13.56
  zzip_disk_new@Base 0.13.56
  zzip_disk_open@Base 0.13.56
+ zzip_mem_disk_buffer@Base 0.13.62
  zzip_mem_disk_close@Base 0.13.56
  zzip_mem_disk_fclose@Base 0.13.56
  zzip_mem_disk_fdopen@Base 0.13.56

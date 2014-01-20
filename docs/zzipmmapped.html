@@ -1,6 +1,6 @@
 <html><head><title>zziplib Library Functions</title>
 </head><body>
-<h2>zziplib Library Functions</h2><p>Version 0.13.56</p><p><big><b><code>#include &lt;zzip/mmapped.h&gt;</code></b></big></p><table width="100%"><tr><td valign="top"><code><b><code><a href="#zzip_disk_entry_to_data">zzip_disk_entry_to_data</a></code></b>(ZZIP_DISK * disk, struct zzip_disk_entry * entry)
+<h2>zziplib Library Functions</h2><p>Version 0.13.62</p><p><big><b><code>#include &lt;zzip/mmapped.h&gt;</code></b></big></p><table width="100%"><tr><td valign="top"><code><b><code><a href="#zzip_disk_entry_to_data">zzip_disk_entry_to_data</a></code></b>(ZZIP_DISK * disk, struct zzip_disk_entry * entry)
  : zzip_byte_t *
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_disk_entry_to_file_header">zzip_disk_entry_to_file_header</a></code></b>(ZZIP_DISK * disk, struct zzip_disk_entry *entry)
  : struct zzip_file_header *
@@ -39,7 +39,8 @@
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_disk_munmap">zzip_disk_munmap</a></code></b>(ZZIP_DISK * disk)
  : int
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_disk_open">zzip_disk_open</a></code></b>(char *filename)
- : ZZIP_DISK *zzip__new__
+ : zzip__new__ ZZIP_DISK *
+</code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_disk_buffer">zzip_disk_buffer</a></code></b>(void *buffer, size_t buflen)  : zzip__new__ ZZIP_DISK *
 </code></td></tr><tr><td valign="top"><code><b><code><a href="#zzip_disk_close">zzip_disk_close</a></code></b>(ZZIP_DISK * disk)
  : int
 </code></td></tr></table><h3>Documentation</h3><dl><dt><table width="100%"><tr><td valign="top"><code><b><a name="zzip_disk_entry_to_data">zzip_disk_entry_to_data</a></b>(ZZIP_DISK * disk, struct zzip_disk_entry * entry)
@@ -180,7 +181,8 @@
 </code></td></tr><tr><td valign="top"><code><b><a name="zzip_disk_munmap">zzip_disk_munmap</a></b>(ZZIP_DISK * disk)
  : int
 </code></td></tr><tr><td valign="top"><code><b><a name="zzip_disk_open">zzip_disk_open</a></b>(char *filename)
- : ZZIP_DISK *zzip__new__
+ : zzip__new__ ZZIP_DISK *
+</code></td></tr><tr><td valign="top"><code><b><a name="zzip_disk_buffer">zzip_disk_buffer</a></b>(void *buffer, size_t buflen)  : zzip__new__ ZZIP_DISK *
 </code></td></tr><tr><td valign="top"><code><b><a name="zzip_disk_close">zzip_disk_close</a></b>(ZZIP_DISK * disk)
  : int
 </code></td></tr></table></dt><dd><table width="100%"><tr><td valign="top"><table border="0" width="100%" cellpadding="0" cellspacing="0"><td> &nbsp;<em> turn a filehandle into a mmapped zip disk archive handle</em> </td><td align="right"> <em><small>zzip/mmapped.c</small></em></td></table><p>
@@ -203,10 +205,18 @@
   memory block. Only if that fails too then we return null. Since handling
   of disk->buffer is ambigous it should not be snatched away please.
 </p>
+</td></tr><tr><td valign="top"><p>  The <code>zzip_disk_buffer</code> function will attach a buffer with a zip image
+  that was acquired from another source than a file.
+  Note that if zzip_disk_mmap fails then zzip_disk_open
+  will fall back and try to read the full file to memory
+  wrapping a ZZIP_DISK around the memory buffer just as
+  the <code>zzip_disk_buffer</code> function will do. Note that the <code>zzip_disk_buffer</code> function will not
+  own the buffer, it will neither be written nor free()d.
+</p>
 </td></tr><tr><td valign="top"><p>
   The <code>zzip_disk_close</code> function will release all data needed to access a (mmapped)
   zip archive, including any malloc()ed blocks, sharedmem mappings
   and it dumps the handle struct as well.
 </p>
-</td></tr></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd></dl>
+</td></tr></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd><dt><table width="100%"></table></dt><dd><table width="100%"></table></dd></dl>
 </body></html>

@@ -1,3 +1,11 @@
+zziplib (0.13.62-1) unstable; urgency=low
+
+  * New upstream release (Closes: #709437)
+  * Updated symbols file.
+  * export-dynamic.patch dropped, accepted upstream
+
+ -- Scott Howard <showard@debian.org>  Mon, 20 Jan 2014 17:12:51 -0500
+
 zziplib (0.13.56-2) unstable; urgency=low
 
   * Adopting package (Closes: #733144)

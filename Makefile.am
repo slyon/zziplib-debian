@@ -10,6 +10,55 @@ rpm: dist-bzip2 $(PACKAGE).spec
 	rpmbuild -ta $(PACKAGE)-$(VERSION).tar.bz2
 	test -d ../pub && cp $(PACKAGE)-$(VERSION).tar.bz2 ../pub/
 
+OSC_ROOT = /my/own/osc
+OSC_SRCDIR = $(OSC_ROOT)
+OSC_PROJECT = home:guidod:zziplib-13
+OSC_PACKAGE = $(PACKAGE)
+OSC_SPECFILE = $(top_srcdir)/$(PACKAGE).spec
+OSC_TARBALL = $(PACKAGE)-$(VERSION).tar.bz2
+OSC_BUILDDIR = $(OSC_ROOT)
+OSC_PACKAGECACHEDIR = $(OSC_BUILDDIR)/packagecache
+OSC_BUILDROOT = $(OSC_BUILDDIR)/buildroot
+OSC_REPOSITORY = openSUSE_11.2
+OSC_ARCH = x86_64
+osc-copy:
+	test -s $(OSC_TARBALL)
+	test -s $(OSC_SPECFILE)
+	test -d $(OSC_SRCDIR)
+	test -d $(OSC_SRCDIR)/$(OSC_PROJECT) \
+	|| ( cd $(OSC_SRCDIR) && osc co $(OSC_PROJECT) )
+	cd $(OSC_SRCDIR)/$(OSC_PROJECT) && osc up
+	cp $(OSC_TARBALL)  $(OSC_SRCDIR)/$(OSC_PROJECT)/$(OSC_PACKAGE)
+	cp $(OSC_SPECFILE) $(OSC_SRCDIR)/$(OSC_PROJECT)/$(OSC_PACKAGE)
+
+DOIT = :
+osc-ci osc-commit upload-osc: osc-copy
+	tarball=`basename $(OSC_TARBALL)` \
+	; ls  $(OSC_SRCDIR)/$(OSC_PROJECT)/$(OSC_PACKAGE)/*.tar.* \
+	| { while read f; do tarname=`basename $$f` \
+	; if test "$$tarname" != "$$tarball" \
+	; then echo osc rm -f $$f ; osc rm -f $$f \
+	; else echo osc add $$f ; osc add $$f || true \
+	; fi ; done }
+	osc status $(OSC_SRCDIR)/$(OSC_PROJECT)/$(OSC_PACKAGE)/
+	$(DOIT) osc commit -m "update $(OSC_TARBALL)" $(OSC_SRCDIR)/$(OSC_PROJECT)/$(OSC_PACKAGE)
+
+osc-build: osc-copy
+	cd $(OSC_SRCDIR)/$(OSC_PROJECT)/$(OSC_PACKAGE)/ \
+	BUILD_DESCR=`basename $(OSC_SPECFILE)` ;\
+	ls -l $$SPEC ; \
+	OSC_PACKAGECACHEDIR=$(OSC_PACKAGECACHEDIR) \
+	OSC_BUILD_ROOT=$(OSC_BUILDROOT) \
+	osc build --release=0 --local-package --clean \
+	$(OSC_REPOSITORY) $(OSC_ARCH) $$BUILD_DESCR
+osc-clean:
+	- test -f $(OSC_SRCDIR)/$(OSC_PROJECT)/$(OSC_PACKAGE)/*.spec \
+	&& rm $(OSC_SRCDIR)/$(OSC_PROJECT)/$(OSC_PACKAGE)/*
+osc-distclean:
+	- test -f $(OSC_SRCDIR)/$(OSC_PROJECT)/$(OSC_PACKAGE)/*.spec \
+	&& rm -rf $(OSC_SRCDIR)/*
+		
+
 indent-check:
 	(cd zzip && $(MAKE) `basename $@`)
 
@@ -20,7 +69,8 @@ upload-sourceforge www:
 	(cd docs && $(MAKE) `basename $@`)
 
 sdl testsdl test-sdl install-sdl :
-	(cd SDL && $(MAKE) `basename $@`)
+	if test -z "$(SDL)"; then echo "skip $@ (no SDL)"; else \
+	(cd SDL && $(MAKE) `basename $@`) ; fi
 
 check-test0 check-test1 check-zzdir check-zzcat \
 check-zzxor check-zzxordir check-zzxorcat \
@@ -96,25 +146,25 @@ zzip64-install: zzip64-install.tmp
 zzip64-install.tmp : zzip64-build.tmp
 	cd zzip64 && $(MAKE) install $(_RELEASEINFO64)
 	cd $(DESTDIR)$(libdir) && mv    libzzip.so   libzzip64.so
-	cd $(DESTDIR)$(libdir) && mv    libzzip.a    libzzip64.a
+	- cd $(DESTDIR)$(libdir) && mv    libzzip.a    libzzip64.a
 	cd $(DESTDIR)$(libdir) && \
-        sed -e 's/zzip.so/zzip64.so/' \
-            -e 's/zzip.a/zzip64.a/'     libzzip.la > libzzip64.la
+        sed -e 's/zzip.so/zzip64.so/' -e 's/zzip.a/zzip64.a/' \
+             libzzip.la > libzzip64.la
 	cd $(DESTDIR)$(libdir)/pkgconfig && \
 	sed -e 's/largefile=/largefile= %_FILE_OFFSET64/' \
-	    -e 's/-lzzip/-lzzip64/' \
-	    -e 's/zziplib/zziplib64/'   zziplib.pc > zziplib64.pc
+	    -e 's/-lzzip/-lzzip64/' -e 's/zziplib/zziplib64/' \
+	     zziplib.pc > zziplib64.pc
 zzip32-postinstall:
-	cd $(DESTDIR)$(libdir) && mv    libzzip.so   libzzip32.so
-	cd $(DESTDIR)$(libdir) && mv    libzzip.a    libzzip32.a
-	cd $(DESTDIR)$(libdir) && ln -s libzzip32.so libzzip.so
-	cd $(DESTDIR)$(libdir) && ln -s libzzip32.a  libzzip.a
+	cd   $(DESTDIR)$(libdir) && mv    libzzip.so   libzzip32.so
+	- cd $(DESTDIR)$(libdir) && mv    libzzip.a    libzzip32.a
+	cd   $(DESTDIR)$(libdir) && ln -s libzzip32.so libzzip.so
+	- cd $(DESTDIR)$(libdir) && ln -s libzzip32.a  libzzip.a
 	cd $(DESTDIR)$(libdir) && \
-	sed -e 's/zzip.so/zzip32.so/' \
-	    -e 's/zzip.a/zzip32.a/'     libzzip.la > libzzip32.la
+	sed -e 's/zzip.so/zzip32.so/' -e 's/zzip.a/zzip32.a/' \
+	    libzzip.la > libzzip32.la
 	cd $(DESTDIR)$(libdir)/pkgconfig && \
-	sed -e 's/-lzzip/-lzzip32/' \
-	     -e 's/zziplib/zziplib32/'  zziplib.pc > zziplib32.pc
+	sed -e 's/-lzzip/-lzzip32/' -e 's/zziplib/zziplib32/' \
+	    zziplib.pc > zziplib32.pc
 zzip-postinstall:
 	: "the 12.8x and 11.8x and 10.8x packages are all the same actually"
 	cd $(DESTDIR)$(libdir) || exit 1 \

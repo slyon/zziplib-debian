@@ -133,9 +133,7 @@
 
 /* whether the system defaults to 32bit off_t but can do 64bit when requested
    */
-#ifndef ZZIP_LARGEFILE_SENSITIVE 
-#define ZZIP_LARGEFILE_SENSITIVE  1 
-#endif
+/* #undef LARGEFILE_SENSITIVE */
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
@@ -168,6 +166,11 @@
 #define ZZIP_PACKAGE_TARNAME  "" 
 #endif
 
+/* Define to the home page for this package. */
+#ifndef ZZIP_PACKAGE_URL 
+#define ZZIP_PACKAGE_URL  "" 
+#endif
+
 /* Define to the version of this package. */
 #ifndef ZZIP_PACKAGE_VERSION 
 #define ZZIP_PACKAGE_VERSION  "" 
@@ -195,7 +198,7 @@
 
 /* Version number of package */
 #ifndef ZZIP_VERSION 
-#define ZZIP_VERSION  "0.13.56" 
+#define ZZIP_VERSION  "0.13.62" 
 #endif
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most

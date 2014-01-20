@@ -31,6 +31,7 @@ libzzip_la_headers = \
 	plugin.h \
 	lib.h \
 	zzip.h \
+	zzip32.h \
         write.h \
 	fetch.h \
 	format.h \
@@ -45,13 +46,15 @@ libzzip_la_LDFLAGS= @ZZIPLIB_LDFLAGS@ $(RELEASE_INFO) $(VERSION_INFO) \
 libzzip_la_LIBADD= -lz @RESOLVES@
 
 libzzipmmapped_la_SOURCES =  mmapped.c memdisk.c fetch.c
-libzzipmmapped_la_headers =  mmapped.h memdisk.h fetch.h
+libzzipmmapped____headers =  mmapped.h memdisk.h fetch.h
+libzzipmmapped_la_headers =  mmapped.h memdisk.h
 libzzipmmapped_la_LDFLAGS= @ZZIPLIB_LDFLAGS@ $(RELEASE_INFO) $(VERSION_INFO) \
                     $(THREAD_SAFE)
 libzzipmmapped_la_LIBADD= -lz @RESOLVES@
 
 libzzipfseeko_la_SOURCES = fseeko.c fetch.c
-libzzipfseeko_la_headers = fseeko.h fetch.h
+libzzipfseeko____headers = fseeko.h fetch.h
+libzzipfseeko_la_headers = fseeko.h
 libzzipfseeko_la_LDFLAGS= @ZZIPLIB_LDFLAGS@ $(RELEASE_INFO) $(VERSION_INFO) \
                     $(THREAD_SAFE)
 libzzipfseeko_la_LIBADD= -lz @RESOLVES@
@@ -65,7 +68,7 @@ MAINTAINERCLEANFILES = _msvc.h
 CLEANFILES = $(WCC10_CLEAN)  *.pc *.omf *~ *.tmp *.tmp.*
 
 # here is some backward compatibility with version 0.10.* of zziplib
-install-data-local : install-zzipHEADERS
+install-data-hook : install-zzipHEADERS
 	echo '#ifndef ZZIP_WARNING'   > $(DESTDIR)$(includedir)/zzip.h
 	echo '#define ZZIP_WARNING 1' >>$(DESTDIR)$(includedir)/zzip.h
 	echo '#ifdef __GNUC__'        >>$(DESTDIR)$(includedir)/zzip.h
@@ -82,9 +85,10 @@ install-data-local : install-zzipHEADERS
 	sed -e 's|zzip.h|zzip-io.h|' -e 's|zzip/lib.h|zzip/plugin.h|' \
 	$(DESTDIR)$(includedir)/zzip.h >$(DESTDIR)$(includedir)/zzip-io.h
 
-install-exec-local:
+install-exec-hook:
 	@ for i in . $(DESTDIR)$(libdir)/libzzip*.so.13 \
-        ; do test -d $$i && continue ; lib=`basename "$$i" .so.13` \
+        ; do test -d $$i && continue ; test -f $$i || continue \
+        ; lib=`basename "$$i" .so.13` \
         ; echo "$(DESTDIR)$(libdir): ln -s $$lib.so.13 $$lib.so.10" \
         ; (cd $(DESTDIR)$(libdir) && ln -s $$lib.so.13 $$lib.so.10) \
         ; echo "$(DESTDIR)$(libdir): ln -s $$lib.so.13 $$lib.so.11" \

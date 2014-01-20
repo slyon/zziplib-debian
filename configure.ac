@@ -1,7 +1,7 @@
 AC_INIT([zziplib.spec])
-AC_PREREQ(2.49)
+AC_PREREQ(2.61)
 AC_COPYRIGHT([Guido Draheim <guido@gmx.de> for ZZipLib.SF.net])
-AC_REVISION($Revision: 1.14 $)
+AC_REVISION($Revision: 1.15 $)
 AC_CONFIG_AUX_DIR([uses])
 AC_CONFIG_MACRO_DIR([m4])
 # =======================================================================
@@ -11,7 +11,7 @@ AX_ENABLE_BUILDDIR_UNAME
 AC_SET_DEFAULT_PATHS_SYSTEM
 # -----------------------------------------------------------------------
 AC_ARG_ENABLE([thread-safe],
-AC_HELP_STRING([--disable-thread-safe],[disable thread-safe libtool option])
+AS_HELP_STRING([--disable-thread-safe],[disable thread-safe libtool option])
    ,,[ enable_thread_safe="yes"])
 THREAD_SAFE=""
 test "$enable_thread_safe" = "yes" && THREAD_SAFE="-thread-safe"
@@ -24,12 +24,12 @@ else
 fi
 # ----------------------------------------------------------------
 AC_MSG_CHECKING(zlib install prefix)
-AC_ARG_WITH(zlib, AC_HELP_STRING(
-    [--with-zlib],[zlib prefix (e.g. '$HOME/software')])
+AC_ARG_WITH(zlib, 
+AS_HELP_STRING([--with-zlib],[zlib prefix (e.g. '$HOME/software')])
     ,,[with_zlib="no"])
 if test "${with_zlib}" = yes ; then # choose --prefix paths
    if test "${prefix}" = NONE ; then
-      AC_MSG_RESULT(oops, but only itself...)
+      AC_MSG_RESULT([oops, but only itself...])
       AC_MSG_ERROR(--with-zlib requires a path argument or a --prefix path set)
    fi
    with_zlib="$prefix"
@@ -43,11 +43,11 @@ case ".$with_zlib" in
       AC_MSG_RESULT([oops, ignored (may try --with-zlib=/usr/.)])
       with_zlib="no, /usr ignored" ;;
   *)  if test ! -d "$with_zlib/include" ; then
-         AC_MSG_RESULT(oops, given but...)
+         AC_MSG_RESULT([oops, given but...])
          AC_MSG_ERROR("$with_zlib/include" is not a directory)
       fi
       if test ! -d "$with_zlib/lib" ; then
-         AC_MSG_RESULT(oops, given but...)
+         AC_MSG_RESULT([oops, given but...])
          AC_MSG_ERROR("$with_zlib/lib" is not a directory)
       fi
       AC_MSG_RESULT($with_zlib)
@@ -84,7 +84,6 @@ AM_MAINTAINER_MODE
 AX_CREATE_PKGCONFIG_INFO(dnl
 [zzip/zziplib.pc], [zzip-zlib-config],[-lzzip],,[ ])
 # -----------------------------------------------------------------------
-echo extrac.t..
 AX_PAX_TAR_CREATE
 AX_PAX_TAR_EXTRACT
 AC_PATH_PROGS(PERL, perl5 perl, echo no perl found for)
@@ -251,22 +250,35 @@ esac
 # ---------------------------------------------------------------
 AC_MSG_CHECKING(whether making SDL parts)
 SDL=""
+SDL_GENERATE=""
 AC_ARG_ENABLE(sdl, AC_HELP_STRING(
     [--enable-sdl],[enable SDL usage (if present)])
     ,,[enable_sdl="no"])
 if test "$enable_sdl" = "no" ; then
    AC_MSG_RESULT([no, disabled])
 else
-   enable_sdl=`sdl-config --version 2>/dev/null`
+   enable_sdl=`pkg-config --modversion sdl 2>/dev/null`
+   if test -z "$enable_sdl"; then
+      enable_sdl=`sdl-config --version 2>/dev/null`
+      SDL_GENERATE="sdl-uninstalled.pc"
+      enable_sdl="$enable_sdl (sdl-config)"
+   else
+      enable_sdl="$enable_sdl (pkgconfig)"
+   fi
+   enable_sdl="$enable_sdl."
    case ".$enable_sdl" in
-     .1.*) AC_MSG_RESULT([yes, for SDL $enable_sdl])
+     .1.*) AC_MSG_RESULT([yes, using SDL $enable_sdl])
            SDL="SDL" ;;
      .2.*) AC_MSG_RESULT([yes, untested $enable_sdl])
            SDL="SDL" ;;
      *)    AC_MSG_RESULT([no, $enable_sdl]) ;;
    esac
+   if test -n "$SDL_GENERATE"; then
+      AC_MSG_RESULT([enabled SDL generation of... $SDL_GENERATE])
+   fi
 fi
-AC_SUBST(SDL)
+AC_SUBST([SDL])
+AC_SUBST([SDL_GENERATE])
 # ---------------------------------------------------------------
 AC_MSG_CHECKING(running extra tests on make check)
 if test "MKZIP" != ":" ; then
@@ -278,35 +290,60 @@ else
 fi
 AC_SUBST(ZIPTESTS)
 # ---------------------------------------------------------------
-AC_MSG_CHECKING(link options)
-case "$host_os" in
-  mingw*)
-    ZZIPLIB_LDFLAGS="-no-undefined -export-all-symbols -mconsole"
+AC_MSG_CHECKING([link options])
+ZZIPLIB_LDFLAGS=""
+case "$host_os" in mingw*)
+    # we may assume that the backend is gnu-ld but DLLs need full resolution
+    ZZIPLIB_LDFLAGS="${wl}-no-undefined ${wl}-export-all-symbols -mconsole"
     RESOLVES=' '
-  ;;
-  *)
-
-    if ".$can_build_shared" = .no
-    then ZZIPLIB_LDFLAGS=""
-    else ZZIPLIB_LDFLAGS="--export-dynamic"
+;; darwin*)
+    # darwin never uses gnu-ld but the linker can do it anyway
+    ZZIPLIB_LDFLAGS="-export-dynamic"
+    RESOLVES=" # "
+;; *)
+    if test ".$can_build_shared" != ".no" ; then
+      ZZIPLIB_LDFLAGS="-export-dynamic"
+      if test ".$lt_cv_prog_gnu_ld" == ".yes" ; then
+         ZZIPLIB_LDFLAGS="${wl}--export-dynamic"
+         # TODO: that is for backward compatibility only
+      fi
     fi
-    RESOLVES=' # '
-  ;;
-esac
+    RESOLVES=" # "
+;; esac
 AC_MSG_RESULT([$ZZIPLIB_LDFLAGS $RESOLVES])
 AC_SUBST([ZZIPLIB_LDFLAGS])
 AC_SUBST([RESOLVES])
+AC_ARG_WITH([defines], 
+AS_HELP_STRING([--with-defines],[easy,harden,allow_modulo_entries]),
+    ,[with_defines="normal"])
+
+#
+case ",$with_defines," in *,easy,*)
+  AC_MSG_RESULT([..adding CFLAGS -DZZIP_EASY])
+  CFLAGS="$CFLAGS -DZZIP_EASY"
+;; esac
+case ",$with_defines," in *,harden,*)
+  AC_MSG_RESULT([..adding CFLAGS -DZZIP_HARDEN])
+  CFLAGS="$CFLAGS -DZZIP_HARDEN"
+;; esac
+case ",$with_defines," in *,allow_modulo_entries,*)
+  AC_MSG_RESULT([..adding CFLAGS -DZZIP_ALLOW_MODULO_ENTRIES])
+  CFLAGS="$CFLAGS -DZZIP_ALLOW_MODULO_ENTRIES"
+;; esac
+
 # ---------------------------------------------------------------
 AX_MAINTAINER_MODE_AUTO_SILENT
 AX_NOT_ENABLE_FRAME_POINTER
 AX_CFLAGS_WARN_ALL
-AX_CFLAGS_NO_WRITABLE_STRINGS
-AX_CFLAGS_STRICT_PROTOTYPES
 AX_CFLAGS_GCC_OPTION(-Wpointer-arith)
 AX_CFLAGS_GCC_OPTION(-Wsign-compare)
 AX_CFLAGS_GCC_OPTION(-Wmissing-declarations)
 AX_CFLAGS_GCC_OPTION(-Wdeclaration-after-statement)
 AX_CFLAGS_GCC_OPTION(-Werror-implicit-function-declaration)
+AX_CFLAGS_GCC_OPTION(-Wstrict-aliasing)
+AX_CFLAGS_GCC_OPTION(-Warray-bounds)
+AX_CFLAGS_NO_WRITABLE_STRINGS
+AX_CFLAGS_STRICT_PROTOTYPES
 # ---------------------------------------------------------------
 AX_ENABLE_DEFAULT_PKGCONFIGDIR
 AX_ENABLE_DEFAULT_ACLOCALDIR
@@ -321,6 +358,7 @@ PATCH_LIBTOOL_TO_ADD_HOST_CC
 # ---------------------------------------------------------------
 echo '-----' $PACKAGE $VERSION $prefix
 $SHELL libtool --features || true
+echo "CPPFLAGS=$CPPFLAGS"
 echo "CFLAGS=$CFLAGS"
 test "$enable_mmap" != "no" && echo "enable  mmap   ($enable_mmap)"
 test "$enable_mmap"  = "no" && echo "disable mmap   ($enable_mmap)"
