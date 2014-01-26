@@ -1,3 +1,11 @@
+zziplib (0.13.62-2) unstable; urgency=low
+
+  * Merge in Ubuntu changes to use dh-autoreconf to ensure package
+    remains buildable across future ports. Thanks to Steve Langasek.
+    (Closes: #736810)
+
+ -- Scott Howard <showard@debian.org>  Sun, 26 Jan 2014 18:54:39 -0500
+
 zziplib (0.13.62-1) unstable; urgency=low
 
   * New upstream release (Closes: #709437)

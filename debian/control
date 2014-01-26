@@ -2,8 +2,8 @@ Source: zziplib
 Section: libs
 Priority: optional
 Maintainer: Scott Howard <showard@debian.org>
-Build-Depends: debhelper (>= 9), autotools-dev, pkg-config, zlib1g-dev, python,
- zip, dh-exec
+Build-Depends: debhelper (>= 9), pkg-config, zlib1g-dev, python,
+ zip, dh-exec, dh-autoreconf
 Standards-Version: 3.9.5
 Homepage: http://zziplib.sourceforge.net
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/zziplib.git
