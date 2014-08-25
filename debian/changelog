@@ -1,3 +1,9 @@
+zziplib (0.13.62-3) unstable; urgency=medium
+
+  * debian/rules: Lintian error cleaning pkg-config-bad-directive
+
+ -- Scott Howard <showard@debian.org>  Sun, 24 Aug 2014 22:20:40 -0400
+
 zziplib (0.13.62-2) unstable; urgency=low
 
   * Merge in Ubuntu changes to use dh-autoreconf to ensure package

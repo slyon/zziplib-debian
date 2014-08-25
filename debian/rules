@@ -17,6 +17,8 @@ override_dh_install:
 	dh_install
 	# empty dependency_libs in .la files
 	sed -i "/dependency_libs/ s/'.*'/''/" `find debian/ -name '*.la'`
+	# remove pkg-config-bad-directive
+	sed -i "s/\-D_FORTIFY_SOURCE=2//" `find debian/ -name '*.pc'`
 
 get-orig-source:
 	uscan --download-current-version --rename
