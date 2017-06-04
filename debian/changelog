@@ -1,3 +1,11 @@
+zziplib (0.13.62-3.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Fix multiple security issues (Closes: #854727). Thanks to Josef
+    Moellers of SuSE for the patches!
+
+ -- Moritz Muehlenhoff <jmm@debian.org>  Sun, 04 Jun 2017 09:03:20 +0200
+
 zziplib (0.13.62-3) unstable; urgency=medium
 
   * debian/rules: Lintian error cleaning pkg-config-bad-directive

@@ -1,2 +1,9 @@
 remove_extra_z_linking.patch
 automake-compatibility.patch
+zziplib-CVE-2017-5974.patch
+zziplib-CVE-2017-5975.patch
+zziplib-CVE-2017-5976.patch
+zziplib-CVE-2017-5978.patch
+zziplib-CVE-2017-5979.patch
+zziplib-CVE-2017-5981.patch
+zziplib-unzipcat-NULL-name.patch
