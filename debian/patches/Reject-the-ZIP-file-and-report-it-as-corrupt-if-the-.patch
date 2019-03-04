@@ -1,0 +1,49 @@
+From: =?UTF-8?q?Josef=20M=C3=B6llers?= <josef@firefly.moellers.local>
+Date: Fri, 2 Feb 2018 14:09:32 +0100
+Subject: Reject the ZIP file and report it as corrupt if the size of the
+ central directory and/or the offset of start of central directory point
+ beyond the end of the ZIP file. [CVE-2018-6484]
+Origin: https://github.com/gdraheim/zziplib/commit/0c0c9256b0903f664bca25dd8d924211f81e01d3
+Bug-Debian-Security: https://security-tracker.debian.org/tracker/CVE-2018-6484
+Bug-Debian-Security: https://security-tracker.debian.org/tracker/CVE-2018-6541
+Bug-Debian-Security: https://security-tracker.debian.org/tracker/CVE-2018-6869
+Bug-Debian: https://bugs.debian.org/889089
+Bug: https://github.com/gdraheim/zziplib/issues/14
+Bug: https://github.com/gdraheim/zziplib/issues/16
+Bug: https://github.com/gdraheim/zziplib/issues/22
+
+---
+
+diff --git a/zzip/zip.c b/zzip/zip.c
+index f0eac2b71501..67e662f59f46 100644
+--- a/zzip/zip.c
++++ b/zzip/zip.c
+@@ -320,6 +320,12 @@ __zzip_fetch_disk_trailer(int fd, zzip_off_t filesize,
+ #                  endif
+ 
+                     __fixup_rootseek(offset + tail - mapped, trailer);
++		    /*
++		     * "extract data from files archived in a single zip file."
++		     * So the file offsets must be within the current ZIP archive!
++		     */
++		    if (trailer->zz_rootseek >= filesize || (trailer->zz_rootseek + trailer->zz_rootsize) >= filesize)
++		        return(ZZIP_CORRUPTED);
+                     { return(0); }
+                 } else if ((*tail == 'P') &&
+                            end - tail >=
+@@ -338,6 +344,12 @@ __zzip_fetch_disk_trailer(int fd, zzip_off_t filesize,
+                         zzip_disk64_trailer_finalentries(orig);
+                     trailer->zz_rootseek = zzip_disk64_trailer_rootseek(orig);
+                     trailer->zz_rootsize = zzip_disk64_trailer_rootsize(orig);
++		    /*
++		     * "extract data from files archived in a single zip file."
++		     * So the file offsets must be within the current ZIP archive!
++		     */
++		    if (trailer->zz_rootseek >= filesize || (trailer->zz_rootseek + trailer->zz_rootsize) >= filesize)
++		        return(ZZIP_CORRUPTED);
+                     { return(0); }
+ #                  endif
+                 }
+-- 
+2.11.0
+

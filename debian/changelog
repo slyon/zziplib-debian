@@ -1,3 +1,22 @@
+zziplib (0.13.62-3.2) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Invalid memory access in zzip_disk_fread (CVE-2018-6381) (Closes: #889096)
+  * Reject the ZIP file and report it as corrupt if the size of the central
+    directory and/or the offset of start of central directory point beyond the
+    end of the ZIP file (CVE-2018-6484, CVE-2018-6541, CVE-2018-6869)
+    (Closes: #889089)
+  * bus error in zzip_disk_findfirst function in zzip/mmapped.c
+    (CVE-2018-6540) (Closes: #923659)
+  * out of bound read in mmapped.c:zzip_disk_fread() causes crash
+    (CVE-2018-7725) (Closes: #913165)
+  * Bus error in zip.c:__zzip_parse_root_directory() cause crash via crafted
+    zip file (CVE-2018-7726) (Closes: #913165)
+  * Memory leak triggered in the function __zzip_parse_root_directory in zip.c
+    (CVE-2018-16548) (Closes: #910335)
+
+ -- Salvatore Bonaccorso <carnil@debian.org>  Mon, 04 Mar 2019 22:43:14 +0100
+
 zziplib (0.13.62-3.1) unstable; urgency=medium
 
   * Non-maintainer upload.

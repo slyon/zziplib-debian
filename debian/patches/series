@@ -7,3 +7,13 @@ zziplib-CVE-2017-5978.patch
 zziplib-CVE-2017-5979.patch
 zziplib-CVE-2017-5981.patch
 zziplib-unzipcat-NULL-name.patch
+merge-CVE-2018-6381.patch-from-jmoellers-12.patch
+Reject-the-ZIP-file-and-report-it-as-corrupt-if-the-.patch
+need-to-check-on-endbuf-for-stored-files-15.patch
+check-zlib-space-to-be-within-buffer-39.patch
+check-rootseek-and-rootsize-to-be-positive-27.patch
+check-rootseek-after-correction-41.patch
+fix-for-zz_rootsize-41.patch
+Avoid-memory-leak-from-__zzip_parse_root_directory-1.patch
+Avoid-memory-leak-from-__zzip_parse_root_directory-2.patch
+One-more-free-to-avoid-memory-leak.patch
