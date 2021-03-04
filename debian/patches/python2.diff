@@ -1,0 +1,83 @@
+Index: b/configure.ac
+===================================================================
+--- a/configure.ac
++++ b/configure.ac
+@@ -87,7 +87,7 @@ AX_CREATE_PKGCONFIG_INFO(dnl
+ AX_PAX_TAR_CREATE
+ AX_PAX_TAR_EXTRACT
+ AC_PATH_PROGS(PERL, perl5 perl, echo no perl found for)
+-AC_PATH_PROGS(PYTHON, python, echo no python found for)
++AC_PATH_PROGS(PYTHON, python2, echo no python found for)
+ AC_PATH_PROGS(MKZIP, zip pkzip, :)
+ AC_PATH_PROGS(XMLTO, xmlto, :)
+ 
+Index: b/docs/make-doc.py
+===================================================================
+--- a/docs/make-doc.py
++++ b/docs/make-doc.py
+@@ -1,4 +1,4 @@
+-#! /usr/bin/python
++#! /usr/bin/python2
+ # -*- coding: UTF-8 -*-
+ import sys
+ import re
+Index: b/docs/zzipdoc/docbookdocument.py
+===================================================================
+--- a/docs/zzipdoc/docbookdocument.py
++++ b/docs/zzipdoc/docbookdocument.py
+@@ -1,4 +1,4 @@
+-#! /usr/bin/env python
++#! /usr/bin/env python2
+ # -*- coding: UTF-8 -*-
+ from match import Match
+ 
+Index: b/docs/zzipdoc/functionlistreference.py
+===================================================================
+--- a/docs/zzipdoc/functionlistreference.py
++++ b/docs/zzipdoc/functionlistreference.py
+@@ -1,4 +1,4 @@
+-#! /usr/bin/env python
++#! /usr/bin/env python2
+ # -*- coding: UTF-8 -*-
+ from match import Match
+ from htm2dbk import *
+Index: b/docs/zzipdoc/htm2dbk.py
+===================================================================
+--- a/docs/zzipdoc/htm2dbk.py
++++ b/docs/zzipdoc/htm2dbk.py
+@@ -1,4 +1,4 @@
+-#! /usr/bin/env python
++#! /usr/bin/env python2
+ 
+ """
+ this file converts simple html text into a docbook xml variant. 
+Index: b/docs/zzipdoc/htmldocument.py
+===================================================================
+--- a/docs/zzipdoc/htmldocument.py
++++ b/docs/zzipdoc/htmldocument.py
+@@ -1,4 +1,4 @@
+-#! /usr/bin/env python
++#! /usr/bin/env python2
+ # -*- coding: UTF-8 -*-
+ from match import Match
+ 
+Index: b/docs/zzipdoc/match.py
+===================================================================
+--- a/docs/zzipdoc/match.py
++++ b/docs/zzipdoc/match.py
+@@ -1,4 +1,4 @@
+-#! /usr/bin/python
++#! /usr/bin/python2
+ # -*- coding: utf-8 -*-
+ # @creator (C) 2003 Guido U. Draheim
+ # @license http://creativecommons.org/licenses/by-nc-sa/2.0/de/
+Index: b/docs/zzipdoc/options.py
+===================================================================
+--- a/docs/zzipdoc/options.py
++++ b/docs/zzipdoc/options.py
+@@ -1,4 +1,4 @@
+-#! /usr/bin/python
++#! /usr/bin/python2
+ # -*- coding: utf-8 -*-
+ # @creator (C) 2003 Guido U. Draheim
+ # @license http://creativecommons.org/licenses/by-nc-sa/2.0/de/
