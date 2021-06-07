@@ -8,7 +8,7 @@ zzipdir = ${includedir}/zzip
 zzip_HEADERS = $(libzzip_la_headers) \
                $(libzzipmmapped_la_headers) \
                $(libzzipfseeko_la_headers)
-noinst_HEADERS = __debug.h __hints.h __mmap.h __dirent.h __fnmatch.h
+noinst_HEADERS = __debug.h __hints.h __mmap.h __dirent.h __fnmatch.h __string.h __mkdir.h __errno.h
 #
 VERSION_INFO=@VERSION_INFO@
 RELEASE_INFO=@RELEASE_INFO@
@@ -66,6 +66,7 @@ EXTRA_DIST =  $(WCC10_DIST) _msvc.sed
 CONFIG_CLEAN_FILES = _config.h 
 MAINTAINERCLEANFILES = _msvc.h
 CLEANFILES = $(WCC10_CLEAN)  *.pc *.omf *~ *.tmp *.tmp.*
+DISTCLEANFILES = *-uninstalled.sh _msvc.in zziplib.pc.in
 
 # here is some backward compatibility with version 0.10.* of zziplib
 install-data-hook : install-zzipHEADERS

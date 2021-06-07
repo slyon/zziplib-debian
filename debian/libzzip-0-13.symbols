@@ -1,9 +1,7 @@
 libzzip-0.so.13 libzzip-0-13 #MINVER#
- __zzip_fetch_disk_trailer@Base 0.13.56
  __zzip_get16@Base 0.13.56
  __zzip_get32@Base 0.13.56
  __zzip_get64@Base 0.13.56
- __zzip_parse_root_directory@Base 0.13.56
  __zzip_set16@Base 0.13.56
  __zzip_set32@Base 0.13.56
  __zzip_set64@Base 0.13.56
@@ -51,6 +49,7 @@ libzzip-0.so.13 libzzip-0-13 #MINVER#
  zzip_open_shared_io@Base 0.13.56
  zzip_opendir@Base 0.13.56
  zzip_opendir_ext_io@Base 0.13.56
+ zzip_pread@Base 0.13.72
  zzip_read@Base 0.13.56
  zzip_readdir@Base 0.13.56
  zzip_realdir@Base 0.13.56
@@ -130,6 +129,7 @@ libzzipmmapped-0.so.13 libzzip-0-13 #MINVER#
  zzip_mem_disk_open@Base 0.13.56
  zzip_mem_disk_unload@Base 0.13.56
  zzip_mem_entry_extra_block@Base 0.13.56
+ zzip_mem_entry_find_extra_block@Base 0.13.72
  zzip_mem_entry_fopen@Base 0.13.56
 libzzipwrap-0.so.13 libzzip-0-13 #MINVER#
  zzipwrap_use_memory_io@Base 0.13.56

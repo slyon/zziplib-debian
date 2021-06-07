@@ -2,12 +2,19 @@ Source: zziplib
 Section: libs
 Priority: optional
 Maintainer: Scott Howard <showard@debian.org>
-Build-Depends: debhelper (>= 9), pkg-config, zlib1g-dev, python2:native,
- zip, dh-exec, dh-autoreconf
-Standards-Version: 3.9.5
+Uploaders: Lukas Märdian <luk@slyon.de>
+Build-Depends:
+ debhelper-compat (= 13),
+ pkg-config,
+ zlib1g-dev,
+ python3:native,
+ zip,
+ dh-exec,
+ cmake,
+Standards-Version: 4.5.1
 Homepage: https://github.com/gdraheim
-Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/zziplib.git
-Vcs-git: git://anonscm.debian.org/collab-maint/zziplib.git
+#Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/zziplib.git
+#Vcs-git: git://anonscm.debian.org/collab-maint/zziplib.git
 
 Package: zziplib-bin
 Section: utils

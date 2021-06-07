@@ -1,3 +1,11 @@
+zziplib (0.13.72-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+    + switch to CMake
+    + drop .la libtool files
+
+ -- Lukas Märdian <luk@slyon.de>  Mon, 10 Jun 2021 14:28:20 +0200
+
 zziplib (0.13.62-3.3) unstable; urgency=medium
 
   * Non-maintainer upload.

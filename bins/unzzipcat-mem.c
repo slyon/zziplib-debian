@@ -9,6 +9,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <zzip/__mkdir.h>
+#include <zzip/__fnmatch.h>
+#include <zzip/__string.h>
+#include <zzip/__debug.h>
+#include "unzzipcat-zip.h"
+#include "unzzip-states.h"
 
 #ifdef ZZIP_HAVE_UNISTD_H
 #include <unistd.h>
@@ -17,43 +24,31 @@
 #include <io.h>
 #endif
 
-#ifdef ZZIP_HAVE_FNMATCH_H
-#include <fnmatch.h>
-#else
-#define fnmatch(x,y,z) strcmp(x,y)
-#endif
+/* Functions in unzzip.c: */
+extern int exitcode(int);
+extern FILE* create_fopen(char*, char*, int);
 
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
-
-static const char usage[] = 
-{
-    "unzzipdir-mem <zip> [names].. \n"
-    "  - unzzip data content of files contained in a zip archive.\n"
-};
-
-static void zzip_mem_entry_fprint(ZZIP_MEM_DISK* disk, 
+static void unzzip_mem_entry_fprint(ZZIP_MEM_DISK* disk, 
 				  ZZIP_MEM_ENTRY* entry, FILE* out)
 {
     ZZIP_DISK_FILE* file = zzip_mem_entry_fopen (disk, entry);
     if (file) 
     {
 	char buffer[1024]; int len;
-	while ((len = zzip_mem_disk_fread (buffer, 1024, 1, file)))
+	while (0 < (len = zzip_mem_disk_fread (buffer, 1024, 1, file)))
 	    fwrite (buffer, len, 1, out);
 	
 	zzip_mem_disk_fclose (file);
     }
 }
 
-static void zzip_mem_disk_cat_file(ZZIP_MEM_DISK* disk, char* name, FILE* out)
+static void unzzip_mem_disk_cat_file(ZZIP_MEM_DISK* disk, char* name, FILE* out)
 {
     ZZIP_DISK_FILE* file = zzip_mem_disk_fopen (disk, name);
     if (file) 
     {
-	char buffer[1024]; int len;
-	while ((len = zzip_mem_disk_fread (buffer, 1, 1024, file))) 
+	char buffer[1025]; int len;
+	while (0 < (len = zzip_mem_disk_fread (buffer, 1, 1024, file))) 
 	{
 	    fwrite (buffer, 1, len, out);
 	}
@@ -62,64 +57,91 @@ static void zzip_mem_disk_cat_file(ZZIP_MEM_DISK* disk, char* name, FILE* out)
     }
 }
 
-int 
-main (int argc, char ** argv)
+static int unzzip_cat (int argc, char ** argv, int extract)
 {
+    int done = 0;
     int argn;
     ZZIP_MEM_DISK* disk;
 
-    if (argc <= 1 || ! strcmp (argv[1], "--help"))
+    if (argc == 1)
     {
-        printf (usage);
-        return 0;
-    }
-    if (! strcmp (argv[1], "--version"))
-    {
-	printf (__FILE__" version "ZZIP_PACKAGE" "ZZIP_VERSION"\n");
-	return 0;
+	printf (__FILE__ " version " ZZIP_PACKAGE_NAME " " ZZIP_PACKAGE_VERSION "\n");
+	return EXIT_OK; /* better provide an archive argument */
     }
 
     disk = zzip_mem_disk_open (argv[1]);
     if (! disk) {
+        DBG3("disk_open failed [%i] %s", errno, strerror(errno));
 	perror(argv[1]);
-	return -1;
+	return exitcode(errno);
     }
 
     if (argc == 2)
     {  /* print directory list */
 	ZZIP_MEM_ENTRY* entry = zzip_mem_disk_findfirst(disk);
+	DBG2("findfirst %p\n", entry);
 	for (; entry ; entry = zzip_mem_disk_findnext(disk, entry))
 	{
 	    char* name = zzip_mem_entry_to_name (entry);
-	    printf ("%s\n", name);
+	    FILE* out = stdout;
+	    if (extract) out = create_fopen(name, "wb", 1);
+	    if (! out) {
+	        if (errno != EISDIR) {
+	             DBG3("can not open output file %i %s", errno, strerror(errno));
+	             done = EXIT_ERRORS;
+	        }
+	        continue;
+	    }
+	    unzzip_mem_disk_cat_file (disk, name, out);
+	    if (extract) fclose(out);
 	}
-	return 0;
-    }
-
-    if (argc == 3)
+    } 
+    else if (argc == 3 && !extract)
     {  /* list from one spec */
 	ZZIP_MEM_ENTRY* entry = 0;
 	while ((entry = zzip_mem_disk_findmatch(disk, argv[2], entry, 0, 0)))
 	{
-	     zzip_mem_entry_fprint (disk, entry, stdout);
+	     unzzip_mem_entry_fprint (disk, entry, stdout);
 	}
-
-	return 0;
-    }
-
-    for (argn=1; argn < argc; argn++)
-    {   /* list only the matching entries - each in order of commandline */
-	ZZIP_MEM_ENTRY* entry = zzip_mem_disk_findfirst(disk);
-	for (; entry ; entry = zzip_mem_disk_findnext(disk, entry))
-	{
-	    char* name = zzip_mem_entry_to_name (entry);
-	    if (! fnmatch (argv[argn], name, 
-			   FNM_NOESCAPE|FNM_PATHNAME|FNM_PERIOD))
-		zzip_mem_disk_cat_file (disk, name, stdout);
+    } else {
+	for (argn=1; argn < argc; argn++)
+	{   /* list only the matching entries - each in order of commandline */
+	    ZZIP_MEM_ENTRY* entry = zzip_mem_disk_findfirst(disk);
+	    for (; entry ; entry = zzip_mem_disk_findnext(disk, entry))
+	    {
+	        char* name = zzip_mem_entry_to_name (entry);
+	        if (! _zzip_fnmatch (argv[argn], name, 
+		    _zzip_FNM_NOESCAPE|_zzip_FNM_PATHNAME|_zzip_FNM_PERIOD))
+	        {
+	            FILE* out = stdout;
+	            if (extract) out = create_fopen(name, "wb", 1);
+		    if (! out) {
+		        if (errno != EISDIR) {
+		            DBG3("can not open output file %i %s", errno, strerror(errno));
+		            done = EXIT_ERRORS;
+		        }
+		        continue;
+		    }
+		    unzzip_mem_disk_cat_file (disk, name, out);
+		    if (extract) fclose(out);
+		    break; /* match loop */
+		}
+	    }
 	}
     }
-    return 0;
+    zzip_mem_disk_close(disk);
+    return done;
 } 
+
+int unzzip_print (int argc, char ** argv)
+{
+    return unzzip_cat(argc, argv, 0);
+}
+
+int unzzip_extract (int argc, char ** argv)
+{
+    return unzzip_cat(argc, argv, 1);
+}
 
 /* 
  * Local variables:
