@@ -5,6 +5,11 @@ It was downloaded from http://zziplib.sourceforge.net
 
 Upstream Author: Guido Draheim <guidod@gmx.de>
 
+The Windows binaries were delete for the DFSG tarball:
+./msvc7/pkzip.exe
+./msvc7/zip.exe
+./msvc8/zip.exe
+./msvc/*
 
 Copyright:
 
