@@ -12,7 +12,4 @@
 #check-rootseek-and-rootsize-to-be-positive-27.patch
 #check-rootseek-after-correction-41.patch
 #fix-for-zz_rootsize-41.patch
-#Avoid-memory-leak-from-__zzip_parse_root_directory-1.patch
-#Avoid-memory-leak-from-__zzip_parse_root_directory-2.patch
-#One-more-free-to-avoid-memory-leak.patch
 skip-test.patch
