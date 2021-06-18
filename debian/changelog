@@ -1,10 +1,30 @@
-zziplib (0.13.72+dfsg.1-1) UNRELEASED; urgency=medium
+zziplib (0.13.72+dfsg.1-1) unstable; urgency=medium
 
   * New upstream release.
     + switch to CMake
     + drop .la libtool files
+    + refresh d/p/zziplib-unzipcat-NULL-name.patch
+    + drop d/p/Avoid-memory-leak-from-__zzip_parse_root_directory-1.patch
+       and d/p/Avoid-memory-leak-from-__zzip_parse_root_directory-2.patch
+       and d/p/One-more-free-to-avoid-memory-leak.patch:
+      applied upstream in 0e1dadb, d2e5d5c and 9411bde
+    + drop patches applied upstream:
+      debian/patches/merge-CVE-2018-6381.patch-from-jmoellers-12.patch
+      debian/patches/zziplib-CVE-2017-5974.patch
+      debian/patches/zziplib-CVE-2017-5975.patch
+      debian/patches/zziplib-CVE-2017-5976.patch
+      debian/patches/zziplib-CVE-2017-5978.patch
+      debian/patches/zziplib-CVE-2017-5979.patch
+      debian/patches/zziplib-CVE-2017-5981.patch
+      debian/patches/need-to-check-on-endbuf-for-stored-files-15.patch
+      debian/patches/Reject-the-ZIP-file-and-report-it-as-corrupt-if-the-.patch
+      debian/patches/check-rootseek-after-correction-41.patch
+      debian/patches/check-rootseek-and-rootsize-to-be-positive-27.patch
+      debian/patches/check-zlib-space-to-be-within-buffer-39.patch
+      debian/patches/fix-for-zz_rootsize-41.patch
+      debian/patches/need-to-check-on-endbuf-for-stored-files-15.patch
 
- -- Lukas Märdian <luk@slyon.de>  Mon, 10 Jun 2021 14:28:20 +0200
+ -- Lukas Märdian <slyon@ubuntu.com>  Fri, 18 Jun 2021 15:57:44 +0200
 
 zziplib (0.13.62-3.3) unstable; urgency=medium
 
