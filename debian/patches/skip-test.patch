@@ -1,5 +1,7 @@
 Description: Skip broken test in zziptests.py
 Author: Lukas Märdian <slyon@ubuntu.com>
+Forwarded: not-needed
+Last-Update: 2021-06-18
 
 ---
 --- zziplib-0.13.72.orig/test/zziptests.py
