@@ -13,8 +13,8 @@ Build-Depends:
  cmake,
 Standards-Version: 4.5.1
 Homepage: https://github.com/gdraheim
-#Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/zziplib.git
-#Vcs-git: git://anonscm.debian.org/collab-maint/zziplib.git
+Vcs-Browser: https://salsa.debian.org/slyon/zzip
+Vcs-git: https://salsa.debian.org/slyon/zzip.git
 
 Package: zziplib-bin
 Section: utils
