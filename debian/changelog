@@ -1,6 +1,6 @@
 zziplib (0.13.72+dfsg.1-1) unstable; urgency=medium
 
-  * New upstream release.
+  * New upstream release. (Closes: #938924)
     + switch to CMake
     + drop .la libtool files
     + refresh d/p/zziplib-unzipcat-NULL-name.patch
