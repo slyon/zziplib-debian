@@ -24,7 +24,7 @@ zziplib (0.13.72+dfsg.1-1) unstable; urgency=medium
       debian/patches/fix-for-zz_rootsize-41.patch
       debian/patches/need-to-check-on-endbuf-for-stored-files-15.patch
 
- -- Lukas Märdian <slyon@ubuntu.com>  Fri, 18 Jun 2021 15:57:44 +0200
+ -- Lukas Märdian <luk@slyon.de>  Fri, 18 Jun 2021 15:57:44 +0200
 
 zziplib (0.13.62-3.3) unstable; urgency=medium
 
@@ -104,8 +104,8 @@ zziplib (0.13.56-2) unstable; urgency=low
 zziplib (0.13.56-1.1) unstable; urgency=low
 
   * Non-maintainer upload.
-  * Fix "FTBFS: x86_64-linux-gnu-gcc: error: unrecognized option 
-    '--export-dynamic'": apply patch from Ubuntu / Matthias Klose: 
+  * Fix "FTBFS: x86_64-linux-gnu-gcc: error: unrecognized option
+    '--export-dynamic'": apply patch from Ubuntu / Matthias Klose:
     - Pass correct linker option. LP: #832895. Closes: #625064.
   * Fix "Emptying dependency_libs in .la files": use recipe provided by Neil
     Williams in the bug report. Closes: #633335
@@ -133,7 +133,7 @@ zziplib (0.13.54-1) unstable; urgency=low
 
 zziplib (0.13.50-1) unstable; urgency=low
 
-  * New upstream version 
+  * New upstream version
     - Update 01-fetch.patch
   * debhelper compat version is 7
   * Standards version is 3.8.1
@@ -144,7 +144,7 @@ zziplib (0.13.50-1) unstable; urgency=low
 
 zziplib (0.13.49-4) unstable; urgency=low
 
-  * NMU acknowledgement. Closes: #443880 
+  * NMU acknowledgement. Closes: #443880
   * Fixed the following lintian issues:
     - zziplib source: out-of-date-standards-version 3.7.2 (current is 3.7.3)
     - zziplib: description-contains-homepage
@@ -239,7 +239,7 @@ zziplib (0.12.83-3) unstable; urgency=low
 
 zziplib (0.12.83-2) unstable; urgency=low
 
-  * Libtool update for kfreebsd-gnu (closes: bug#294730). 
+  * Libtool update for kfreebsd-gnu (closes: bug#294730).
 
  -- Aurelien Jarno <aurel32@debian.org>  Fri, 11 Feb 2005 17:32:04 +0100
 
