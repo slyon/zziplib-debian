@@ -1,3 +1,10 @@
+zziplib (0.13.72+dfsg.1-1.1) unstable; urgency=medium
+
+  * Non-Maintainer Upload.
+  * Fix (i386) cross-compilation.
+
+ -- Lukas Märdian <luk@slyon.de>  Mon, 21 Jun 2021 14:42:07 +0200
+
 zziplib (0.13.72+dfsg.1-1) unstable; urgency=medium
 
   * New upstream release. (Closes: #938924)
