@@ -12,7 +12,7 @@ Build-Depends:
  dh-exec,
  cmake,
 Standards-Version: 4.5.1
-Homepage: https://github.com/gdraheim
+Homepage: https://github.com/gdraheim/zziplib
 Vcs-Browser: https://salsa.debian.org/slyon/zzip
 Vcs-git: https://salsa.debian.org/slyon/zzip.git
 
